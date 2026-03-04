@@ -46,12 +46,6 @@ font-size:20px;
 background:linear-gradient(45deg,var(--accent),var(--accent2));
 -webkit-background-clip:text;
 color:transparent;
-display:flex;
-align-items:center;
-gap:10px;
-}
-.logo img{
-height:35px;
 }
 .icon{cursor:pointer;font-size:22px;margin-left:15px;position:relative;}
 .cart-count{
@@ -101,34 +95,27 @@ display:none;z-index:1500;
 display:flex;justify-content:space-between;
 align-items:center;margin-bottom:8px;
 }
-.admin-panel{
-position:fixed;inset:0;background:rgba(0,0,0,.6);
-display:none;justify-content:center;align-items:center;z-index:3000;
-}
-.admin-box{
-background:var(--card);padding:25px;border-radius:15px;
-width:95%;max-width:900px;max-height:90%;overflow:auto;
-}
-.tab-buttons button{margin-right:5px;}
-.tab{display:none;}
-.tab.active{display:block;}
 input,select{
 width:100%;padding:6px;margin-bottom:6px;
 border-radius:6px;border:1px solid #ccc;
+}
+.login-box{
+position:fixed;inset:0;background:rgba(0,0,0,.6);
+display:none;justify-content:center;align-items:center;z-index:4000;
+}
+.login-content{
+background:var(--card);padding:25px;border-radius:15px;width:300px;
 }
 </style>
 </head>
 <body>
 
 <header>
-<div class="logo">
-<img src="https://via.placeholder.com/40" alt="Logo">
-<span>Mi Tienda</span>
-</div>
+<div class="logo">Mi Tienda</div>
 <div>
 <span class="icon" onclick="toggleDark()">🌗</span>
+<span class="icon" onclick="abrirLogin()">👤</span>
 <span class="icon" onclick="openCart()">🛒<span class="cart-count" id="cartCount">0</span></span>
-<span class="icon" onclick="openAdmin()">⚙</span>
 </div>
 </header>
 
@@ -140,87 +127,47 @@ border-radius:6px;border:1px solid #ccc;
 <h2>Carrito</h2>
 <div id="cartItems"></div>
 <hr>
-
-<select id="tipoEntrega" onchange="mostrarFormulario()">
-<option value="local">Retiro en local</option>
-<option value="envio">Envío</option>
-</select>
-
-<div id="formEnvio" style="display:none;">
-<input id="nombreEnvio" placeholder="Nombre">
-<input id="direccionEnvio" placeholder="Dirección">
-<input id="telefonoEnvio" placeholder="Teléfono">
-</div>
-
 <p>Total: $<span id="total">0</span></p>
 <p id="ahorro" style="color:green"></p>
-
 <button onclick="hacerPedido()">Hacer Pedido</button>
 <button onclick="closeCart()">Cerrar</button>
 </div>
 
-<div class="admin-panel" id="adminPanel">
-<div class="admin-box">
-
-<h2>Panel Admin</h2>
-
-<div class="tab-buttons">
-<button onclick="mostrarTab('productosTab')">Productos</button>
-<button onclick="mostrarTab('historialTab')">Historial</button>
-</div>
-
-<div id="productosTab" class="tab active">
-<input id="editIndex" type="hidden">
-<input id="n" placeholder="Nombre">
-<input id="p" placeholder="Precio individual">
-<input id="promo" placeholder="Precio promo (por 2)">
-<input id="stock" placeholder="Stock">
-<input id="img" placeholder="URL imagen">
-<label><input type="checkbox" id="promo2"> Promo por 2</label>
-<label><input type="checkbox" id="tresx2"> 3x2</label>
-<label><input type="checkbox" id="tresx1"> 3x1</label>
-<input id="descManual" placeholder="Descuento manual ($)">
-<button onclick="guardar()">Guardar</button>
-<hr>
-<div id="listaAdmin"></div>
-</div>
-
-<div id="historialTab" class="tab">
-<button onclick="borrarHistorial()">Borrar historial</button>
-<div id="historialContenido"></div>
-</div>
-
-<button onclick="cerrarAdmin()">Cerrar</button>
-
+<div class="login-box" id="loginBox">
+<div class="login-content">
+<h3>Cuenta Mayorista</h3>
+<input id="user" placeholder="Usuario">
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="registrar()">Registrarse</button>
+<button onclick="login()">Ingresar</button>
+<button onclick="logout()">Cerrar sesión</button>
+<button onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
 <script>
+const MONTO_MINIMO_MAYORISTA = 50000
+
 let products=JSON.parse(localStorage.getItem("products"))||[]
 let cart=[]
-let history=JSON.parse(localStorage.getItem("history"))||[]
-
-function mostrarTab(id){
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
-document.getElementById(id).classList.add("active")
-}
+let currentUser=JSON.parse(localStorage.getItem("currentUser"))||null
+let users=JSON.parse(localStorage.getItem("users"))||[]
 
 function render(){
 let c=document.getElementById("products")
 c.innerHTML=""
 products.forEach((p,i)=>{
-let etiquetas=""
-if(p.promo2) etiquetas+=`<span class="promo-badge">Promo x2</span>`
-if(p.tresx2) etiquetas+=`<span class="promo-badge">3x2</span>`
-if(p.tresx1) etiquetas+=`<span class="promo-badge">3x1</span>`
-if(p.descManual) etiquetas+=`<span class="promo-badge">-$${p.descManual} c/u</span>`
+
+let precioBase=p.price
+if(currentUser && p.mayorista){
+precioBase=p.mayorista
+}
 
 c.innerHTML+=`
 <div class="card">
 <img src="${p.img||'https://via.placeholder.com/300'}">
 <h3>${p.name}</h3>
-<p>$${p.price}</p>
-${etiquetas}
+<p>$${precioBase}</p>
 <p>Stock: ${p.stock}</p>
 <button onclick="add(${i})">Agregar</button>
 </div>`
@@ -237,41 +184,20 @@ else cart.push({i,qty:1})
 updateCart()
 }
 
-function calcularProducto(p,qty){
-let subtotal=p.price*qty
-let ahorro=0
-if(p.promo2 && qty>=2){
-let sets=Math.floor(qty/2)
-subtotal=p.promo*sets+(qty%2)*p.price
-ahorro+=(p.price*2-p.promo)*sets
-}
-if(p.tresx2 && qty>=3){
-let sets=Math.floor(qty/3)
-subtotal=p.price*(qty-sets)
-ahorro+=p.price*sets
-}
-if(p.tresx1 && qty>=3){
-let sets=Math.floor(qty/3)
-subtotal=p.price*(qty-2*sets)
-ahorro+=p.price*2*sets
-}
-if(p.descManual){
-subtotal-=p.descManual*qty
-ahorro+=p.descManual*qty
-}
-return {subtotal,ahorro}
-}
-
 function updateCart(){
 let items=document.getElementById("cartItems")
 items.innerHTML=""
 let total=0
-let ahorroTotal=0
+
 cart.forEach(c=>{
 let p=products[c.i]
-let calc=calcularProducto(p,c.qty)
-total+=calc.subtotal
-ahorroTotal+=calc.ahorro
+let precio=p.price
+if(currentUser && p.mayorista){
+precio=p.mayorista
+}
+let subtotal=precio*c.qty
+total+=subtotal
+
 items.innerHTML+=`
 <div class="cart-item">
 ${p.name} x${c.qty}
@@ -281,9 +207,20 @@ ${p.name} x${c.qty}
 </div>
 </div>`
 })
+
 document.getElementById("total").innerText=total
 document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0)
-document.getElementById("ahorro").innerText=ahorroTotal>0?`Ahorrás $${ahorroTotal}`:""
+
+if(currentUser){
+if(total<MONTO_MINIMO_MAYORISTA){
+document.getElementById("ahorro").innerText=
+"Te faltan $" + (MONTO_MINIMO_MAYORISTA-total) + " para el mínimo mayorista"
+}else{
+document.getElementById("ahorro").innerText=""
+}
+}else{
+document.getElementById("ahorro").innerText=""
+}
 }
 
 function cambiar(i,v){
@@ -295,112 +232,73 @@ if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
 updateCart()
 }
 
-function mostrarFormulario(){
-let tipo=document.getElementById("tipoEntrega").value
-document.getElementById("formEnvio").style.display=tipo==="envio"?"block":"none"
-}
-
 function hacerPedido(){
 if(cart.length===0){alert("Carrito vacío");return}
-let tipo=document.getElementById("tipoEntrega").value
-let total=document.getElementById("total").innerText
+let total=parseInt(document.getElementById("total").innerText)
+
+if(currentUser){
+if(total<MONTO_MINIMO_MAYORISTA){
+alert("El pedido mínimo mayorista es de $"+MONTO_MINIMO_MAYORISTA)
+return
+}
+}
+
 let detalle=""
 cart.forEach(c=>{
 let p=products[c.i]
-let calc=calcularProducto(p,c.qty)
-detalle+=`${p.name} x${c.qty} - $${calc.subtotal}\n`
+let precio=p.price
+if(currentUser && p.mayorista){
+precio=p.mayorista
+}
+let subtotal=precio*c.qty
+detalle+=`${p.name} x${c.qty} - $${subtotal}\n`
 p.stock-=c.qty
 })
-let datos=""
-if(tipo==="envio"){
-let nombre=document.getElementById("nombreEnvio").value
-let direccion=document.getElementById("direccionEnvio").value
-let telefono=document.getElementById("telefonoEnvio").value
-if(!nombre||!direccion||!telefono){alert("Completar datos");return}
-datos=`\nEnvío:\nNombre: ${nombre}\nDirección: ${direccion}\nTeléfono: ${telefono}`
-}
-let mensaje=`Pedido:\n${detalle}\nTotal: $${total}${datos}`
+
+let mensaje=`Pedido:\n${detalle}\nTotal: $${total}`
 window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(mensaje)}`)
-history.push({fecha:new Date().toLocaleString(),detalle,total,tipo})
-localStorage.setItem("history",JSON.stringify(history))
+
 localStorage.setItem("products",JSON.stringify(products))
 cart=[]
 updateCart()
 render()
 }
 
-function openAdmin(){
-let pass=prompt("Contraseña:")
-if(pass==="admin"){
-document.getElementById("adminPanel").style.display="flex"
-cargarAdmin()
-}else alert("Incorrecta")
-}
-function cerrarAdmin(){document.getElementById("adminPanel").style.display="none"}
+function abrirLogin(){document.getElementById("loginBox").style.display="flex"}
+function cerrarLogin(){document.getElementById("loginBox").style.display="none"}
 function toggleDark(){document.body.classList.toggle("dark")}
 function openCart(){document.getElementById("drawer").classList.add("open");document.getElementById("overlay").classList.add("show")}
 function closeCart(){document.getElementById("drawer").classList.remove("open");document.getElementById("overlay").classList.remove("show")}
 
-function guardar(){
-let index=document.getElementById("editIndex").value
-let producto={
-name:document.getElementById("n").value,
-price:parseInt(document.getElementById("p").value),
-promo:parseInt(document.getElementById("promo").value)||0,
-promo2:document.getElementById("promo2").checked,
-tresx2:document.getElementById("tresx2").checked,
-tresx1:document.getElementById("tresx1").checked,
-descManual:parseInt(document.getElementById("descManual").value)||0,
-stock:parseInt(document.getElementById("stock").value),
-img:document.getElementById("img").value
+function registrar(){
+let u=user.value
+let p=pass.value
+if(!u||!p)return alert("Completar datos")
+users.push({user:u,pass:p})
+localStorage.setItem("users",JSON.stringify(users))
+alert("Cuenta creada")
 }
-if(index==="") products.push(producto)
-else products[index]=producto
-localStorage.setItem("products",JSON.stringify(products))
+
+function login(){
+let u=user.value
+let p=pass.value
+let found=users.find(x=>x.user===u && x.pass===p)
+if(found){
+currentUser=found
+localStorage.setItem("currentUser",JSON.stringify(found))
+alert("Sesión iniciada como mayorista")
+cerrarLogin()
 render()
-cargarAdmin()
-document.getElementById("editIndex").value=""
+updateCart()
+}else alert("Datos incorrectos")
 }
 
-function cargarAdmin(){
-let l=document.getElementById("listaAdmin")
-l.innerHTML=""
-products.forEach((p,i)=>{
-l.innerHTML+=`${p.name} - Stock: ${p.stock}
-<button onclick="editar(${i})">Editar</button>
-<button onclick="eliminar(${i})">Eliminar</button><br>`
-})
-let h=document.getElementById("historialContenido")
-h.innerHTML=history.map(x=>
-`<p><b>${x.fecha}</b><br>${x.detalle.replace(/\n/g,"<br>")}<br>Total: $${x.total}</p><hr>`
-).join("")
-}
-
-function editar(i){
-let prod=products[i]
-document.getElementById("editIndex").value=i
-document.getElementById("n").value=prod.name
-document.getElementById("p").value=prod.price
-document.getElementById("promo").value=prod.promo
-document.getElementById("stock").value=prod.stock
-document.getElementById("img").value=prod.img
-document.getElementById("promo2").checked=prod.promo2
-document.getElementById("tresx2").checked=prod.tresx2
-document.getElementById("tresx1").checked=prod.tresx1
-document.getElementById("descManual").value=prod.descManual
-}
-
-function eliminar(i){
-products.splice(i,1)
-localStorage.setItem("products",JSON.stringify(products))
+function logout(){
+currentUser=null
+localStorage.removeItem("currentUser")
+alert("Sesión cerrada")
 render()
-cargarAdmin()
-}
-
-function borrarHistorial(){
-history=[]
-localStorage.setItem("history",JSON.stringify(history))
-cargarAdmin()
+updateCart()
 }
 
 render()
