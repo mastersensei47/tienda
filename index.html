@@ -3,112 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tienda PRO</title>
-
+<title>Tienda Pro</title>
 <style>
 :root{
 --bg:#f4f6f9;
 --card:#ffffff;
 --text:#111;
---accent:#2563eb;
---accent2:#9333ea;
---shadow:0 15px 40px rgba(0,0,0,.1);
-}
-
-body.dark{
---bg:#0f172a;
---card:#1e293b;
---text:#f1f5f9;
---accent:#22d3ee;
---accent2:#f43f5e;
---shadow:0 20px 60px rgba(0,0,0,.6);
+--accent:#0d6efd;
+--darkbg:#121212;
+--darkcard:#1e1e1e;
+--darktext:#f1f1f1;
 }
 
 body{
 margin:0;
-font-family:system-ui;
+font-family:Segoe UI;
 background:var(--bg);
 color:var(--text);
 transition:.3s;
+}
+
+.dark{
+background:var(--darkbg);
+color:var(--darktext);
 }
 
 header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px 25px;
-background:var(--card);
-box-shadow:var(--shadow);
-position:sticky;
-top:0;
-z-index:1000;
+padding:15px 20px;
+background:var(--accent);
+color:white;
+font-weight:bold;
 }
 
-.logo{
-font-weight:700;
-font-size:20px;
-background:linear-gradient(45deg,var(--accent),var(--accent2));
--webkit-background-clip:text;
-color:transparent;
-}
-
-.icon{
+button{
 cursor:pointer;
-font-size:22px;
-margin-left:15px;
-position:relative;
+border:none;
+padding:6px 10px;
+border-radius:6px;
 }
 
-.cart-count{
-position:absolute;
-top:-6px;
-right:-10px;
-background:var(--accent2);
-color:#fff;
-font-size:11px;
-padding:3px 6px;
-border-radius:50%;
-}
-
-.products{
+.product-grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-gap:20px;
-padding:25px;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:15px;
+padding:20px;
 }
 
 .card{
 background:var(--card);
 padding:15px;
-border-radius:15px;
-box-shadow:var(--shadow);
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
 transition:.3s;
 }
 
-.card:hover{transform:translateY(-5px)}
+.dark .card{
+background:var(--darkcard);
+}
 
-.card img{
-width:100%;
-height:180px;
-object-fit:cover;
-border-radius:12px;
+.price{
+font-size:18px;
+font-weight:bold;
 }
 
 .old{
 text-decoration:line-through;
-opacity:.6;
-margin-left:5px;
+color:red;
 font-size:14px;
 }
 
-button{
-background:linear-gradient(45deg,var(--accent),var(--accent2));
-border:none;
-color:#fff;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-margin-top:5px;
+.promo-label{
+background:red;
+color:white;
+padding:2px 6px;
+font-size:12px;
+border-radius:4px;
+margin-left:5px;
 }
 
 .drawer{
@@ -118,278 +91,325 @@ top:0;
 width:350px;
 height:100%;
 background:var(--card);
-box-shadow:var(--shadow);
+box-shadow:-5px 0 20px rgba(0,0,0,.2);
 padding:20px;
-transition:.4s;
+transition:.3s;
 overflow:auto;
-z-index:2000;
+z-index:999;
 }
 
-.drawer.open{right:0}
-
-.overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.5);
-display:none;
-z-index:1500;
+.dark .drawer{
+background:var(--darkcard);
 }
 
-.overlay.show{display:block}
+.drawer.open{
+right:0;
+}
 
 .cart-item{
 display:flex;
 justify-content:space-between;
-align-items:center;
-margin-bottom:8px;
+margin-bottom:10px;
 }
 
 .admin-panel{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.6);
+background:white;
+z-index:1000;
 display:none;
-justify-content:center;
-align-items:center;
-z-index:3000;
-}
-
-.admin-box{
-background:var(--card);
-padding:25px;
-border-radius:15px;
-width:95%;
-max-width:900px;
-max-height:90%;
 overflow:auto;
+padding:20px;
 }
 
-input{
+.dark .admin-panel{
+background:#1e1e1e;
+color:white;
+}
+
+.section{
+margin-bottom:30px;
+}
+
+input,select{
+padding:5px;
+margin:5px 0;
 width:100%;
-padding:6px;
-margin-bottom:6px;
-border-radius:6px;
-border:1px solid #ccc;
+}
+
+.hidden{
+display:none;
 }
 </style>
 </head>
 <body>
 
 <header>
-<div class="logo">Mi Tienda</div>
+<div>Tienda Pro</div>
 <div>
-<span class="icon" onclick="toggleDark()">🌗</span>
-<span class="icon" onclick="openCart()">🛒<span class="cart-count" id="cartCount">0</span></span>
-<span class="icon" onclick="openAdmin()">⚙</span>
+<button onclick="toggleTheme()">🌙</button>
+<button onclick="toggleCart()">🛍</button>
+<button onclick="openAdmin()">⚙</button>
 </div>
 </header>
 
-<div class="products" id="products"></div>
+<div class="product-grid" id="products"></div>
 
-<div class="overlay" id="overlay" onclick="closeCart()"></div>
-
-<div class="drawer" id="drawer">
-<h2>Carrito</h2>
+<div class="drawer" id="cartDrawer">
+<h3>Carrito</h3>
 <div id="cartItems"></div>
 <hr>
-<label><input type="checkbox" id="envioCheck"> Agregar envío</label>
-<p>Total: $<span id="total">0</span></p>
-<p id="ahorro" style="color:green"></p>
-<button onclick="hacerPedido()">Hacer Pedido</button>
-<button onclick="closeCart()">Cerrar</button>
+<div id="cartSummary"></div>
+
+<h4>Entrega</h4>
+<select id="deliveryType" onchange="renderForm()">
+<option value="local">Retiro en local</option>
+<option value="envio">Envío a domicilio</option>
+</select>
+
+<div id="deliveryForm"></div>
+
+<button onclick="sendOrder()">Hacer Pedido</button>
 </div>
 
 <div class="admin-panel" id="adminPanel">
-<div class="admin-box">
 <h2>Panel Admin</h2>
+<button onclick="closeAdmin()">Volver</button>
 
-<h3>Agregar Producto</h3>
-<input id="n" placeholder="Nombre">
-<input id="p" placeholder="Precio normal">
-<input id="promo" placeholder="Precio por 2 (opcional)">
-<input id="stock" placeholder="Stock">
-<input id="img" placeholder="URL imagen">
-<label><input type="checkbox" id="promo2"> Activar promo 2 precio reducido</label><br>
-<label><input type="checkbox" id="tresx2"> Activar 3x2</label><br>
-<input id="descManual" placeholder="Descuento manual ($)">
-<button onclick="guardar()">Guardar</button>
-
-<hr>
+<div class="section">
 <h3>Productos</h3>
-<div id="listaAdmin"></div>
+<input id="pName" placeholder="Nombre">
+<input id="pPrice" placeholder="Precio normal">
+<input id="pPromo" placeholder="Precio promo (opcional)">
+<label><input type="checkbox" id="p3x2"> Activar 3x2</label>
+<button onclick="addProduct()">Agregar</button>
+<div id="adminProducts"></div>
+</div>
 
-<hr>
+<div class="section">
 <h3>Envío</h3>
-<input id="precioEnvio" placeholder="Precio envío">
-<button onclick="guardarEnvio()">Guardar Envío</button>
+<input id="shippingPrice" placeholder="Precio envío">
+<button onclick="saveShipping()">Guardar</button>
+</div>
 
-<hr>
+<div class="section">
 <h3>Historial</h3>
-<div id="historial"></div>
-
-<button onclick="cerrarAdmin()">Cerrar</button>
+<div id="history"></div>
 </div>
 </div>
 
 <script>
-let products=JSON.parse(localStorage.getItem("products"))||[]
-let cart=[]
-let shipping=localStorage.getItem("shipping")||0
-let history=JSON.parse(localStorage.getItem("history"))||[]
+let products=JSON.parse(localStorage.getItem("products"))||[];
+let cart=[];
+let shipping=localStorage.getItem("shipping")||0;
+let history=JSON.parse(localStorage.getItem("history"))||[];
 
-function render(){
-let c=document.getElementById("products")
-c.innerHTML=""
+function saveData(){
+localStorage.setItem("products",JSON.stringify(products));
+localStorage.setItem("shipping",shipping);
+localStorage.setItem("history",JSON.stringify(history));
+}
+
+function renderProducts(){
+let container=document.getElementById("products");
+container.innerHTML="";
 products.forEach((p,i)=>{
-c.innerHTML+=`
+let priceHTML="";
+if(p.promo){
+priceHTML=`
+<div class="price">$${p.price}</div>
+<div class="old">$${p.promo}</div>
+<span class="promo-label">PROMO</span>
+`;
+}else{
+priceHTML=`<div class="price">$${p.price}</div>`;
+}
+container.innerHTML+=`
 <div class="card">
-<img src="${p.img||'https://via.placeholder.com/300'}">
-<h3>${p.name}</h3>
-<p>$${p.price} ${p.promo2?`<span class="old">$${p.promo}</span>`:""}</p>
-<p>Stock: ${p.stock}</p>
-<button onclick="add(${i})">Agregar</button>
-</div>`
-})
+<h4>${p.name}</h4>
+${priceHTML}
+<button onclick="addToCart(${i})">Agregar</button>
+</div>`;
+});
 }
 
-function add(i){
-let item=cart.find(x=>x.i==i)
-if(item)item.qty++
-else cart.push({i,qty:1})
-updateCart()
+function addProduct(){
+let name=document.getElementById("pName").value;
+let price=parseFloat(document.getElementById("pPrice").value);
+let promo=parseFloat(document.getElementById("pPromo").value);
+let is3x2=document.getElementById("p3x2").checked;
+products.push({name,price,promo:promo||null,is3x2});
+saveData();
+renderProducts();
+renderAdminProducts();
 }
 
-function updateCart(){
-let items=document.getElementById("cartItems")
-items.innerHTML=""
-let total=0
-let ahorro=0
+function renderAdminProducts(){
+let container=document.getElementById("adminProducts");
+container.innerHTML="";
+products.forEach((p,i)=>{
+container.innerHTML+=`
+<div>
+${p.name} - $${p.price}
+<button onclick="deleteProduct(${i})">Eliminar</button>
+</div>`;
+});
+}
+
+function deleteProduct(i){
+products.splice(i,1);
+saveData();
+renderProducts();
+renderAdminProducts();
+}
+
+function addToCart(i){
+let existing=cart.find(c=>c.index===i);
+if(existing){
+existing.qty++;
+}else{
+cart.push({index:i,qty:1});
+}
+renderCart();
+}
+
+function renderCart(){
+let items=document.getElementById("cartItems");
+items.innerHTML="";
+let total=0;
+let ahorro=0;
 
 cart.forEach(c=>{
-let p=products[c.i]
-let subtotal=p.price*c.qty
+let p=products[c.index];
+let unit=p.price;
+if(p.promo) ahorro+=(p.promo-p.price)*c.qty;
 
-if(p.promo2 && c.qty>=2){
-subtotal=p.promo*(Math.floor(c.qty/2))+(c.qty%2)*p.price
-ahorro+= (p.price*2 - p.promo)*Math.floor(c.qty/2)
+if(p.is3x2){
+let free=Math.floor(c.qty/3);
+ahorro+=free*unit;
+total+=unit*(c.qty-free);
+}else{
+total+=unit*c.qty;
 }
-
-if(p.tresx2 && c.qty>=3){
-let sets=Math.floor(c.qty/3)
-subtotal=p.price*(c.qty-sets)
-ahorro+=p.price*sets
-}
-
-if(p.descManual){
-subtotal-=p.descManual*c.qty
-ahorro+=p.descManual*c.qty
-}
-
-total+=subtotal
 
 items.innerHTML+=`
 <div class="cart-item">
-${p.name} x${c.qty}
+<div>${p.name} x${c.qty}</div>
 <div>
-<button onclick="cambiar(${c.i},-1)">-</button>
-<button onclick="cambiar(${c.i},1)">+</button>
+<button onclick="changeQty(${c.index},-1)">-</button>
+${c.qty}
+<button onclick="changeQty(${c.index},1)">+</button>
+<button onclick="removeItem(${c.index})">🗑</button>
 </div>
-</div>`
-})
+</div>`;
+});
 
-if(document.getElementById("envioCheck").checked)
-total+=parseInt(shipping)
-
-document.getElementById("total").innerText=total
-document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0)
-document.getElementById("ahorro").innerText=ahorro>0?`Ahorrás $${ahorro}`:""
+if(document.getElementById("deliveryType").value==="envio"){
+total+=parseFloat(shipping);
 }
 
-function cambiar(i,v){
-let item=cart.find(x=>x.i==i)
-item.qty+=v
-if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
-updateCart()
+document.getElementById("cartSummary").innerHTML=`
+Subtotal: $${total}<br>
+Ahorro: $${ahorro}<br>
+Envío: ${document.getElementById("deliveryType").value==="envio"?"$"+shipping:"Gratis"}
+`;
 }
 
-function hacerPedido(){
-let msg="Pedido:%0A"
-cart.forEach(c=>{
-let p=products[c.i]
-msg+=`${p.name} x${c.qty}%0A`
-p.stock-=c.qty
-})
-msg+=`Total: $${document.getElementById("total").innerText}`
-window.open(`https://wa.me/549XXXXXXXXXX?text=${msg}`)
-history.push({fecha:new Date().toLocaleString(),detalle:msg})
-localStorage.setItem("history",JSON.stringify(history))
-localStorage.setItem("products",JSON.stringify(products))
-cart=[]
-updateCart()
-render()
+function changeQty(i,val){
+let item=cart.find(c=>c.index===i);
+item.qty+=val;
+if(item.qty<=0) cart=cart.filter(c=>c.index!==i);
+renderCart();
 }
 
-function openCart(){
-drawer.classList.add("open")
-overlay.classList.add("show")
-}
-function closeCart(){
-drawer.classList.remove("open")
-overlay.classList.remove("show")
+function removeItem(i){
+cart=cart.filter(c=>c.index!==i);
+renderCart();
 }
 
-function toggleDark(){
-document.body.classList.toggle("dark")
+function toggleCart(){
+document.getElementById("cartDrawer").classList.toggle("open");
+}
+
+function toggleTheme(){
+document.body.classList.toggle("dark");
 }
 
 function openAdmin(){
-adminPanel.style.display="flex"
-cargarAdmin()
+let pass=prompt("Contraseña:");
+if(pass==="admin"){
+document.getElementById("adminPanel").style.display="block";
+renderAdminProducts();
+renderHistory();
+}else{
+alert("Incorrecta");
 }
-function cerrarAdmin(){
-adminPanel.style.display="none"
-}
-
-function guardar(){
-products.push({
-name:n.value,
-price:parseInt(p.value),
-promo:parseInt(promo.value)||0,
-promo2:promo2.checked,
-tresx2:tresx2.checked,
-descManual:parseInt(descManual.value)||0,
-stock:parseInt(stock.value),
-img:img.value
-})
-localStorage.setItem("products",JSON.stringify(products))
-render()
-cargarAdmin()
 }
 
-function cargarAdmin(){
-let l=document.getElementById("listaAdmin")
-l.innerHTML=""
-products.forEach((p,i)=>{
-l.innerHTML+=`${p.name} - $${p.price} <button onclick="eliminar(${i})">Eliminar</button><br>`
-})
-let h=document.getElementById("historial")
-h.innerHTML=history.map(x=>`<p>${x.fecha}</p>`).join("")
+function closeAdmin(){
+document.getElementById("adminPanel").style.display="none";
 }
 
-function eliminar(i){
-products.splice(i,1)
-localStorage.setItem("products",JSON.stringify(products))
-render()
-cargarAdmin()
+function saveShipping(){
+shipping=document.getElementById("shippingPrice").value||0;
+saveData();
+alert("Guardado");
 }
 
-function guardarEnvio(){
-shipping=precioEnvio.value
-localStorage.setItem("shipping",shipping)
+function renderForm(){
+let type=document.getElementById("deliveryType").value;
+let form=document.getElementById("deliveryForm");
+if(type==="envio"){
+form.innerHTML=`
+<input id="name" placeholder="Nombre">
+<input id="address" placeholder="Dirección">
+<input id="phone" placeholder="Teléfono">
+`;
+}else{
+form.innerHTML=`
+<input id="name" placeholder="Nombre">
+<input id="phone" placeholder="Teléfono">
+`;
+}
+renderCart();
 }
 
-render()
-updateCart()
+function sendOrder(){
+let type=document.getElementById("deliveryType").value;
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+let address=type==="envio"?document.getElementById("address").value:"Retira en local";
+
+let message="Pedido:\n";
+cart.forEach(c=>{
+let p=products[c.index];
+message+=`${p.name} x${c.qty} - $${p.price*c.qty}\n`;
+});
+message+=`Entrega: ${address}`;
+window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(message)}`);
+
+history.push({date:new Date().toLocaleString(),cart,type,address});
+saveData();
+cart=[];
+renderCart();
+toggleCart();
+}
+
+function renderHistory(){
+let container=document.getElementById("history");
+container.innerHTML="";
+history.forEach(h=>{
+container.innerHTML+=`
+<div>
+${h.date}<br>
+Entrega: ${h.address}
+<hr>
+</div>`;
+});
+}
+
+renderProducts();
+renderForm();
 </script>
 
 </body>
