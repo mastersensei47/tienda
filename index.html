@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mi Tienda PRO</title>
+<title>Tienda PRO</title>
 
 <style>
 :root{
---bg:#f3f4f6;
+--bg:#f4f6f9;
 --card:#ffffff;
---text:#111827;
+--text:#111;
 --accent:#2563eb;
 --accent2:#9333ea;
---shadow:0 15px 35px rgba(0,0,0,.08);
+--shadow:0 15px 40px rgba(0,0,0,.1);
 }
 
 body.dark{
@@ -21,10 +21,9 @@ body.dark{
 --text:#f1f5f9;
 --accent:#22d3ee;
 --accent2:#f43f5e;
---shadow:0 20px 45px rgba(0,0,0,.6);
+--shadow:0 20px 60px rgba(0,0,0,.6);
 }
 
-*{box-sizing:border-box}
 body{
 margin:0;
 font-family:system-ui;
@@ -33,7 +32,6 @@ color:var(--text);
 transition:.4s;
 }
 
-/* HEADER */
 header{
 display:flex;
 justify-content:space-between;
@@ -54,16 +52,11 @@ background:linear-gradient(45deg,var(--accent),var(--accent2));
 color:transparent;
 }
 
-.header-icons{
-display:flex;
-gap:20px;
-align-items:center;
-}
-
 .icon{
 cursor:pointer;
 font-size:22px;
 position:relative;
+margin-left:15px;
 }
 
 .cart-count{
@@ -77,7 +70,6 @@ padding:3px 6px;
 border-radius:50%;
 }
 
-/* PRODUCTOS */
 .products{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
@@ -91,30 +83,15 @@ border-radius:16px;
 box-shadow:var(--shadow);
 padding:15px;
 transition:.3s;
-animation:fade .4s ease;
 }
 
-.card:hover{
-transform:translateY(-6px);
-}
+.card:hover{transform:translateY(-5px)}
 
 .card img{
 width:100%;
 height:180px;
 object-fit:cover;
 border-radius:12px;
-}
-
-.price{
-font-weight:700;
-font-size:18px;
-}
-
-.old{
-text-decoration:line-through;
-opacity:.6;
-margin-left:6px;
-font-size:14px;
 }
 
 button{
@@ -124,18 +101,12 @@ color:#fff;
 padding:8px 12px;
 border-radius:8px;
 cursor:pointer;
-transition:.2s;
 }
 
-button:hover{
-transform:scale(1.05);
-}
-
-/* DRAWER */
 .overlay{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.4);
+background:rgba(0,0,0,.5);
 display:none;
 z-index:1500;
 }
@@ -160,25 +131,9 @@ overflow:auto;
 .cart-item{
 display:flex;
 justify-content:space-between;
-align-items:center;
 margin-bottom:10px;
 }
 
-.qty{
-display:flex;
-align-items:center;
-gap:5px;
-}
-
-.close-btn{
-position:absolute;
-right:15px;
-top:15px;
-cursor:pointer;
-font-weight:bold;
-}
-
-/* ADMIN DASHBOARD */
 .admin-login,
 .admin-panel{
 position:fixed;
@@ -186,8 +141,8 @@ inset:0;
 display:none;
 justify-content:center;
 align-items:center;
+background:rgba(0,0,0,.6);
 z-index:3000;
-background:rgba(0,0,0,.5);
 }
 
 .admin-box{
@@ -195,54 +150,26 @@ background:var(--card);
 padding:30px;
 border-radius:20px;
 width:90%;
-max-width:900px;
-display:flex;
-min-height:500px;
-}
-
-.sidebar{
-width:200px;
-border-right:1px solid #ccc;
-padding-right:10px;
-}
-
-.sidebar button{
-width:100%;
-margin-bottom:10px;
-}
-
-.admin-content{
-flex:1;
-padding-left:20px;
-overflow:auto;
+max-width:600px;
 }
 
 input{
 width:100%;
 padding:8px;
-margin-bottom:8px;
+margin-bottom:10px;
 border-radius:6px;
 border:1px solid #ccc;
 }
-
-@keyframes fade{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1;transform:translateY(0)}
-}
 </style>
 </head>
-
 <body>
 
 <header>
 <div class="logo">Mi Tienda</div>
-<div class="header-icons">
-<div class="icon" onclick="toggleDark()">🌗</div>
-<div class="icon" onclick="openCart()">
-🛒
-<span class="cart-count" id="cartCount">0</span>
-</div>
-<div class="icon" onclick="openAdmin()">●</div>
+<div>
+<span class="icon" onclick="toggleDark()">🌗</span>
+<span class="icon" onclick="openCart()">🛒<span class="cart-count" id="cartCount">0</span></span>
+<span class="icon" onclick="showLogin()">●</span>
 </div>
 </header>
 
@@ -251,46 +178,42 @@ to{opacity:1;transform:translateY(0)}
 <div class="overlay" id="overlay" onclick="closeCart()"></div>
 
 <div class="drawer" id="drawer">
-<div class="close-btn" onclick="closeCart()">✖</div>
 <h2>Carrito</h2>
 <div id="cartItems"></div>
 <hr>
-<label><input type="checkbox" id="envioCheck"> Agregar envío</label>
 <p>Total: $<span id="total">0</span></p>
-<p id="ahorro" style="color:green"></p>
-<button onclick="sendWhatsApp()">WhatsApp</button>
+<button onclick="closeCart()">Cerrar</button>
 </div>
 
-<!-- ADMIN LOGIN -->
-<div class="admin-login" id="adminLogin">
-<div class="admin-box" style="max-width:400px;">
-<div style="width:100%">
+<!-- LOGIN -->
+<div class="admin-login" id="loginBox">
+<div class="admin-box">
 <h3>Acceso Admin</h3>
-<input id="adminPass" placeholder="Contraseña">
+<input type="password" id="adminPassword" placeholder="Contraseña">
 <button onclick="login()">Entrar</button>
-</div>
+<button onclick="closeLogin()">Volver</button>
 </div>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- PANEL -->
 <div class="admin-panel" id="adminPanel">
 <div class="admin-box">
-<div class="sidebar">
-<button onclick="showSection('prod')">📦 Productos</button>
-<button onclick="showSection('env')">🚚 Envíos</button>
-<button onclick="showSection('hist')">📜 Historial</button>
-<button onclick="logout()">Cerrar</button>
-</div>
-
-<div class="admin-content" id="adminContent"></div>
+<h3>Panel Admin</h3>
+<input id="name" placeholder="Nombre producto">
+<input id="price" placeholder="Precio">
+<input id="image" placeholder="URL imagen">
+<button onclick="addProduct()">Agregar</button>
+<hr>
+<div id="adminList"></div>
+<button onclick="logout()">Cerrar sesión</button>
 </div>
 </div>
 
 <script>
 let products=JSON.parse(localStorage.getItem("products"))||[]
 let cart=[]
-let shipping=localStorage.getItem("shipping")||0
 
+/* PRODUCTOS */
 function render(){
 let container=document.getElementById("products")
 container.innerHTML=""
@@ -299,7 +222,7 @@ container.innerHTML+=`
 <div class="card">
 <img src="${p.image||'https://via.placeholder.com/300'}">
 <h3>${p.name}</h3>
-<div class="price">$${p.price}</div>
+<p>$${p.price}</p>
 <button onclick="add(${i})">Agregar</button>
 </div>`
 })
@@ -321,16 +244,11 @@ let p=products[c.i]
 total+=p.price*c.qty
 items.innerHTML+=`
 <div class="cart-item">
-<span>${p.name}</span>
-<div class="qty">
+${p.name} x${c.qty}
 <button onclick="change(${c.i},-1)">-</button>
-${c.qty}
 <button onclick="change(${c.i},1)">+</button>
-</div>
 </div>`
 })
-if(document.getElementById("envioCheck").checked)
-total+=parseInt(shipping)
 document.getElementById("total").innerText=total
 document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0)
 }
@@ -342,94 +260,81 @@ if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
 updateCart()
 }
 
+/* CARRITO */
 function openCart(){
-drawer.classList.add("open")
-overlay.classList.add("show")
+document.getElementById("drawer").classList.add("open")
+document.getElementById("overlay").classList.add("show")
 }
 function closeCart(){
-drawer.classList.remove("open")
-overlay.classList.remove("show")
+document.getElementById("drawer").classList.remove("open")
+document.getElementById("overlay").classList.remove("show")
 }
 
+/* DARK MODE */
 function toggleDark(){
 document.body.classList.toggle("dark")
+localStorage.setItem("dark",document.body.classList.contains("dark"))
 }
-
-function sendWhatsApp(){
-let msg="Pedido:%0A"
-cart.forEach(c=>{
-let p=products[c.i]
-msg+=`${p.name} x${c.qty}%0A`
-})
-window.open(`https://wa.me/549XXXXXXXXXX?text=${msg}`)
+if(localStorage.getItem("dark")==="true"){
+document.body.classList.add("dark")
 }
 
 /* ADMIN */
-function openAdmin(){ adminLogin.style.display="flex" }
+function showLogin(){
+document.getElementById("loginBox").style.display="flex"
+}
+function closeLogin(){
+document.getElementById("loginBox").style.display="none"
+}
 function login(){
-if(adminPass.value==="admin123"){
-adminLogin.style.display="none"
-adminPanel.style.display="flex"
-showSection("prod")
+let pass=document.getElementById("adminPassword").value
+if(pass==="admin123"){
+localStorage.setItem("admin","true")
+document.getElementById("loginBox").style.display="none"
+document.getElementById("adminPanel").style.display="flex"
+loadAdmin()
+}else{
+alert("Contraseña incorrecta")
 }
 }
 function logout(){
-adminPanel.style.display="none"
+localStorage.removeItem("admin")
+document.getElementById("adminPanel").style.display="none"
 }
 
-function showSection(s){
-if(s==="prod"){
-adminContent.innerHTML=`
-<h3>Productos</h3>
-<input id="n" placeholder="Nombre">
-<input id="p" placeholder="Precio">
-<input id="img" placeholder="Imagen URL">
-<button onclick="save()">Guardar</button>
-<hr>
-${products.map((x,i)=>`
-<div>
-${x.name} - $${x.price}
-<button onclick="edit(${i})">Editar</button>
-<button onclick="del(${i})">Eliminar</button>
-</div>`).join("")}
-`
-}
-if(s==="env"){
-adminContent.innerHTML=`
-<h3>Envío</h3>
-<input id="ship" value="${shipping}">
-<button onclick="saveShip()">Guardar</button>`
-}
-if(s==="hist"){
-let h=JSON.parse(localStorage.getItem("hist"))||[]
-adminContent.innerHTML="<h3>Historial</h3>"+h.map(x=>`<p>${x}</p>`).join("")
-}
-}
-
-function save(){
-products.push({name:n.value,price:parseInt(p.value),image:img.value})
+function addProduct(){
+let name=document.getElementById("name").value
+let price=parseInt(document.getElementById("price").value)
+let image=document.getElementById("image").value
+products.push({name,price,image})
 localStorage.setItem("products",JSON.stringify(products))
 render()
-showSection("prod")
+loadAdmin()
 }
 
-function edit(i){
-let x=products[i]
-n.value=x.name
-p.value=x.price
-img.value=x.image
+function loadAdmin(){
+let list=document.getElementById("adminList")
+list.innerHTML=""
+products.forEach((p,i)=>{
+list.innerHTML+=`
+<div>
+${p.name} - $${p.price}
+<button onclick="deleteProduct(${i})">Eliminar</button>
+</div>`
+})
 }
 
-function del(i){
+function deleteProduct(i){
 products.splice(i,1)
 localStorage.setItem("products",JSON.stringify(products))
 render()
-showSection("prod")
+loadAdmin()
 }
 
-function saveShip(){
-shipping=ship.value
-localStorage.setItem("shipping",shipping)
+/* AUTO LOGIN SI YA ESTABA */
+if(localStorage.getItem("admin")==="true"){
+document.getElementById("adminPanel").style.display="flex"
+loadAdmin()
 }
 
 render()
