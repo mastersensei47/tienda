@@ -19,6 +19,8 @@
     #lista-carrito li { margin:0.5rem 0; }
     .eliminar { background:#dc3545; color:#fff; border:none; padding:0.3rem 0.6rem; margin-left:1rem; cursor:pointer; border-radius:3px; }
     .eliminar:hover { background:#c82333; }
+    #btn-whatsapp { background:#25D366; color:#fff; border:none; padding:0.7rem 1.2rem; cursor:pointer; border-radius:5px; margin-top:1rem; }
+    #btn-whatsapp:hover { background:#1ebe5d; }
     footer { background:#333; color:#fff; text-align:center; padding:1rem; margin-top:2rem; }
   </style>
 </head>
@@ -57,6 +59,7 @@
     <h2>Carrito de Compras</h2>
     <ul id="lista-carrito"></ul>
     <p><strong>Total:</strong> $<span id="total">0</span></p>
+    <button id="btn-whatsapp" onclick="enviarWhatsApp()">Enviar pedido por WhatsApp</button>
   </section>
 
   <footer>
@@ -98,6 +101,24 @@
 
     function guardarCarrito() {
       localStorage.setItem("carrito", JSON.stringify(carrito));
+    }
+
+    function enviarWhatsApp() {
+      if (carrito.length === 0) {
+        alert("El carrito está vacío.");
+        return;
+      }
+      let mensaje = "Hola, quiero hacer este pedido:%0A";
+      carrito.forEach(item => {
+        mensaje += `- ${item.nombre} ($${item.precio})%0A`;
+      });
+      let total = carrito.reduce((sum, item) => sum + item.precio, 0);
+      mensaje += `Total: $${total}`;
+      
+      // Número de WhatsApp (ejemplo: Argentina con código +54)
+      let telefono = "5493425056940"; 
+      let url = `https://wa.me/${telefono}?text=${mensaje}`;
+      window.open(url, "_blank");
     }
 
     // Mostrar carrito al cargar la página
