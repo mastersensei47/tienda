@@ -3,35 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tienda Premium</title>
+<title>Master Store</title>
 
 <style>
 
-/* ----------------- VARIABLES ----------------- */
+/* ---------------- VARIABLES ---------------- */
 
 :root{
   --bg:#f5f5f7;
   --card:#ffffff;
   --text:#111;
-  --accent:#000;
-  --shadow:0 8px 25px rgba(0,0,0,.08);
+  --accent:#111;
+  --green:#25D366;
 }
 
 body.dark{
   --bg:#0f0f12;
-  --card:#1a1a1f;
+  --card:#1c1c22;
   --text:#fff;
   --accent:#fff;
-  --shadow:0 8px 25px rgba(0,0,0,.4);
 }
 
-/* ----------------- GLOBAL ----------------- */
+/* ---------------- BASE ---------------- */
 
 *{
-  margin:0;
-  padding:0;
   box-sizing:border-box;
   font-family:-apple-system, BlinkMacSystemFont, sans-serif;
+  margin:0;
+  padding:0;
 }
 
 body{
@@ -40,7 +39,7 @@ body{
   transition:.3s;
 }
 
-/* ----------------- HEADER ----------------- */
+/* ---------------- HEADER ---------------- */
 
 header{
   display:flex;
@@ -48,7 +47,7 @@ header{
   align-items:center;
   padding:20px 40px;
   background:var(--card);
-  box-shadow:var(--shadow);
+  box-shadow:0 5px 20px rgba(0,0,0,.05);
   position:sticky;
   top:0;
   z-index:100;
@@ -56,19 +55,18 @@ header{
 
 .logo{
   font-weight:700;
-  font-size:20px;
   letter-spacing:1px;
 }
 
 .actions{
   display:flex;
-  align-items:center;
   gap:20px;
+  align-items:center;
 }
 
-.cart-icon{
-  position:relative;
+.cart-btn{
   cursor:pointer;
+  position:relative;
   font-size:22px;
 }
 
@@ -81,15 +79,13 @@ header{
   font-size:12px;
   padding:3px 6px;
   border-radius:50%;
-  transition:.2s;
 }
 
 .toggle-dark{
   cursor:pointer;
-  font-size:18px;
 }
 
-/* ----------------- PRODUCTS ----------------- */
+/* ---------------- PRODUCTS ---------------- */
 
 .products{
   display:grid;
@@ -101,41 +97,35 @@ header{
 .product{
   background:var(--card);
   padding:20px;
-  border-radius:16px;
-  box-shadow:var(--shadow);
+  border-radius:15px;
+  box-shadow:0 8px 20px rgba(0,0,0,.05);
   transition:.3s;
-  text-align:center;
 }
 
 .product:hover{
-  transform:translateY(-6px);
+  transform:translateY(-5px);
 }
 
 .product img{
   width:100%;
   height:160px;
   object-fit:cover;
-  border-radius:12px;
-  margin-bottom:15px;
+  border-radius:10px;
+  margin-bottom:10px;
 }
 
 .product button{
   margin-top:10px;
-  padding:10px;
   width:100%;
+  padding:10px;
   border:none;
   border-radius:8px;
   background:var(--accent);
   color:var(--bg);
   cursor:pointer;
-  transition:.2s;
 }
 
-.product button:hover{
-  opacity:.8;
-}
-
-/* ----------------- CART DRAWER ----------------- */
+/* ---------------- CART DRAWER ---------------- */
 
 .overlay{
   position:fixed;
@@ -152,55 +142,56 @@ header{
   visibility:visible;
 }
 
-.cart-drawer{
+.cart{
   position:fixed;
   right:-400px;
   top:0;
   width:350px;
   height:100%;
   background:var(--card);
-  box-shadow:-10px 0 30px rgba(0,0,0,.2);
   padding:25px;
-  transition:.4s cubic-bezier(.77,0,.18,1);
   display:flex;
   flex-direction:column;
+  transition:.4s;
 }
 
-.cart-drawer.active{
+.cart.active{
   right:0;
 }
 
 .cart-items{
   flex:1;
-  overflow-y:auto;
-  margin-bottom:15px;
+  overflow:auto;
 }
 
 .cart-item{
   display:flex;
   justify-content:space-between;
-  margin-bottom:10px;
+  margin-bottom:8px;
   font-size:14px;
 }
 
 .total{
   font-weight:bold;
-  margin-bottom:15px;
+  margin-top:10px;
 }
 
 .checkout{
+  margin-top:15px;
   padding:12px;
   border:none;
-  border-radius:10px;
-  background:#25D366;
+  border-radius:8px;
+  background:var(--green);
   color:white;
   font-weight:bold;
   cursor:pointer;
-  transition:.2s;
 }
 
-.checkout:hover{
-  transform:scale(1.05);
+.admin-btn{
+  opacity:0;
+  position:absolute;
+  top:5px;
+  left:5px;
 }
 
 </style>
@@ -212,69 +203,78 @@ header{
 
   <div class="actions">
     <div class="toggle-dark">🌙</div>
-    <div class="cart-icon">
-      🛍
+    <div class="cart-btn">🛍
       <span class="cart-count">0</span>
     </div>
   </div>
 </header>
 
-<section class="products">
-
-  <div class="product">
-    <img src="https://picsum.photos/300/200?1">
-    <h3>Producto 1</h3>
-    <p>$100</p>
-    <button onclick="addToCart('Producto 1',100)">Agregar</button>
-  </div>
-
-  <div class="product">
-    <img src="https://picsum.photos/300/200?2">
-    <h3>Producto 2</h3>
-    <p>$200</p>
-    <button onclick="addToCart('Producto 2',200)">Agregar</button>
-  </div>
-
-</section>
+<div class="products" id="products"></div>
 
 <div class="overlay"></div>
 
-<div class="cart-drawer">
+<div class="cart">
   <h3>Tu carrito</h3>
   <div class="cart-items"></div>
+
+  <label>
+    <input type="checkbox" id="shippingCheck">
+    Agregar envío
+  </label>
+
   <div class="total">Total: $0</div>
+
   <button class="checkout">📱 Pedir por WhatsApp</button>
 </div>
 
 <script>
 
-let cart = [];
+/* ---------------- DATA ---------------- */
 
-const cartIcon = document.querySelector(".cart-icon");
-const cartDrawer = document.querySelector(".cart-drawer");
-const overlay = document.querySelector(".overlay");
-const cartItems = document.querySelector(".cart-items");
-const totalDiv = document.querySelector(".total");
-const cartCount = document.querySelector(".cart-count");
+let products=[
+  {id:1,name:"Producto 1",price:100,price2:180,stock:10,img:"https://picsum.photos/300/200?1"},
+  {id:2,name:"Producto 2",price:200,price2:350,stock:8,img:"https://picsum.photos/300/200?2"}
+];
 
-cartIcon.onclick = () => {
-  cartDrawer.classList.add("active");
-  overlay.classList.add("active");
-};
+let cart=[];
 
-overlay.onclick = () => {
-  cartDrawer.classList.remove("active");
-  overlay.classList.remove("active");
-};
+/* ---------------- RENDER PRODUCTS ---------------- */
 
-function addToCart(name,price){
+function renderProducts(){
+  const container=document.getElementById("products");
+  container.innerHTML="";
+  products.forEach(p=>{
+    container.innerHTML+=`
+      <div class="product">
+        <img src="${p.img}">
+        <h4>${p.name}</h4>
+        <p>$${p.price} c/u</p>
+        <small>2x $${p.price2}</small>
+        <p>Stock: ${p.stock}</p>
+        <button onclick="addToCart(${p.id})">Agregar</button>
+      </div>
+    `;
+  });
+}
 
-  const existing = cart.find(p=>p.name===name);
+renderProducts();
+
+/* ---------------- CART ---------------- */
+
+function addToCart(id){
+
+  const product=products.find(p=>p.id===id);
+  if(product.stock<=0){
+    alert("Sin stock");
+    return;
+  }
+
+  const existing=cart.find(p=>p.id===id);
 
   if(existing){
     existing.qty++;
   }else{
-    cart.push({name,price,qty:1});
+    cart.push({id:id,name:product.name,price:product.price,price2:product.price2,qty:1});
   }
 
   updateCart();
@@ -282,12 +282,27 @@ function addToCart(name,price){
 
 function updateCart(){
 
+  const cartItems=document.querySelector(".cart-items");
+  const totalDiv=document.querySelector(".total");
+  const countDiv=document.querySelector(".cart-count");
+
   cartItems.innerHTML="";
   let total=0;
   let count=0;
 
   cart.forEach(item=>{
-    const subtotal=item.price*item.qty;
+    let subtotal=0;
+
+    if(item.qty==1){
+      subtotal=item.price;
+    }else if(item.qty==2){
+      subtotal=item.price2;
+    }else if(item.qty>=3){
+      const groups=Math.floor(item.qty/3);
+      const remainder=item.qty%3;
+      subtotal=groups*item.price2 + remainder*item.price;
+    }
+
     total+=subtotal;
     count+=item.qty;
 
@@ -299,9 +314,33 @@ function updateCart(){
     `;
   });
 
+  if(document.getElementById("shippingCheck").checked){
+    total+=500;
+  }
+
   totalDiv.innerText="Total: $"+total;
-  cartCount.innerText=count;
+  countDiv.innerText=count;
 }
+
+/* ---------------- DRAWER ---------------- */
+
+const cartBtn=document.querySelector(".cart-btn");
+const cartDrawer=document.querySelector(".cart");
+const overlay=document.querySelector(".overlay");
+
+cartBtn.onclick=()=>{
+  cartDrawer.classList.add("active");
+  overlay.classList.add("active");
+};
+
+overlay.onclick=()=>{
+  cartDrawer.classList.remove("active");
+  overlay.classList.remove("active");
+};
+
+document.getElementById("shippingCheck").onchange=updateCart;
+
+/* ---------------- WHATSAPP ---------------- */
 
 document.querySelector(".checkout").onclick=()=>{
 
@@ -310,30 +349,40 @@ document.querySelector(".checkout").onclick=()=>{
     return;
   }
 
-  let msg="🛒 Pedido:%0A%0A";
+  let msg="🛒 Pedido:%0A";
 
   cart.forEach(item=>{
-    msg+=`${item.name} x${item.qty} - $${item.price*item.qty}%0A`;
+    msg+=`${item.name} x${item.qty}%0A`;
   });
 
-  msg+="%0AGracias 🙌";
+  if(document.getElementById("shippingCheck").checked){
+    msg+="Con envío%0A";
+  }else{
+    msg+="Retiro en local%0A";
+  }
 
-  window.open("https://wa.me/3434508948?text="+msg,"_blank");
+  window.open("https://wa.me/549XXXXXXXXXX?text="+msg,"_blank");
+
+  cart.forEach(item=>{
+    const p=products.find(prod=>prod.id===item.id);
+    p.stock-=item.qty;
+  });
+
+  cart=[];
+  updateCart();
+  renderProducts();
 };
 
-/* --------- DARK MODE --------- */
-
-const toggle = document.querySelector(".toggle-dark");
+/* ---------------- DARK MODE ---------------- */
 
 if(window.matchMedia('(prefers-color-scheme: dark)').matches){
   document.body.classList.add("dark");
 }
 
-toggle.onclick=()=>{
+document.querySelector(".toggle-dark").onclick=()=>{
   document.body.classList.toggle("dark");
 };
 
 </script>
-
 </body>
 </html>
