@@ -3,429 +3,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tienda PRO</title>
+<title>Neo Repuestos</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
-/* 🎨 MISMO DISEÑO — NO MODIFICADO */
-:root{
---bg:#f4f6f9;
---card:#ffffff;
---text:#111;
---accent:#2563eb;
---accent2:#9333ea;
---shadow:0 15px 40px rgba(0,0,0,.1);
-}
-body.dark{
---bg:#0f172a;
---card:#1e293b;
---text:#f1f5f9;
---accent:#22d3ee;
---accent2:#f43f5e;
---shadow:0 20px 60px rgba(0,0,0,.6);
-}
-body{
+*{
 margin:0;
+padding:0;
+box-sizing:border-box;
 font-family:system-ui;
-background:var(--bg);
-color:var(--text);
-transition:.3s;
 }
-header{
+
+body{
 display:flex;
+background:#0f172a;
+color:#fff;
+}
+
+/* SIDEBAR */
+.sidebar{
+width:260px;
+background:#111827;
+height:100vh;
+display:flex;
+flex-direction:column;
 justify-content:space-between;
+transition:.3s;
+position:fixed;
+}
+
+.sidebar.collapsed{
+width:80px;
+}
+
+.sidebar-header{
+display:flex;
 align-items:center;
-padding:15px 25px;
-background:var(--card);
-box-shadow:var(--shadow);
-position:sticky;
-top:0;
-z-index:1000;
+gap:12px;
+padding:20px 15px;
+border-bottom:1px solid rgba(255,255,255,.1);
 }
-.logo{
+
+.logo-img{
+width:45px;
+height:45px;
+object-fit:contain;
+}
+
+.logo-text{
+font-size:18px;
 font-weight:700;
-font-size:20px;
-background:linear-gradient(45deg,var(--accent),var(--accent2));
--webkit-background-clip:text;
-color:transparent;
-}
-.icon{cursor:pointer;font-size:22px;margin-left:15px;position:relative;}
-.cart-count{
-position:absolute;top:-6px;right:-10px;
-background:var(--accent2);color:#fff;font-size:11px;
-padding:3px 6px;border-radius:50%;
-}
-.products{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-gap:20px;
-padding:25px;
-}
-.card{
-background:var(--card);
-padding:15px;
-border-radius:15px;
-box-shadow:var(--shadow);
+white-space:nowrap;
 transition:.3s;
 }
-.card:hover{transform:translateY(-5px)}
-.card img{
-width:100%;height:180px;object-fit:cover;border-radius:12px;
+
+.sidebar.collapsed .logo-text{
+opacity:0;
+width:0;
+overflow:hidden;
 }
-.promo-badge{
-background:linear-gradient(45deg,var(--accent),var(--accent2));
-color:#fff;font-size:11px;padding:3px 6px;border-radius:6px;margin:3px 3px 0 0;
-display:inline-block;
+
+/* MENU */
+.menu{
+list-style:none;
+padding:15px 0;
 }
-button{
-background:linear-gradient(45deg,var(--accent),var(--accent2));
-border:none;color:#fff;padding:6px 10px;border-radius:6px;
-cursor:pointer;margin-top:5px;
+
+.menu li{
+padding:12px 20px;
+display:flex;
+align-items:center;
+gap:15px;
+cursor:pointer;
+transition:.2s;
 }
-.drawer{
-position:fixed;right:-400px;top:0;width:350px;height:100%;
-background:var(--card);box-shadow:var(--shadow);
-padding:20px;transition:.4s;overflow:auto;z-index:2000;
+
+.menu li:hover{
+background:rgba(255,255,255,.1);
 }
-.drawer.open{right:0}
-.overlay{
-position:fixed;inset:0;background:rgba(0,0,0,.5);
-display:none;z-index:1500;
+
+.menu i{
+width:20px;
+text-align:center;
+font-size:18px;
 }
-.overlay.show{display:block}
-.cart-item{
-display:flex;justify-content:space-between;
-align-items:center;margin-bottom:8px;
-}
-.admin-panel{
-position:fixed;inset:0;background:rgba(0,0,0,.6);
-display:none;justify-content:center;align-items:center;z-index:3000;
-}
-.admin-box{
-background:var(--card);padding:25px;border-radius:15px;
-width:95%;max-width:900px;max-height:90%;overflow:auto;
-}
-.tab-buttons button{
-margin-right:5px;
-}
-.tab{
+
+.sidebar.collapsed .menu span{
 display:none;
 }
-.tab.active{
-display:block;
+
+/* FOOTER */
+.sidebar-footer{
+padding:15px;
+border-top:1px solid rgba(255,255,255,.1);
 }
-input,select{
-width:100%;padding:6px;margin-bottom:6px;
-border-radius:6px;border:1px solid #ccc;
+
+.contact{
+font-size:14px;
+margin-bottom:10px;
+}
+
+.socials{
+display:flex;
+gap:10px;
+margin-top:8px;
+}
+
+.socials i{
+font-size:18px;
+cursor:pointer;
+transition:.2s;
+}
+
+.socials i:hover{
+color:#38bdf8;
+}
+
+.sidebar.collapsed .contact,
+.sidebar.collapsed .socials{
+display:none;
+}
+
+/* BOTON TOGGLE */
+.toggle-btn{
+position:absolute;
+top:15px;
+right:-15px;
+background:#38bdf8;
+width:30px;
+height:30px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+color:#000;
+font-size:14px;
+}
+
+/* CONTENIDO */
+.content{
+margin-left:260px;
+padding:30px;
+flex:1;
+transition:.3s;
+}
+
+.sidebar.collapsed ~ .content{
+margin-left:80px;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+.sidebar{
+position:fixed;
+left:-260px;
+}
+.sidebar.active{
+left:0;
+}
+.content{
+margin-left:0;
+}
 }
 </style>
 </head>
 <body>
 
-<header>
-<div class="logo">Mi Tienda</div>
+<div class="sidebar" id="sidebar">
+
 <div>
-<span class="icon" onclick="toggleDark()">🌗</span>
-<span class="icon" onclick="openCart()">🛒<span class="cart-count" id="cartCount">0</span></span>
-<span class="icon" onclick="openAdmin()">⚙</span>
-</div>
-</header>
-
-<div class="products" id="products"></div>
-
-<div class="overlay" id="overlay" onclick="closeCart()"></div>
-
-<div class="drawer" id="drawer">
-<h2>Carrito</h2>
-<div id="cartItems"></div>
-<hr>
-
-<select id="tipoEntrega" onchange="mostrarFormulario()">
-<option value="local">Retiro en local</option>
-<option value="envio">Envío</option>
-</select>
-
-<div id="formEnvio" style="display:none;">
-<input id="nombreEnvio" placeholder="Nombre">
-<input id="direccionEnvio" placeholder="Dirección">
-<input id="telefonoEnvio" placeholder="Teléfono">
+<div class="sidebar-header">
+<img src="logo.png" alt="Neo Repuestos" class="logo-img">
+<span class="logo-text">Neo Repuestos</span>
 </div>
 
-<p>Total: $<span id="total">0</span></p>
-<p id="ahorro" style="color:green"></p>
-
-<button onclick="hacerPedido()">Hacer Pedido</button>
-<button onclick="closeCart()">Cerrar</button>
+<ul class="menu">
+<li><i class="fas fa-home"></i><span>Inicio</span></li>
+<li><i class="fas fa-circle-info"></i><span>Información</span></li>
+<li><i class="fas fa-location-dot"></i><span>Ubicación</span></li>
+<li><i class="fab fa-instagram"></i><span>Instagram</span></li>
+<li><i class="fab fa-whatsapp"></i><span>WhatsApp</span></li>
+</ul>
 </div>
 
-<div class="admin-panel" id="adminPanel">
-<div class="admin-box">
-
-<h2>Panel Admin</h2>
-
-<div class="tab-buttons">
-<button onclick="mostrarTab('productos')">Productos</button>
-<button onclick="mostrarTab('historial')">Historial</button>
+<div class="sidebar-footer">
+<div class="contact">
+<strong>Contacto</strong><br>
++54 9 343 4508948
 </div>
 
-<div id="productos" class="tab active">
-<h3>Producto</h3>
-<input id="editIndex" type="hidden">
-<input id="n" placeholder="Nombre">
-<input id="p" placeholder="Precio individual">
-<input id="promo" placeholder="Precio promo (por 2)">
-<input id="stock" placeholder="Stock">
-<input id="img" placeholder="URL imagen">
-<label><input type="checkbox" id="promo2"> Promo por 2</label>
-<label><input type="checkbox" id="tresx2"> 3x2</label>
-<label><input type="checkbox" id="tresx1"> 3x1</label>
-<input id="descManual" placeholder="Descuento manual ($)">
-<button onclick="guardar()">Guardar</button>
-<hr>
-<div id="listaAdmin"></div>
+<div class="socials">
+<i class="fab fa-facebook"></i>
+<i class="fab fa-instagram"></i>
+<i class="fab fa-whatsapp"></i>
+</div>
 </div>
 
-<div id="historial" class="tab">
-<button onclick="borrarHistorial()">Borrar historial</button>
-<div id="historialContenido"></div>
+<div class="toggle-btn" onclick="toggleSidebar()">
+<i class="fas fa-chevron-left"></i>
 </div>
 
-<button onclick="cerrarAdmin()">Cerrar</button>
-
 </div>
+
+<div class="content">
+<h1>Bienvenido a Neo Repuestos</h1>
+<p>Contenido principal de tu tienda...</p>
 </div>
 
 <script>
-let products=JSON.parse(localStorage.getItem("products"))||[]
-let cart=[]
-let history=JSON.parse(localStorage.getItem("history"))||[]
-
-function mostrarTab(id){
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
-document.getElementById(id).classList.add("active")
+function toggleSidebar(){
+document.getElementById("sidebar").classList.toggle("collapsed")
 }
-
-function render(){
-let c=document.getElementById("products")
-c.innerHTML=""
-products.forEach((p,i)=>{
-let etiquetas=""
-if(p.promo2) etiquetas+=`<span class="promo-badge">Promo x2</span>`
-if(p.tresx2) etiquetas+=`<span class="promo-badge">3x2</span>`
-if(p.tresx1) etiquetas+=`<span class="promo-badge">3x1</span>`
-if(p.descManual) etiquetas+=`<span class="promo-badge">-$${p.descManual} c/u</span>`
-
-c.innerHTML+=`
-<div class="card">
-<img src="${p.img||'https://via.placeholder.com/300'}">
-<h3>${p.name}</h3>
-<p>$${p.price}</p>
-${etiquetas}
-<p>Stock: ${p.stock}</p>
-<button onclick="add(${i})">Agregar</button>
-</div>`
-})
-}
-
-function add(i){
-let p=products[i]
-let item=cart.find(x=>x.i==i)
-let qtyActual=item?item.qty:0
-if(qtyActual+1>p.stock){
-alert("No hay más stock disponible")
-return
-}
-if(item)item.qty++
-else cart.push({i,qty:1})
-updateCart()
-}
-
-function calcularProducto(p,qty){
-let subtotal=p.price*qty
-let ahorro=0
-
-if(p.promo2 && qty>=2){
-let sets=Math.floor(qty/2)
-subtotal=p.promo*sets+(qty%2)*p.price
-ahorro+=(p.price*2-p.promo)*sets
-}
-if(p.tresx2 && qty>=3){
-let sets=Math.floor(qty/3)
-subtotal=p.price*(qty-sets)
-ahorro+=p.price*sets
-}
-if(p.tresx1 && qty>=3){
-let sets=Math.floor(qty/3)
-subtotal=p.price*(qty-2*sets)
-ahorro+=p.price*2*sets
-}
-if(p.descManual){
-subtotal-=p.descManual*qty
-ahorro+=p.descManual*qty
-}
-return {subtotal,ahorro}
-}
-
-function updateCart(){
-let items=document.getElementById("cartItems")
-items.innerHTML=""
-let total=0
-let ahorroTotal=0
-
-cart.forEach(c=>{
-let p=products[c.i]
-let calc=calcularProducto(p,c.qty)
-total+=calc.subtotal
-ahorroTotal+=calc.ahorro
-
-items.innerHTML+=`
-<div class="cart-item">
-${p.name} x${c.qty}
-<div>
-<button onclick="cambiar(${c.i},-1)">-</button>
-<button onclick="cambiar(${c.i},1)">+</button>
-</div>
-</div>`
-})
-
-document.getElementById("total").innerText=total
-document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0)
-document.getElementById("ahorro").innerText=ahorroTotal>0?`Ahorrás $${ahorroTotal}`:""
-}
-
-function cambiar(i,v){
-let item=cart.find(x=>x.i==i)
-let p=products[i]
-if(item.qty+v>p.stock){
-alert("Stock insuficiente")
-return
-}
-item.qty+=v
-if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
-updateCart()
-}
-
-function mostrarFormulario(){
-let tipo=document.getElementById("tipoEntrega").value
-document.getElementById("formEnvio").style.display=
-tipo==="envio"?"block":"none"
-}
-
-function hacerPedido(){
-if(cart.length===0) return alert("Carrito vacío")
-
-let tipo=document.getElementById("tipoEntrega").value
-let total=document.getElementById("total").innerText
-let detalle=""
-
-cart.forEach(c=>{
-let p=products[c.i]
-let calc=calcularProducto(p,c.qty)
-detalle+=`${p.name} x${c.qty} - $${calc.subtotal}\n`
-p.stock-=c.qty
-})
-
-let datos=""
-if(tipo==="envio"){
-let nombre=nombreEnvio.value
-let direccion=direccionEnvio.value
-let telefono=telefonoEnvio.value
-if(!nombre||!direccion||!telefono){
-alert("Completar datos de envío")
-return
-}
-datos=`\nEnvío:\nNombre: ${nombre}\nDirección: ${direccion}\nTeléfono: ${telefono}`
-}
-
-let mensaje=`Pedido:\n${detalle}\nTotal: $${total}${datos}`
-window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(mensaje)}`)
-
-history.push({fecha:new Date().toLocaleString(),detalle,total,tipo})
-localStorage.setItem("history",JSON.stringify(history))
-localStorage.setItem("products",JSON.stringify(products))
-
-cart=[]
-updateCart()
-render()
-}
-
-function openAdmin(){
-let pass=prompt("Contraseña:")
-if(pass==="admin"){
-adminPanel.style.display="flex"
-cargarAdmin()
-}else alert("Incorrecta")
-}
-function cerrarAdmin(){adminPanel.style.display="none"}
-function toggleDark(){document.body.classList.toggle("dark")}
-function openCart(){drawer.classList.add("open");overlay.classList.add("show")}
-function closeCart(){drawer.classList.remove("open");overlay.classList.remove("show")}
-
-function guardar(){
-let index=editIndex.value
-let producto={
-name:n.value,
-price:parseInt(p.value),
-promo:parseInt(promo.value)||0,
-promo2:promo2.checked,
-tresx2:tresx2.checked,
-tresx1:tresx1.checked,
-descManual:parseInt(descManual.value)||0,
-stock:parseInt(stock.value),
-img:img.value
-}
-if(index==="") products.push(producto)
-else products[index]=producto
-localStorage.setItem("products",JSON.stringify(products))
-render()
-cargarAdmin()
-editIndex.value=""
-}
-
-function cargarAdmin(){
-let l=document.getElementById("listaAdmin")
-l.innerHTML=""
-products.forEach((p,i)=>{
-l.innerHTML+=`
-${p.name} - Stock: ${p.stock}
-<button onclick="editar(${i})">Editar</button>
-<button onclick="eliminar(${i})">Eliminar</button><br>`
-})
-
-let h=document.getElementById("historialContenido")
-h.innerHTML=history.map(x=>
-`<p><b>${x.fecha}</b><br>${x.detalle.replace(/\n/g,"<br>")}<br>Total: $${x.total}</p><hr>`
-).join("")
-}
-
-function editar(i){
-let p=products[i]
-editIndex.value=i
-n.value=p.name
-p.value=p.price
-promo.value=p.promo
-stock.value=p.stock
-img.value=p.img
-promo2.checked=p.promo2
-tresx2.checked=p.tresx2
-tresx1.checked=p.tresx1
-descManual.value=p.descManual
-}
-
-function eliminar(i){
-products.splice(i,1)
-localStorage.setItem("products",JSON.stringify(products))
-render()
-cargarAdmin()
-}
-
-function borrarHistorial(){
-history=[]
-localStorage.setItem("history",JSON.stringify(history))
-cargarAdmin()
-}
-
-render()
-updateCart()
 </script>
 
 </body>
