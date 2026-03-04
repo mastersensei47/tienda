@@ -3,333 +3,409 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tienda Pro</title>
+<title>Mi Tienda</title>
 
 <style>
 :root{
-  --bg:#ffffff;
-  --text:#111;
-  --card:#f5f5f5;
-  --accent:#0a84ff;
-  --green:#00c853;
+--bg:#f4f6f9;
+--card:#ffffff;
+--accent:#2563eb;
+--text:#111;
+--shadow:0 10px 25px rgba(0,0,0,.08);
 }
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#111;
-    --text:#fff;
-    --card:#1e1e1e;
-  }
+body.dark{
+--bg:#0f172a;
+--card:#1e293b;
+--text:#f1f5f9;
+--shadow:0 10px 25px rgba(0,0,0,.4);
 }
-body{margin:0;font-family:Arial;background:var(--bg);color:var(--text);}
-header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:var(--accent);color:white;}
-.cart-icon{position:relative;cursor:pointer;font-size:22px;}
-.cart-count{position:absolute;top:-8px;right:-10px;background:red;color:white;font-size:12px;padding:3px 6px;border-radius:50%;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;padding:20px;}
-.card{background:var(--card);padding:15px;border-radius:10px;text-align:center;}
-.card img{width:100%;height:150px;object-fit:cover;border-radius:8px;}
-button{padding:6px 10px;margin:3px;border:none;border-radius:6px;cursor:pointer;background:var(--accent);color:white;}
-.promo{color:var(--green);font-weight:bold;}
-.tachado{text-decoration:line-through;color:gray;}
-
-#cartModal{position:fixed;top:0;right:-100%;width:350px;height:100%;background:var(--bg);box-shadow:-5px 0 15px rgba(0,0,0,.3);padding:20px;transition:.3s;overflow:auto;}
-#cartModal.active{right:0;}
-.close-cart{background:red;float:right;}
-
-.qty-btn{padding:3px 8px;font-size:14px}
-
-.admin-btn{
-  position:fixed;bottom:15px;left:15px;width:40px;height:40px;
-  background:url('https://cdn-icons-png.flaticon.com/512/3524/3524659.png') center/cover;
-  opacity:.4;cursor:pointer;
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:system-ui;
+background:var(--bg);
+color:var(--text);
+transition:.3s;
+}
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 25px;
+background:var(--card);
+box-shadow:var(--shadow);
+position:sticky;
+top:0;
+z-index:1000;
+}
+.logo{
+font-weight:700;
+font-size:20px;
+}
+.cart-btn{
+position:relative;
+cursor:pointer;
+font-size:22px;
+}
+.cart-count{
+position:absolute;
+top:-8px;
+right:-10px;
+background:var(--accent);
+color:#fff;
+font-size:12px;
+padding:3px 7px;
+border-radius:50%;
+}
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:20px;
+padding:25px;
+}
+.card{
+background:var(--card);
+border-radius:15px;
+box-shadow:var(--shadow);
+padding:15px;
+transition:.3s;
+animation:fade .4s ease;
+}
+.card:hover{transform:translateY(-5px)}
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+border-radius:10px;
+}
+.card h3{margin:10px 0 5px}
+.price{
+font-weight:700;
+}
+.old{
+text-decoration:line-through;
+opacity:.6;
+margin-left:5px;
+}
+button{
+background:var(--accent);
+border:none;
+color:#fff;
+padding:8px 12px;
+border-radius:8px;
+cursor:pointer;
+}
+.drawer{
+position:fixed;
+top:0;
+right:-400px;
+width:350px;
+height:100%;
+background:var(--card);
+box-shadow:var(--shadow);
+transition:.4s;
+padding:20px;
+overflow:auto;
+z-index:2000;
+}
+.drawer.open{right:0}
+.cart-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
+.qty{
+display:flex;
+align-items:center;
+gap:5px;
 }
 .admin-panel{
-  display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:var(--bg);padding:20px;border-radius:10px;width:420px;
-  max-height:90vh;overflow:auto;box-shadow:0 0 20px rgba(0,0,0,.5);
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:var(--card);
+padding:20px;
+border-radius:15px;
+box-shadow:var(--shadow);
+display:none;
+z-index:3000;
+width:90%;
+max-width:500px;
+max-height:90%;
+overflow:auto;
 }
-.admin-item{
-  background:var(--card);
-  padding:8px;
-  border-radius:6px;
-  margin-bottom:8px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.admin-tabs{
+display:flex;
+gap:10px;
+margin-bottom:10px;
 }
-input,select{width:100%;padding:6px;margin:4px 0;}
-.whatsapp{background:#25D366;}
+.admin-tabs button{
+flex:1;
+background:#ccc;
+color:#000;
+}
+.admin-tabs button.active{
+background:var(--accent);
+color:#fff;
+}
+input{
+padding:7px;
+width:100%;
+margin-bottom:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+@keyframes fade{
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1;transform:translateY(0)}
+}
 </style>
 </head>
+
 <body>
 
 <header>
-  <h2>Mi Tienda</h2>
-  <div class="cart-icon" onclick="toggleCart()">
-    🛒 <span class="cart-count" id="cartCount">0</span>
-  </div>
+<div class="logo">Mi Tienda</div>
+<div style="display:flex;gap:15px;align-items:center;">
+<div onclick="toggleDark()">🌙</div>
+<div class="cart-btn" onclick="toggleCart()">
+🛒
+<span class="cart-count" id="cartCount">0</span>
+</div>
+<div onclick="openAdminLogin()" style="cursor:pointer;">⚙</div>
+</div>
 </header>
 
-<div class="grid" id="productos"></div>
+<div class="products" id="products"></div>
 
-<div id="cartModal">
-  <button class="close-cart" onclick="toggleCart()">X</button>
-  <h3>Carrito</h3>
-  <div id="cartItems"></div>
-
-  <label>
-    <input type="checkbox" id="envioCheck" onchange="actualizarCarrito()">
-    Agregar envío (+$<span id="envioPrecioTexto"></span>)
-  </label>
-
-  <h3 id="total"></h3>
-
-  <button class="whatsapp" onclick="enviarWhatsApp()">Enviar por WhatsApp</button>
-  <button onclick="confirmarCompra()">Confirmar Compra</button>
+<div class="drawer" id="cartDrawer">
+<h2>Carrito</h2>
+<div id="cartItems"></div>
+<hr>
+<label><input type="checkbox" id="envioCheck"> Agregar envío</label>
+<p>Total: $<span id="cartTotal">0</span></p>
+<p id="ahorro" style="color:green;font-weight:600"></p>
+<button onclick="sendWhatsApp()">Enviar por WhatsApp</button>
+<button onclick="confirmPurchase()">Confirmar Compra</button>
 </div>
 
-<div class="admin-btn" onclick="abrirAdmin()"></div>
-
 <div class="admin-panel" id="adminPanel">
-  <h3>Modo Admin</h3>
-  <input type="password" id="adminPass" placeholder="Contraseña">
-  <button onclick="verificarAdmin()">Entrar</button>
+<h2>Panel Admin</h2>
+<div class="admin-tabs">
+<button onclick="showTab(0)" class="active">Productos</button>
+<button onclick="showTab(1)">Envíos</button>
+<button onclick="showTab(2)">Historial</button>
+</div>
 
-  <div id="adminContent" style="display:none;">
-    <hr>
-    <input id="nombreInput" placeholder="Nombre">
-    <input id="precioInput" type="number" placeholder="Precio normal">
-    <input id="imagenInput" placeholder="URL Imagen">
-    <input id="stockInput" type="number" placeholder="Stock">
+<div class="tab">
+<h3>Agregar / Editar</h3>
+<input id="name" placeholder="Nombre">
+<input id="price" placeholder="Precio normal">
+<input id="promo" placeholder="Precio promo (opcional)">
+<input id="stock" placeholder="Stock">
+<input id="image" placeholder="URL Imagen">
+<input id="manualDiscount" placeholder="Descuento manual x unidad">
+<button onclick="saveProduct()">Guardar</button>
+<div id="adminList"></div>
+</div>
 
-    <select id="tipoPromo">
-      <option value="">Sin promo</option>
-      <option value="3x2">3x2</option>
-      <option value="2precio">2 pagás menos</option>
-    </select>
+<div class="tab" style="display:none">
+<h3>Configurar Envío</h3>
+<input id="shippingPrice" placeholder="Precio envío">
+<button onclick="saveShipping()">Guardar</button>
+</div>
 
-    <input id="precioEspecialInput" type="number" placeholder="Precio especial (precio por 2)">
+<div class="tab" style="display:none">
+<h3>Historial Pedidos</h3>
+<div id="history"></div>
+</div>
 
-    <button onclick="guardarProducto()">Guardar Producto</button>
-    <button onclick="cerrarAdmin()">Cerrar</button>
-
-    <hr>
-    <div id="adminLista"></div>
-  </div>
+<button onclick="closeAdmin()">Cerrar</button>
 </div>
 
 <script>
-let productos = JSON.parse(localStorage.getItem("productos")) || [];
-let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-let envioPrecio = Number(localStorage.getItem("envioPrecio")) || 500;
-let editIndex = null;
+let products=JSON.parse(localStorage.getItem("products"))||[]
+let cart=[]
+let shipping=localStorage.getItem("shipping")||0
+let editing=null
 
-document.getElementById("envioPrecioTexto").innerText = envioPrecio;
+function renderProducts(){
+let container=document.getElementById("products")
+container.innerHTML=""
+products.forEach((p,i)=>{
+container.innerHTML+=`
+<div class="card">
+<img src="${p.image||'https://via.placeholder.com/300'}">
+<h3>${p.name}</h3>
+<div class="price">
+$${p.promo||p.price}
+${p.promo?`<span class="old">$${p.price}</span>`:""}
+</div>
+<p>Stock: ${p.stock}</p>
+<button onclick="addToCart(${i})">Agregar</button>
+</div>`
+})
+}
 
-function guardarDatos(){
-  localStorage.setItem("productos", JSON.stringify(productos));
-  localStorage.setItem("carrito", JSON.stringify(carrito));
+function addToCart(i){
+let item=cart.find(x=>x.i==i)
+if(item){item.qty++}
+else{cart.push({i,qty:1})}
+updateCart()
+}
+
+function updateCart(){
+document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0)
+let items=document.getElementById("cartItems")
+items.innerHTML=""
+let total=0
+let ahorro=0
+cart.forEach(c=>{
+let p=products[c.i]
+let price=p.promo||p.price
+let subtotal=price*c.qty
+let normal=p.price*c.qty
+if(p.manualDiscount) subtotal-=p.manualDiscount*c.qty
+if(c.qty>=3) subtotal=price*2
+total+=subtotal
+ahorro+=normal-subtotal
+items.innerHTML+=`
+<div class="cart-item">
+<span>${p.name}</span>
+<div class="qty">
+<button onclick="changeQty(${c.i},-1)">-</button>
+${c.qty}
+<button onclick="changeQty(${c.i},1)">+</button>
+</div>
+</div>`
+})
+if(document.getElementById("envioCheck").checked)
+total+=parseInt(shipping)
+document.getElementById("cartTotal").innerText=total
+document.getElementById("ahorro").innerText=ahorro>0?`Ahorras $${ahorro}`:""
+}
+
+function changeQty(i,val){
+let item=cart.find(x=>x.i==i)
+if(!item)return
+item.qty+=val
+if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
+updateCart()
 }
 
 function toggleCart(){
-  document.getElementById("cartModal").classList.toggle("active");
+document.getElementById("cartDrawer").classList.toggle("open")
 }
 
-function calcularSubtotal(p, cantidad){
-  let precioNormal = p.precio * cantidad;
-  let subtotal = precioNormal;
-
-  if(p.promo?.tipo==="2precio" && cantidad>=2){
-    let pares=Math.floor(cantidad/2);
-    let resto=cantidad%2;
-    subtotal=(pares*p.promo.precioEspecial)+(resto*p.precio);
-  }
-
-  if(p.promo?.tipo==="3x2" && cantidad>=3){
-    let grupos=Math.floor(cantidad/3);
-    let resto=cantidad%3;
-    subtotal=(grupos*(p.precio*2))+(resto*p.precio);
-  }
-
-  return {subtotal, precioNormal};
+function sendWhatsApp(){
+let msg="Pedido:%0A"
+cart.forEach(c=>{
+let p=products[c.i]
+msg+=`${p.name} x${c.qty}%0A`
+})
+msg+=`Total: $${document.getElementById("cartTotal").innerText}`
+window.open(`https://wa.me/549XXXXXXXXXX?text=${msg}`)
 }
 
-function actualizarCarrito(){
-  cartItems.innerHTML="";
-  let total=0;
-  let ahorroTotal=0;
-  let cantidadTotal=0;
-
-  carrito.forEach((item,i)=>{
-    let p=productos[item.index];
-    let calc=calcularSubtotal(p,item.cantidad);
-    let ahorro=calc.precioNormal-calc.subtotal;
-
-    total+=calc.subtotal;
-    ahorroTotal+=ahorro;
-    cantidadTotal+=item.cantidad;
-
-    cartItems.innerHTML+=`
-    <div>
-      <strong>${p.nombre}</strong><br>
-      <button class="qty-btn" onclick="restar(${i})">−</button>
-      ${item.cantidad}
-      <button class="qty-btn" onclick="sumar(${i})">+</button><br>
-      ${ahorro>0?
-        `<span class="tachado">$${calc.precioNormal}</span><br>
-         <span class="promo">$${calc.subtotal}</span><br>
-         <small class="promo">Ahorrás $${ahorro}</small>`
-        :`$${calc.subtotal}`
-      }
-      <hr>
-    </div>`;
-  });
-
-  if(document.getElementById("envioCheck").checked){
-    total+=envioPrecio;
-  }
-
-  totalDiv.innerHTML=`Total: $${total}
-  ${ahorroTotal>0?`<br><span class="promo">Ahorro total: $${ahorroTotal}</span>`:""}`;
-
-  cartCount.innerText=cantidadTotal;
+function confirmPurchase(){
+cart.forEach(c=>{
+products[c.i].stock-=c.qty
+})
+localStorage.setItem("products",JSON.stringify(products))
+let history=JSON.parse(localStorage.getItem("history"))||[]
+history.push({date:new Date().toLocaleString(),total:document.getElementById("cartTotal").innerText})
+localStorage.setItem("history",JSON.stringify(history))
+cart=[]
+updateCart()
+renderProducts()
+alert("Compra confirmada")
 }
 
-function sumar(i){
-  let item=carrito[i];
-  if(item.cantidad < productos[item.index].stock){
-    item.cantidad++;
-  }
-  guardarDatos();
-  actualizarCarrito();
+function openAdminLogin(){
+let pass=prompt("Contraseña:")
+if(pass==="admin123"){
+document.getElementById("adminPanel").style.display="block"
+loadAdminList()
+}
 }
 
-function restar(i){
-  let item=carrito[i];
-  item.cantidad--;
-  if(item.cantidad<=0){
-    carrito.splice(i,1);
-  }
-  guardarDatos();
-  actualizarCarrito();
+function closeAdmin(){
+document.getElementById("adminPanel").style.display="none"
 }
 
-function agregarCarrito(i){
-  let p=productos[i];
-  if(p.stock<=0){alert("Sin stock");return;}
-  let item=carrito.find(x=>x.index===i);
-  if(item && item.cantidad<p.stock) item.cantidad++;
-  else if(!item) carrito.push({index:i,cantidad:1});
-  guardarDatos();
-  actualizarCarrito();
+function saveProduct(){
+let p={
+name:name.value,
+price:parseInt(price.value),
+promo:promo.value?parseInt(promo.value):null,
+stock:parseInt(stock.value),
+image:image.value,
+manualDiscount:manualDiscount.value?parseInt(manualDiscount.value):0
+}
+if(editing!=null){products[editing]=p;editing=null}
+else{products.push(p)}
+localStorage.setItem("products",JSON.stringify(products))
+renderProducts()
+loadAdminList()
 }
 
-function confirmarCompra(){
-  carrito.forEach(item=>{
-    productos[item.index].stock-=item.cantidad;
-  });
-  carrito=[];
-  guardarDatos();
-  renderProductos();
-  actualizarCarrito();
-  alert("Compra confirmada ✅");
+function loadAdminList(){
+let list=document.getElementById("adminList")
+list.innerHTML=""
+products.forEach((p,i)=>{
+list.innerHTML+=`
+<div>
+${p.name}
+<button onclick="editProduct(${i})">Editar</button>
+<button onclick="deleteProduct(${i})">Eliminar</button>
+</div>`
+})
 }
 
-function abrirAdmin(){adminPanel.style.display="block";}
-function cerrarAdmin(){adminPanel.style.display="none";}
-
-function verificarAdmin(){
-  if(adminPass.value==="1234"){
-    document.getElementById("adminContent").style.display="block";
-    renderAdmin();
-  } else alert("Contraseña incorrecta");
+function editProduct(i){
+editing=i
+let p=products[i]
+name.value=p.name
+price.value=p.price
+promo.value=p.promo||""
+stock.value=p.stock
+image.value=p.image
+manualDiscount.value=p.manualDiscount||""
 }
 
-function guardarProducto(){
-  let promo=null;
-
-  if(tipoPromo.value==="3x2") promo={tipo:"3x2"};
-  if(tipoPromo.value==="2precio") promo={tipo:"2precio",precioEspecial:Number(precioEspecialInput.value)};
-
-  let nuevo={
-    nombre:nombreInput.value,
-    precio:Number(precioInput.value),
-    imagen:imagenInput.value,
-    stock:Number(stockInput.value),
-    promo
-  };
-
-  if(editIndex!==null){
-    productos[editIndex]=nuevo;
-    editIndex=null;
-  } else {
-    productos.push(nuevo);
-  }
-
-  nombreInput.value="";
-  precioInput.value="";
-  imagenInput.value="";
-  stockInput.value="";
-  precioEspecialInput.value="";
-  tipoPromo.value="";
-
-  guardarDatos();
-  renderProductos();
+function deleteProduct(i){
+products.splice(i,1)
+localStorage.setItem("products",JSON.stringify(products))
+renderProducts()
+loadAdminList()
 }
 
-function renderProductos(){
-  productosDiv.innerHTML="";
-  productos.forEach((p,i)=>{
-    let promoTexto="";
-    if(p.promo?.tipo==="3x2") promoTexto="🎁 3x2";
-    if(p.promo?.tipo==="2precio") promoTexto=`2x $${p.promo.precioEspecial}`;
-
-    productosDiv.innerHTML+=`
-    <div class="card">
-      <img src="${p.imagen}">
-      <h4>${p.nombre}</h4>
-      <p>$${p.precio}</p>
-      ${promoTexto?`<p class="promo">${promoTexto}</p>`:""}
-      <p>Stock: ${p.stock}</p>
-      <button onclick="agregarCarrito(${i})">Agregar</button>
-    </div>`;
-  });
-  renderAdmin();
+function saveShipping(){
+shipping=shippingPrice.value
+localStorage.setItem("shipping",shipping)
 }
 
-function renderAdmin(){
-  adminLista.innerHTML="";
-  productos.forEach((p,i)=>{
-    adminLista.innerHTML+=`
-      <div class="admin-item">
-        <div>
-          ${p.nombre}<br>
-          <small>Stock: ${p.stock}</small>
-        </div>
-        <div>
-          <button onclick="editarProducto(${i})">✏</button>
-          <button onclick="eliminarProducto(${i})">🗑</button>
-        </div>
-      </div>`;
-  });
+function showTab(n){
+document.querySelectorAll(".tab").forEach((t,i)=>{
+t.style.display=i==n?"block":"none"
+})
+document.querySelectorAll(".admin-tabs button").forEach((b,i)=>{
+b.classList.toggle("active",i==n)
+})
+if(n==2){
+let h=JSON.parse(localStorage.getItem("history"))||[]
+history.innerHTML=h.map(x=>`<p>${x.date} - $${x.total}</p>`).join("")
+}
 }
 
-function editarProducto(i){
-  let p=productos[i];
-  nombreInput.value=p.nombre;
-  precioInput.value=p.precio;
-  imagenInput.value=p.imagen;
-  stockInput.value=p.stock;
-  editIndex=i;
+function toggleDark(){
+document.body.classList.toggle("dark")
 }
 
-function eliminarProducto(i){
-  productos.splice(i,1);
-  guardarDatos();
-  renderProductos();
-}
-
-renderProductos();
-actualizarCarrito();
+renderProducts()
+updateCart()
 </script>
 
 </body>
