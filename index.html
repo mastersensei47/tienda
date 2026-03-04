@@ -3,17 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>master sensei47</title>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<title>Neo Repuestos</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
 
 body{
 display:flex;
@@ -21,111 +14,72 @@ background:#0f172a;
 color:#fff;
 }
 
-/* SIDEBAR */
+/* ========== SIDEBAR ========== */
+
 .sidebar{
-width:260px;
+width:250px;
 background:#111827;
 height:100vh;
+position:fixed;
+left:0;
+top:0;
 display:flex;
 flex-direction:column;
 justify-content:space-between;
 transition:.3s;
-position:fixed;
+z-index:2000;
 }
 
-.sidebar.collapsed{
-width:80px;
-}
+.sidebar.collapsed{width:80px;}
 
 .sidebar-header{
 display:flex;
 align-items:center;
 gap:12px;
-padding:20px 15px;
+padding:20px;
 border-bottom:1px solid rgba(255,255,255,.1);
 }
 
 .logo-img{
-width:45px;
-height:45px;
+width:42px;
+height:42px;
 object-fit:contain;
 }
 
 .logo-text{
-font-size:18px;
-font-weight:700;
-white-space:nowrap;
+font-weight:600;
+font-size:17px;
 transition:.3s;
 }
 
-.sidebar.collapsed .logo-text{
-opacity:0;
-width:0;
-overflow:hidden;
-}
+.sidebar.collapsed .logo-text{display:none;}
 
-/* MENU */
 .menu{
 list-style:none;
-padding:15px 0;
+padding:10px 0;
 }
 
 .menu li{
 padding:12px 20px;
 display:flex;
 align-items:center;
-gap:15px;
+gap:10px;
 cursor:pointer;
 transition:.2s;
 }
 
-.menu li:hover{
-background:rgba(255,255,255,.1);
-}
+.menu li:hover{background:rgba(255,255,255,.1);}
 
-.menu i{
-width:20px;
-text-align:center;
-font-size:18px;
-}
+.sidebar.collapsed .menu span{display:none;}
 
-.sidebar.collapsed .menu span{
-display:none;
-}
-
-/* FOOTER */
 .sidebar-footer{
 padding:15px;
 border-top:1px solid rgba(255,255,255,.1);
-}
-
-.contact{
 font-size:14px;
-margin-bottom:10px;
 }
 
-.socials{
-display:flex;
-gap:10px;
-margin-top:8px;
-}
+.sidebar.collapsed .sidebar-footer{display:none;}
 
-.socials i{
-font-size:18px;
-cursor:pointer;
-transition:.2s;
-}
-
-.socials i:hover{
-color:#38bdf8;
-}
-
-.sidebar.collapsed .contact,
-.sidebar.collapsed .socials{
-display:none;
-}
-
-/* BOTON TOGGLE */
 .toggle-btn{
 position:absolute;
 top:15px;
@@ -139,83 +93,302 @@ align-items:center;
 justify-content:center;
 cursor:pointer;
 color:#000;
-font-size:14px;
 }
 
-/* CONTENIDO */
-.content{
-margin-left:260px;
-padding:30px;
+/* ========== CONTENIDO ========== */
+
+.main-content{
+margin-left:250px;
+padding:25px;
 flex:1;
 transition:.3s;
 }
 
-.sidebar.collapsed ~ .content{
+.sidebar.collapsed ~ .main-content{
 margin-left:80px;
 }
 
-/* RESPONSIVE */
-@media(max-width:768px){
-.sidebar{
+/* ========== PRODUCTOS ========== */
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+gap:20px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+
+.card img{
+width:100%;
+height:170px;
+object-fit:cover;
+border-radius:8px;
+}
+
+button{
+background:#38bdf8;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
+}
+
+/* ========== CARRITO ========== */
+
+.drawer{
 position:fixed;
-left:-260px;
+right:-400px;
+top:0;
+width:350px;
+height:100%;
+background:#1e293b;
+padding:20px;
+transition:.4s;
+overflow:auto;
+z-index:3000;
 }
-.sidebar.active{
-left:0;
+
+.drawer.open{right:0;}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.5);
+display:none;
+z-index:2500;
 }
-.content{
-margin-left:0;
+
+.overlay.show{display:block;}
+
+.cart-item{
+display:flex;
+justify-content:space-between;
+margin-bottom:8px;
 }
+
+/* ========== ADMIN ========== */
+
+.admin-panel{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:4000;
+}
+
+.admin-box{
+background:#1e293b;
+padding:25px;
+border-radius:12px;
+width:95%;
+max-width:900px;
+max-height:90%;
+overflow:auto;
+}
+
+input{
+width:100%;
+padding:6px;
+margin-bottom:6px;
+border-radius:6px;
+border:none;
 }
 </style>
 </head>
+
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
 
 <div>
 <div class="sidebar-header">
-<img src="logo.png" alt="Neo Repuestos" class="logo-img">
-<span class="logo-text">ms47</span>
+<img src="logo.png" class="logo-img">
+<span class="logo-text">Neo Repuestos</span>
 </div>
 
 <ul class="menu">
-<li><i class="fas fa-home"></i><span>Inicio</span></li>
-<li><i class="fas fa-circle-info"></i><span>Información</span></li>
-<li><i class="fas fa-location-dot"></i><span>Ubicación</span></li>
-<li><i class="fab fa-instagram"></i><span>Instagram</span></li>
-<li><i class="fab fa-whatsapp"></i><span>WhatsApp</span></li>
+<li onclick="window.scrollTo(0,0)">🏠 <span>Inicio</span></li>
+<li onclick="openCart()">🛒 <span>Carrito</span></li>
+<li onclick="openAdmin()">⚙ <span>Admin</span></li>
 </ul>
 </div>
 
 <div class="sidebar-footer">
-<div class="contact">
 <strong>Contacto</strong><br>
 +54 9 343 4508948
 </div>
 
-<div class="socials">
-<i class="fab fa-facebook"></i>
-<i class="fab fa-instagram"></i>
-<i class="fab fa-whatsapp"></i>
-</div>
+<div class="toggle-btn" onclick="toggleSidebar()">☰</div>
 </div>
 
-<div class="toggle-btn" onclick="toggleSidebar()">
-<i class="fas fa-chevron-left"></i>
-</div>
+<!-- CONTENIDO -->
+<div class="main-content">
+
+<h1>Productos</h1>
+
+<div class="products" id="products"></div>
 
 </div>
 
-<div class="content">
-<h1>Bienvenido a MS47</h1>
-<p>Contenido principal de tu tienda...</p>
+<!-- CARRITO -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+
+<div class="drawer" id="drawer">
+<h2>Carrito</h2>
+<div id="cartItems"></div>
+<p>Total: $<span id="total">0</span></p>
+<button onclick="hacerPedido()">Enviar por WhatsApp</button>
+<button onclick="closeCart()">Cerrar</button>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-panel" id="adminPanel">
+<div class="admin-box">
+<h2>Panel Admin</h2>
+<input id="n" placeholder="Nombre producto">
+<input id="p" placeholder="Precio">
+<input id="s" placeholder="Stock">
+<input id="img" placeholder="URL Imagen">
+<button onclick="guardar()">Agregar Producto</button>
+<hr>
+<div id="listaAdmin"></div>
+<button onclick="cerrarAdmin()">Cerrar</button>
+</div>
 </div>
 
 <script>
-function toggleSidebar(){
-document.getElementById("sidebar").classList.toggle("collapsed")
+let products=JSON.parse(localStorage.getItem("products"))||[]
+let cart=[]
+
+function render(){
+let c=document.getElementById("products")
+c.innerHTML=""
+products.forEach((p,i)=>{
+c.innerHTML+=`
+<div class="card">
+<img src="${p.img||'https://via.placeholder.com/300'}">
+<h3>${p.name}</h3>
+<p>$${p.price}</p>
+<p>Stock: ${p.stock}</p>
+<button onclick="add(${i})">Agregar</button>
+</div>`
+})
 }
+
+function add(i){
+let p=products[i]
+let item=cart.find(x=>x.i==i)
+if(item){
+if(item.qty+1>p.stock){alert("Sin stock");return}
+item.qty++
+}else{
+cart.push({i,qty:1})
+}
+updateCart()
+}
+
+function updateCart(){
+let items=document.getElementById("cartItems")
+items.innerHTML=""
+let total=0
+cart.forEach(c=>{
+let p=products[c.i]
+let subtotal=p.price*c.qty
+total+=subtotal
+items.innerHTML+=`
+<div class="cart-item">
+${p.name} x${c.qty}
+<div>
+<button onclick="cambiar(${c.i},-1)">-</button>
+<button onclick="cambiar(${c.i},1)">+</button>
+</div>
+</div>`
+})
+document.getElementById("total").innerText=total
+}
+
+function cambiar(i,v){
+let item=cart.find(x=>x.i==i)
+let p=products[i]
+if(item.qty+v>p.stock){alert("Sin stock");return}
+item.qty+=v
+if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
+updateCart()
+}
+
+function hacerPedido(){
+let mensaje="Pedido:%0A"
+let total=0
+cart.forEach(c=>{
+let p=products[c.i]
+mensaje+=`${p.name} x${c.qty}%0A`
+total+=p.price*c.qty
+p.stock-=c.qty
+})
+mensaje+=`Total: $${total}`
+window.open(`https://wa.me/5493434508948?text=${mensaje}`)
+localStorage.setItem("products",JSON.stringify(products))
+cart=[]
+updateCart()
+render()
+}
+
+function guardar(){
+products.push({
+name:n.value,
+price:parseInt(p.value),
+stock:parseInt(s.value),
+img:img.value
+})
+localStorage.setItem("products",JSON.stringify(products))
+render()
+cargarAdmin()
+}
+
+function cargarAdmin(){
+let l=document.getElementById("listaAdmin")
+l.innerHTML=""
+products.forEach((p,i)=>{
+l.innerHTML+=`${p.name} - Stock:${p.stock}<br>`
+})
+}
+
+function toggleSidebar(){
+sidebar.classList.toggle("collapsed")
+}
+
+function openCart(){
+drawer.classList.add("open")
+overlay.classList.add("show")
+}
+
+function closeCart(){
+drawer.classList.remove("open")
+overlay.classList.remove("show")
+}
+
+function openAdmin(){
+let pass=prompt("Contraseña:")
+if(pass==="admin"){
+adminPanel.style.display="flex"
+cargarAdmin()
+}
+}
+
+function cerrarAdmin(){
+adminPanel.style.display="none"
+}
+
+render()
 </script>
 
 </body>
