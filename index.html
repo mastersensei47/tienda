@@ -1,3 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tienda Pro</title>
+
+<style>
+:root{
+  --bg:#ffffff;
+  --text:#111;
+  --card:#f5f5f5;
+  --accent:#0a84ff;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#111;
+    --text:#fff;
+    --card:#1e1e1e;
+  }
+}
+body{
+  margin:0;
+  font-family:Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px;
+  background:var(--accent);
+  color:white;
+}
+.cart-icon{
+  position:relative;
+  cursor:pointer;
+  font-size:22px;
+}
+.cart-count{
+  position:absolute;
+  top:-8px;
+  right:-10px;
+  background:red;
+  color:white;
+  font-size:12px;
+  padding:3px 6px;
+  border-radius:50%;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:15px;
+  padding:20px;
+}
+.card{
+  background:var(--card);
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+.card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:8px;
+}
+button{
+  padding:6px 10px;
+  margin-top:5px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:var(--accent);
+  color:white;
+}
+.promo{color:#00c853;font-weight:bold;}
+
+#cartModal{
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:350px;
+  height:100%;
+  background:var(--bg);
+  box-shadow:-5px 0 15px rgba(0,0,0,.3);
+  padding:20px;
+  transition:.3s;
+  overflow:auto;
+}
+#cartModal.active{ right:0; }
+
+.close-cart{
+  background:red;
+  float:right;
+}
+
+.admin-btn{
+  position:fixed;
+  bottom:15px;
+  left:15px;
+  width:40px;
+  height:40px;
+  background:url('https://cdn-icons-png.flaticon.com/512/3524/3524659.png') center/cover;
+  opacity:.4;
+  cursor:pointer;
+}
+.admin-panel{
+  display:none;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:var(--bg);
+  padding:20px;
+  border-radius:10px;
+  width:400px;
+  max-height:90vh;
+  overflow:auto;
+  box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+input,select{
+  width:100%;
+  padding:6px;
+  margin:4px 0;
+}
+.admin-item{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:5px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Mi Tienda</h2>
+  <div class="cart-icon" onclick="toggleCart()">
+    🛒 <span class="cart-count" id="cartCount">0</span>
+  </div>
+</header>
+
+<div class="grid" id="productos"></div>
+
+<div id="cartModal">
+  <button class="close-cart" onclick="toggleCart()">X</button>
+  <h3>Carrito</h3>
+  <div id="cartItems"></div>
+  <h3 id="total"></h3>
+  <button onclick="confirmarCompra()">Confirmar Compra</button>
+</div>
+
+<div class="admin-btn" onclick="abrirAdmin()"></div>
+
+<div class="admin-panel" id="adminPanel">
+  <h3>Modo Admin</h3>
+  <input type="password" id="adminPass" placeholder="Contraseña">
+  <button onclick="verificarAdmin()">Entrar</button>
+
+  <div id="adminContent" style="display:none;">
+    <hr>
+    <input id="nombreInput" placeholder="Nombre">
+    <input id="precioInput" type="number" placeholder="Precio">
+    <input id="imagenInput" placeholder="URL Imagen">
+    <input id="stockInput" type="number" placeholder="Stock">
+
+    <select id="tipoPromo">
+      <option value="">Sin promo</option>
+      <option value="3x2">3x2</option>
+      <option value="2precio">2 pagás menos</option>
+    </select>
+
+    <input id="precioEspecialInput" type="number" placeholder="Precio especial">
+
+    <button onclick="guardarProducto()">Guardar</button>
+    <button onclick="cerrarAdmin()">Cerrar</button>
+
+    <hr>
+    <div id="adminLista"></div>
+  </div>
+</div>
+
 <script>
 let productos = JSON.parse(localStorage.getItem("productos")) || [];
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -21,15 +205,7 @@ function renderProductos(){
     <div class="card">
       <img src="${p.imagen}">
       <h4>${p.nombre}</h4>
-
-      <p><b>$${p.precio}</b> c/u</p>
-
-      ${p.tipoPromo==="2precio" ? 
-        `<p class="promo">🔥 $${p.precioPromo} c/u llevando 2+</p>` : ""}
-
-      ${p.tipoPromo==="3x2" ? 
-        `<p class="promo">🎁 Promo 3x2</p>` : ""}
-
+      <p>$${p.precio}</p>
       <p>Stock: ${p.stock}</p>
       <button onclick="agregarCarrito(${i})">Agregar</button>
     </div>`;
@@ -41,7 +217,7 @@ function renderAdmin(){
   productos.forEach((p,i)=>{
     adminLista.innerHTML+=`
       <div class="admin-item">
-        ${p.nombre} ($${p.precio})
+        ${p.nombre} (Stock:${p.stock})
         <div>
           <button onclick="editarProducto(${i})">✏</button>
           <button onclick="eliminarProducto(${i})">🗑</button>
@@ -51,18 +227,21 @@ function renderAdmin(){
 }
 
 function guardarProducto(){
+  let promo=null;
+  if(tipoPromo.value==="3x2") promo={tipo:"3x2"};
+  if(tipoPromo.value==="2precio") promo={tipo:"2precio",precioEspecial:Number(precioEspecialInput.value)};
+
   let nuevo = {
     nombre:nombreInput.value,
     precio:Number(precioInput.value),
-    precioPromo:Number(precioEspecialInput.value),
-    tipoPromo:tipoPromo.value,
     imagen:imagenInput.value,
-    stock:Number(stockInput.value)
+    stock:Number(stockInput.value),
+    promo
   };
 
-  if(editIndex!==null){
-    productos[editIndex]=nuevo;
-    editIndex=null;
+  if(editIndex !== null){
+    productos[editIndex] = nuevo;
+    editIndex = null;
   } else {
     productos.push(nuevo);
   }
@@ -74,14 +253,12 @@ function guardarProducto(){
 }
 
 function editarProducto(i){
-  let p=productos[i];
+  let p = productos[i];
   nombreInput.value=p.nombre;
   precioInput.value=p.precio;
-  precioEspecialInput.value=p.precioPromo || "";
-  tipoPromo.value=p.tipoPromo || "";
   imagenInput.value=p.imagen;
   stockInput.value=p.stock;
-  editIndex=i;
+  editIndex = i;
 }
 
 function eliminarProducto(i){
@@ -92,11 +269,11 @@ function eliminarProducto(i){
 }
 
 function agregarCarrito(i){
-  let p=productos[i];
+  let p = productos[i];
   if(p.stock<=0){ alert("Sin stock"); return; }
 
-  let item=carrito.find(x=>x.index===i);
-  if(item && item.cantidad<p.stock){
+  let item = carrito.find(x=>x.index===i);
+  if(item && item.cantidad < p.stock){
     item.cantidad++;
   } else if(!item){
     carrito.push({index:i,cantidad:1});
@@ -106,55 +283,23 @@ function agregarCarrito(i){
   actualizarCarrito();
 }
 
-function calcularTotal(p,cantidad){
-  let total=0;
-  let textoPromo="";
-  let ahorro=0;
-
-  if(p.tipoPromo==="2precio" && cantidad>=2){
-    total = cantidad * p.precioPromo;
-    ahorro = (p.precio - p.precioPromo) * cantidad;
-    textoPromo="🔥 Precio reducido aplicado";
-  }
-  else if(p.tipoPromo==="3x2"){
-    let grupos=Math.floor(cantidad/3);
-    let resto=cantidad%3;
-    total = (grupos*2*p.precio) + (resto*p.precio);
-    ahorro = grupos * p.precio;
-    if(grupos>0) textoPromo="🎁 Promo 3x2 aplicada";
-  }
-  else{
-    total = cantidad * p.precio;
-  }
-
-  return {total,textoPromo,ahorro};
-}
-
 function actualizarCarrito(){
   cartItems.innerHTML="";
-  let totalGeneral=0;
+  let total=0;
   let cantidadTotal=0;
 
   carrito.forEach((item,i)=>{
     let p=productos[item.index];
-    let res=calcularTotal(p,item.cantidad);
-
-    totalGeneral+=res.total;
+    let subtotal=p.precio*item.cantidad;
+    total+=subtotal;
     cantidadTotal+=item.cantidad;
 
     cartItems.innerHTML+=`
-      <div>
-        <p><b>${p.nombre}</b></p>
-        <p>${item.cantidad} x $${p.precio}</p>
-        <p><b>Total: $${res.total}</b></p>
-        ${res.textoPromo?`<p class="promo">${res.textoPromo}</p>`:""}
-        ${res.ahorro>0?`<p class="promo">Ahorrás $${res.ahorro}</p>`:""}
-        <button onclick="quitar(${i})">❌</button>
-        <hr>
-      </div>`;
+      <p>${p.nombre} x${item.cantidad} - $${subtotal}
+      <button onclick="quitar(${i})">❌</button></p>`;
   });
 
-  totalDiv.innerText="Total: $"+totalGeneral;
+  totalDiv.innerText="Total: $"+total;
   cartCount.innerText=cantidadTotal;
 }
 
@@ -173,7 +318,7 @@ function confirmarCompra(){
   renderProductos();
   renderAdmin();
   actualizarCarrito();
-  alert("Compra confirmada ✅");
+  alert("Compra confirmada ✅ Stock actualizado");
 }
 
 function toggleCart(){
@@ -193,12 +338,14 @@ function verificarAdmin(){
 function limpiarInputs(){
   nombreInput.value="";
   precioInput.value="";
-  precioEspecialInput.value="";
-  tipoPromo.value="";
   imagenInput.value="";
   stockInput.value="";
+  precioEspecialInput.value="";
 }
 
 renderProductos();
 actualizarCarrito();
 </script>
+
+</body>
+</html>
