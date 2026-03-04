@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tienda Online</title>
+  <title>Tienda Online con Admin</title>
   <style>
     body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
     header { background:#333; color:#fff; padding:1rem; text-align:center; }
@@ -15,16 +15,14 @@
     .producto h3 { margin:0.5rem 0; }
     .producto button { background:#28a745; color:#fff; border:none; padding:0.5rem 1rem; cursor:pointer; border-radius:3px; }
     .producto button:hover { background:#218838; }
-    #carrito, #envio { background:#fff; margin:2rem; padding:1rem; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    #carrito, #envio, #admin { background:#fff; margin:2rem; padding:1rem; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     #lista-carrito li { margin:0.5rem 0; }
     .eliminar { background:#dc3545; color:#fff; border:none; padding:0.3rem 0.6rem; margin-left:1rem; cursor:pointer; border-radius:3px; }
     .eliminar:hover { background:#c82333; }
-    #btn-whatsapp { background:#25D366; color:#fff; border:none; padding:0.7rem 1.2rem; cursor:pointer; border-radius:5px; margin-top:1rem; }
-    #btn-whatsapp:hover { background:#1ebe5d; }
-    footer { background:#333; color:#fff; text-align:center; padding:1rem; margin-top:2rem; }
     input { width:100%; padding:0.5rem; margin:0.3rem 0; }
     button[type="submit"] { background:#007bff; color:#fff; border:none; padding:0.7rem 1.2rem; cursor:pointer; border-radius:5px; }
     button[type="submit"]:hover { background:#0056b3; }
+    footer { background:#333; color:#fff; text-align:center; padding:1rem; margin-top:2rem; }
   </style>
 </head>
 <body>
@@ -37,33 +35,17 @@
     <a href="#">Contacto</a>
   </nav>
 
-  <section class="productos">
-    <div class="producto">
-      <img src="https://via.placeholder.com/200" alt="Producto 1">
-      <h3>Producto 1</h3>
-      <p>$1000</p>
-      <button onclick="agregarAlCarrito('Producto 1', 1000)">Agregar al carrito</button>
-    </div>
-    <div class="producto">
-      <img src="https://via.placeholder.com/200" alt="Producto 2">
-      <h3>Producto 2</h3>
-      <p>$1500</p>
-      <button onclick="agregarAlCarrito('Producto 2', 1500)">Agregar al carrito</button>
-    </div>
-    <div class="producto">
-      <img src="https://via.placeholder.com/200" alt="Producto 3">
-      <h3>Producto 3</h3>
-      <p>$2000</p>
-      <button onclick="agregarAlCarrito('Producto 3', 2000)">Agregar al carrito</button>
-    </div>
-  </section>
+  <!-- Productos cargados desde Firebase -->
+  <section class="productos" id="productos"></section>
 
+  <!-- Carrito -->
   <section id="carrito">
     <h2>Carrito de Compras</h2>
     <ul id="lista-carrito"></ul>
     <p><strong>Total:</strong> $<span id="total">0</span></p>
   </section>
 
+  <!-- Formulario de envío -->
   <section id="envio">
     <h2>Datos de Envío</h2>
     <form id="form-envio">
@@ -77,11 +59,46 @@
     </form>
   </section>
 
+  <!-- Panel Admin -->
+  <section id="admin">
+    <h2>Panel Admin</h2>
+    <form id="form-admin">
+      <label>Nombre:</label>
+      <input type="text" id="nombreProd" required>
+      <label>Precio:</label>
+      <input type="number" id="precioProd" required>
+      <label>Imagen (URL):</label>
+      <input type="text" id="imagenProd" required>
+      <button type="submit">Agregar Producto</button>
+    </form>
+    <div id="lista-admin"></div>
+  </section>
+
   <footer>
     <p>&copy; 2026 Mi Tienda Online</p>
   </footer>
 
-  <script>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc } 
+      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    // Configuración de tu proyecto Firebase (copiar desde Firebase Console)
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "tu-proyecto.firebaseapp.com",
+      projectId: "tu-project-id",
+      storageBucket: "tu-proyecto.appspot.com",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Carrito
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
     function agregarAlCarrito(nombre, precio) {
@@ -118,6 +135,7 @@
       localStorage.setItem("carrito", JSON.stringify(carrito));
     }
 
+    // Formulario de envío -> WhatsApp
     document.getElementById("form-envio").addEventListener("submit", function(e) {
       e.preventDefault();
       if (carrito.length === 0) {
@@ -138,14 +156,44 @@
       mensaje += `Dirección: ${direccion}%0A`;
       mensaje += `Teléfono: ${telefono}`;
 
-      // Número de WhatsApp (ejemplo: Argentina con código +54)
       let telefonoNegocio = "5493425056940"; 
       let url = `https://wa.me/${telefonoNegocio}?text=${mensaje}`;
       window.open(url, "_blank");
     });
 
-    // Mostrar carrito al cargar la página
-    mostrarCarrito();
-  </script>
-</body>
-</html>
+    // Cargar productos desde Firebase
+    async function cargarProductos() {
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      const contenedor = document.getElementById("productos");
+      contenedor.innerHTML = "";
+      querySnapshot.forEach((docSnap) => {
+        const producto = docSnap.data();
+        contenedor.innerHTML += `
+          <div class="producto">
+            <img src="${producto.imagen}" alt="${producto.nombre}">
+            <h3>${producto.nombre}</h3>
+            <p>$${producto.precio}</p>
+            <button onclick="agregarAlCarrito('${producto.nombre}', ${producto.precio})">Agregar al carrito</button>
+          </div>
+        `;
+      });
+    }
+
+    // Panel Admin
+    document.getElementById("form-admin").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombreProd").value;
+      const precio = parseFloat(document.getElementById("precioProd").value);
+      const imagen = document.getElementById("imagenProd").value;
+
+      await addDoc(collection(db, "productos"), { nombre, precio, imagen });
+      alert("Producto agregado correctamente");
+      cargarProductos();
+      mostrarAdmin();
+    });
+
+    async function mostrarAdmin() {
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      const adminPanel = document.getElementById("lista-admin");
+      adminPanel.innerHTML = "";
+      querySnapshot
