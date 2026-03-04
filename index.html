@@ -6,7 +6,6 @@
 <title>Tienda PRO</title>
 
 <style>
-/* 🎨 TU DISEÑO ORIGINAL — NO MODIFICADO */
 :root{
 --bg:#f4f6f9;
 --card:#ffffff;
@@ -30,108 +29,6 @@ background:var(--bg);
 color:var(--text);
 transition:.3s;
 }
-
-/* ===== SIDEBAR AGREGADO (SIN ROMPER TU ESTÉTICA) ===== */
-
-body{
-display:flex;
-}
-
-.sidebar-new{
-width:230px;
-background:var(--card);
-box-shadow:var(--shadow);
-height:100vh;
-position:fixed;
-left:0;
-top:0;
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-transition:.3s;
-z-index:1200;
-}
-
-.sidebar-new.collapsed{
-width:75px;
-}
-
-.sidebar-header{
-display:flex;
-align-items:center;
-gap:10px;
-padding:20px;
-}
-
-.sidebar-header img{
-width:40px;
-height:40px;
-object-fit:contain;
-}
-
-.sidebar-header span{
-font-weight:700;
-font-size:16px;
-}
-
-.sidebar-new.collapsed .sidebar-header span{
-display:none;
-}
-
-.sidebar-menu div{
-padding:12px 20px;
-cursor:pointer;
-transition:.2s;
-}
-
-.sidebar-menu div:hover{
-background:rgba(0,0,0,.05);
-}
-
-.sidebar-new.collapsed .sidebar-menu span{
-display:none;
-}
-
-.sidebar-footer{
-padding:15px;
-font-size:14px;
-border-top:1px solid rgba(0,0,0,.05);
-}
-
-.sidebar-new.collapsed .sidebar-footer{
-display:none;
-}
-
-.sidebar-toggle{
-position:absolute;
-top:15px;
-right:-15px;
-background:var(--accent);
-color:#fff;
-width:28px;
-height:28px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-font-weight:bold;
-}
-
-/* ===== EMPUJE CONTENIDO ===== */
-
-.main-wrapper{
-margin-left:230px;
-width:100%;
-transition:.3s;
-}
-
-.sidebar-new.collapsed ~ .main-wrapper{
-margin-left:75px;
-}
-
-/* ===== TU HEADER ORIGINAL ===== */
-
 header{
 display:flex;
 justify-content:space-between;
@@ -149,6 +46,12 @@ font-size:20px;
 background:linear-gradient(45deg,var(--accent),var(--accent2));
 -webkit-background-clip:text;
 color:transparent;
+display:flex;
+align-items:center;
+gap:10px;
+}
+.logo img{
+height:35px;
 }
 .icon{cursor:pointer;font-size:22px;margin-left:15px;position:relative;}
 .cart-count{
@@ -156,9 +59,6 @@ position:absolute;top:-6px;right:-10px;
 background:var(--accent2);color:#fff;font-size:11px;
 padding:3px 6px;border-radius:50%;
 }
-
-/* ===== RESTO DE TU DISEÑO ORIGINAL ===== */
-
 .products{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
@@ -218,40 +118,13 @@ border-radius:6px;border:1px solid #ccc;
 }
 </style>
 </head>
-
 <body>
 
-<!-- ===== SIDEBAR NUEVO ===== -->
-
-<div class="sidebar-new" id="sidebarNew">
-
-<div>
-<div class="sidebar-header">
-<img src="logo.png">
+<header>
+<div class="logo">
+<img src="https://via.placeholder.com/40" alt="Logo">
 <span>Mi Tienda</span>
 </div>
-
-<div class="sidebar-menu">
-<div onclick="window.scrollTo(0,0)">Inicio</div>
-<div onclick="openCart()">Carrito</div>
-<div onclick="openAdmin()">Admin</div>
-</div>
-</div>
-
-<div class="sidebar-footer">
-Contacto:<br>
-+54 9 343 4508948
-</div>
-
-<div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
-</div>
-
-<!-- ===== ENVUELVE TODO TU CONTENIDO ===== -->
-
-<div class="main-wrapper">
-
-<header>
-<div class="logo">Mi Tienda</div>
 <div>
 <span class="icon" onclick="toggleDark()">🌗</span>
 <span class="icon" onclick="openCart()">🛒<span class="cart-count" id="cartCount">0</span></span>
@@ -262,6 +135,7 @@ Contacto:<br>
 <div class="products" id="products"></div>
 
 <div class="overlay" id="overlay" onclick="closeCart()"></div>
+
 <div class="drawer" id="drawer">
 <h2>Carrito</h2>
 <div id="cartItems"></div>
@@ -285,18 +159,253 @@ Contacto:<br>
 <button onclick="closeCart()">Cerrar</button>
 </div>
 
-<!-- TU PANEL ADMIN ORIGINAL SIGUE IGUAL (NO TOCADO) -->
-<!-- ... TODO TU SCRIPT ORIGINAL SIGUE IGUAL ... -->
+<div class="admin-panel" id="adminPanel">
+<div class="admin-box">
 
+<h2>Panel Admin</h2>
+
+<div class="tab-buttons">
+<button onclick="mostrarTab('productosTab')">Productos</button>
+<button onclick="mostrarTab('historialTab')">Historial</button>
+</div>
+
+<div id="productosTab" class="tab active">
+<input id="editIndex" type="hidden">
+<input id="n" placeholder="Nombre">
+<input id="p" placeholder="Precio individual">
+<input id="promo" placeholder="Precio promo (por 2)">
+<input id="stock" placeholder="Stock">
+<input id="img" placeholder="URL imagen">
+<label><input type="checkbox" id="promo2"> Promo por 2</label>
+<label><input type="checkbox" id="tresx2"> 3x2</label>
+<label><input type="checkbox" id="tresx1"> 3x1</label>
+<input id="descManual" placeholder="Descuento manual ($)">
+<button onclick="guardar()">Guardar</button>
+<hr>
+<div id="listaAdmin"></div>
+</div>
+
+<div id="historialTab" class="tab">
+<button onclick="borrarHistorial()">Borrar historial</button>
+<div id="historialContenido"></div>
+</div>
+
+<button onclick="cerrarAdmin()">Cerrar</button>
+
+</div>
 </div>
 
 <script>
-function toggleSidebar(){
-document.getElementById("sidebarNew").classList.toggle("collapsed")
-}
-</script>
+let products=JSON.parse(localStorage.getItem("products"))||[]
+let cart=[]
+let history=JSON.parse(localStorage.getItem("history"))||[]
 
-<!-- PEGA AQUÍ TODO TU SCRIPT ORIGINAL COMPLETO SIN CAMBIOS -->
+function mostrarTab(id){
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
+document.getElementById(id).classList.add("active")
+}
+
+function render(){
+let c=document.getElementById("products")
+c.innerHTML=""
+products.forEach((p,i)=>{
+let etiquetas=""
+if(p.promo2) etiquetas+=`<span class="promo-badge">Promo x2</span>`
+if(p.tresx2) etiquetas+=`<span class="promo-badge">3x2</span>`
+if(p.tresx1) etiquetas+=`<span class="promo-badge">3x1</span>`
+if(p.descManual) etiquetas+=`<span class="promo-badge">-$${p.descManual} c/u</span>`
+
+c.innerHTML+=`
+<div class="card">
+<img src="${p.img||'https://via.placeholder.com/300'}">
+<h3>${p.name}</h3>
+<p>$${p.price}</p>
+${etiquetas}
+<p>Stock: ${p.stock}</p>
+<button onclick="add(${i})">Agregar</button>
+</div>`
+})
+}
+
+function add(i){
+let p=products[i]
+let item=cart.find(x=>x.i==i)
+let qtyActual=item?item.qty:0
+if(qtyActual+1>p.stock){alert("No hay más stock");return}
+if(item)item.qty++
+else cart.push({i,qty:1})
+updateCart()
+}
+
+function calcularProducto(p,qty){
+let subtotal=p.price*qty
+let ahorro=0
+if(p.promo2 && qty>=2){
+let sets=Math.floor(qty/2)
+subtotal=p.promo*sets+(qty%2)*p.price
+ahorro+=(p.price*2-p.promo)*sets
+}
+if(p.tresx2 && qty>=3){
+let sets=Math.floor(qty/3)
+subtotal=p.price*(qty-sets)
+ahorro+=p.price*sets
+}
+if(p.tresx1 && qty>=3){
+let sets=Math.floor(qty/3)
+subtotal=p.price*(qty-2*sets)
+ahorro+=p.price*2*sets
+}
+if(p.descManual){
+subtotal-=p.descManual*qty
+ahorro+=p.descManual*qty
+}
+return {subtotal,ahorro}
+}
+
+function updateCart(){
+let items=document.getElementById("cartItems")
+items.innerHTML=""
+let total=0
+let ahorroTotal=0
+cart.forEach(c=>{
+let p=products[c.i]
+let calc=calcularProducto(p,c.qty)
+total+=calc.subtotal
+ahorroTotal+=calc.ahorro
+items.innerHTML+=`
+<div class="cart-item">
+${p.name} x${c.qty}
+<div>
+<button onclick="cambiar(${c.i},-1)">-</button>
+<button onclick="cambiar(${c.i},1)">+</button>
+</div>
+</div>`
+})
+document.getElementById("total").innerText=total
+document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0)
+document.getElementById("ahorro").innerText=ahorroTotal>0?`Ahorrás $${ahorroTotal}`:""
+}
+
+function cambiar(i,v){
+let item=cart.find(x=>x.i==i)
+let p=products[i]
+if(item.qty+v>p.stock){alert("Stock insuficiente");return}
+item.qty+=v
+if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
+updateCart()
+}
+
+function mostrarFormulario(){
+let tipo=document.getElementById("tipoEntrega").value
+document.getElementById("formEnvio").style.display=tipo==="envio"?"block":"none"
+}
+
+function hacerPedido(){
+if(cart.length===0){alert("Carrito vacío");return}
+let tipo=document.getElementById("tipoEntrega").value
+let total=document.getElementById("total").innerText
+let detalle=""
+cart.forEach(c=>{
+let p=products[c.i]
+let calc=calcularProducto(p,c.qty)
+detalle+=`${p.name} x${c.qty} - $${calc.subtotal}\n`
+p.stock-=c.qty
+})
+let datos=""
+if(tipo==="envio"){
+let nombre=document.getElementById("nombreEnvio").value
+let direccion=document.getElementById("direccionEnvio").value
+let telefono=document.getElementById("telefonoEnvio").value
+if(!nombre||!direccion||!telefono){alert("Completar datos");return}
+datos=`\nEnvío:\nNombre: ${nombre}\nDirección: ${direccion}\nTeléfono: ${telefono}`
+}
+let mensaje=`Pedido:\n${detalle}\nTotal: $${total}${datos}`
+window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(mensaje)}`)
+history.push({fecha:new Date().toLocaleString(),detalle,total,tipo})
+localStorage.setItem("history",JSON.stringify(history))
+localStorage.setItem("products",JSON.stringify(products))
+cart=[]
+updateCart()
+render()
+}
+
+function openAdmin(){
+let pass=prompt("Contraseña:")
+if(pass==="admin"){
+document.getElementById("adminPanel").style.display="flex"
+cargarAdmin()
+}else alert("Incorrecta")
+}
+function cerrarAdmin(){document.getElementById("adminPanel").style.display="none"}
+function toggleDark(){document.body.classList.toggle("dark")}
+function openCart(){document.getElementById("drawer").classList.add("open");document.getElementById("overlay").classList.add("show")}
+function closeCart(){document.getElementById("drawer").classList.remove("open");document.getElementById("overlay").classList.remove("show")}
+
+function guardar(){
+let index=document.getElementById("editIndex").value
+let producto={
+name:document.getElementById("n").value,
+price:parseInt(document.getElementById("p").value),
+promo:parseInt(document.getElementById("promo").value)||0,
+promo2:document.getElementById("promo2").checked,
+tresx2:document.getElementById("tresx2").checked,
+tresx1:document.getElementById("tresx1").checked,
+descManual:parseInt(document.getElementById("descManual").value)||0,
+stock:parseInt(document.getElementById("stock").value),
+img:document.getElementById("img").value
+}
+if(index==="") products.push(producto)
+else products[index]=producto
+localStorage.setItem("products",JSON.stringify(products))
+render()
+cargarAdmin()
+document.getElementById("editIndex").value=""
+}
+
+function cargarAdmin(){
+let l=document.getElementById("listaAdmin")
+l.innerHTML=""
+products.forEach((p,i)=>{
+l.innerHTML+=`${p.name} - Stock: ${p.stock}
+<button onclick="editar(${i})">Editar</button>
+<button onclick="eliminar(${i})">Eliminar</button><br>`
+})
+let h=document.getElementById("historialContenido")
+h.innerHTML=history.map(x=>
+`<p><b>${x.fecha}</b><br>${x.detalle.replace(/\n/g,"<br>")}<br>Total: $${x.total}</p><hr>`
+).join("")
+}
+
+function editar(i){
+let prod=products[i]
+document.getElementById("editIndex").value=i
+document.getElementById("n").value=prod.name
+document.getElementById("p").value=prod.price
+document.getElementById("promo").value=prod.promo
+document.getElementById("stock").value=prod.stock
+document.getElementById("img").value=prod.img
+document.getElementById("promo2").checked=prod.promo2
+document.getElementById("tresx2").checked=prod.tresx2
+document.getElementById("tresx1").checked=prod.tresx1
+document.getElementById("descManual").value=prod.descManual
+}
+
+function eliminar(i){
+products.splice(i,1)
+localStorage.setItem("products",JSON.stringify(products))
+render()
+cargarAdmin()
+}
+
+function borrarHistorial(){
+history=[]
+localStorage.setItem("history",JSON.stringify(history))
+cargarAdmin()
+}
+
+render()
+updateCart()
+</script>
 
 </body>
 </html>
