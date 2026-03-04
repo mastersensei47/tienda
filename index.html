@@ -5,69 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tienda Online</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f4f4;
-    }
-    header {
-      background: #333;
-      color: #fff;
-      padding: 1rem;
-      text-align: center;
-    }
-    nav {
-      background: #444;
-      padding: 0.5rem;
-      text-align: center;
-    }
-    nav a {
-      color: #fff;
-      margin: 0 1rem;
-      text-decoration: none;
-    }
-    .productos {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin: 2rem;
-    }
-    .producto {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin: 1rem;
-      padding: 1rem;
-      width: 250px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .producto img {
-      max-width: 100%;
-      border-radius: 5px;
-    }
-    .producto h3 {
-      margin: 0.5rem 0;
-    }
-    .producto button {
-      background: #28a745;
-      color: #fff;
-      border: none;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border-radius: 3px;
-    }
-    .producto button:hover {
-      background: #218838;
-    }
-    footer {
-      background: #333;
-      color: #fff;
-      text-align: center;
-      padding: 1rem;
-      margin-top: 2rem;
-    }
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
+    header { background:#333; color:#fff; padding:1rem; text-align:center; }
+    nav { background:#444; padding:0.5rem; text-align:center; }
+    nav a { color:#fff; margin:0 1rem; text-decoration:none; }
+    .productos { display:flex; flex-wrap:wrap; justify-content:center; margin:2rem; }
+    .producto { background:#fff; border:1px solid #ddd; border-radius:5px; margin:1rem; padding:1rem; width:250px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .producto img { max-width:100%; border-radius:5px; }
+    .producto h3 { margin:0.5rem 0; }
+    .producto button { background:#28a745; color:#fff; border:none; padding:0.5rem 1rem; cursor:pointer; border-radius:3px; }
+    .producto button:hover { background:#218838; }
+    #carrito { background:#fff; margin:2rem; padding:1rem; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    #lista-carrito li { margin:0.5rem 0; }
+    .eliminar { background:#dc3545; color:#fff; border:none; padding:0.3rem 0.6rem; margin-left:1rem; cursor:pointer; border-radius:3px; }
+    .eliminar:hover { background:#c82333; }
+    footer { background:#333; color:#fff; text-align:center; padding:1rem; margin-top:2rem; }
   </style>
 </head>
 <body>
@@ -79,28 +31,77 @@
     <a href="#">Productos</a>
     <a href="#">Contacto</a>
   </nav>
+
   <section class="productos">
     <div class="producto">
       <img src="https://via.placeholder.com/200" alt="Producto 1">
       <h3>Producto 1</h3>
       <p>$1000</p>
-      <button>Agregar al carrito</button>
+      <button onclick="agregarAlCarrito('Producto 1', 1000)">Agregar al carrito</button>
     </div>
     <div class="producto">
       <img src="https://via.placeholder.com/200" alt="Producto 2">
       <h3>Producto 2</h3>
       <p>$1500</p>
-      <button>Agregar al carrito</button>
+      <button onclick="agregarAlCarrito('Producto 2', 1500)">Agregar al carrito</button>
     </div>
     <div class="producto">
       <img src="https://via.placeholder.com/200" alt="Producto 3">
       <h3>Producto 3</h3>
       <p>$2000</p>
-      <button>Agregar al carrito</button>
+      <button onclick="agregarAlCarrito('Producto 3', 2000)">Agregar al carrito</button>
     </div>
   </section>
+
+  <section id="carrito">
+    <h2>Carrito de Compras</h2>
+    <ul id="lista-carrito"></ul>
+    <p><strong>Total:</strong> $<span id="total">0</span></p>
+  </section>
+
   <footer>
     <p>&copy; 2026 Mi Tienda Online</p>
   </footer>
+
+  <script>
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    function agregarAlCarrito(nombre, precio) {
+      carrito.push({ nombre, precio });
+      guardarCarrito();
+      mostrarCarrito();
+    }
+
+    function eliminarDelCarrito(index) {
+      carrito.splice(index, 1);
+      guardarCarrito();
+      mostrarCarrito();
+    }
+
+    function mostrarCarrito() {
+      const lista = document.getElementById("lista-carrito");
+      lista.innerHTML = "";
+      let total = 0;
+      carrito.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.nombre} - $${item.precio}`;
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "Eliminar";
+        btnEliminar.className = "eliminar";
+        btnEliminar.onclick = () => eliminarDelCarrito(index);
+        li.appendChild(btnEliminar);
+        lista.appendChild(li);
+        total += item.precio;
+      });
+      document.getElementById("total").textContent = total;
+    }
+
+    function guardarCarrito() {
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+    }
+
+    // Mostrar carrito al cargar la página
+    mostrarCarrito();
+  </script>
 </body>
 </html>
