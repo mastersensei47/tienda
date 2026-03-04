@@ -20,119 +20,35 @@
     --card:#1e1e1e;
   }
 }
-body{
-  margin:0;
-  font-family:Arial;
-  background:var(--bg);
-  color:var(--text);
-}
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px;
-  background:var(--accent);
-  color:white;
-}
-.cart-icon{
-  position:relative;
-  cursor:pointer;
-  font-size:22px;
-}
-.cart-count{
-  position:absolute;
-  top:-8px;
-  right:-10px;
-  background:red;
-  color:white;
-  font-size:12px;
-  padding:3px 6px;
-  border-radius:50%;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:15px;
-  padding:20px;
-}
-.card{
-  background:var(--card);
-  padding:15px;
-  border-radius:10px;
-  text-align:center;
-}
-.card img{
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:8px;
-}
-button{
-  padding:6px 10px;
-  margin-top:5px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:var(--accent);
-  color:white;
-}
+body{margin:0;font-family:Arial;background:var(--bg);color:var(--text);}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:var(--accent);color:white;}
+.cart-icon{position:relative;cursor:pointer;font-size:22px;}
+.cart-count{position:absolute;top:-8px;right:-10px;background:red;color:white;font-size:12px;padding:3px 6px;border-radius:50%;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;padding:20px;}
+.card{background:var(--card);padding:15px;border-radius:10px;text-align:center;}
+.card img{width:100%;height:150px;object-fit:cover;border-radius:8px;}
+button{padding:6px 10px;margin-top:5px;border:none;border-radius:6px;cursor:pointer;background:var(--accent);color:white;}
 .promo{color:var(--green);font-weight:bold;}
-.tachado{ text-decoration:line-through; color:gray; }
+.tachado{text-decoration:line-through;color:gray;}
 
-#cartModal{
-  position:fixed;
-  top:0;
-  right:-100%;
-  width:350px;
-  height:100%;
-  background:var(--bg);
-  box-shadow:-5px 0 15px rgba(0,0,0,.3);
-  padding:20px;
-  transition:.3s;
-  overflow:auto;
-}
-#cartModal.active{ right:0; }
-
-.close-cart{
-  background:red;
-  float:right;
-}
+#cartModal{position:fixed;top:0;right:-100%;width:350px;height:100%;background:var(--bg);box-shadow:-5px 0 15px rgba(0,0,0,.3);padding:20px;transition:.3s;overflow:auto;}
+#cartModal.active{right:0;}
+.close-cart{background:red;float:right;}
 
 .admin-btn{
-  position:fixed;
-  bottom:15px;
-  left:15px;
-  width:40px;
-  height:40px;
+  position:fixed;bottom:15px;left:15px;width:40px;height:40px;
   background:url('https://cdn-icons-png.flaticon.com/512/3524/3524659.png') center/cover;
-  opacity:.4;
-  cursor:pointer;
+  opacity:.4;cursor:pointer;
 }
 .admin-panel{
-  display:none;
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:var(--bg);
-  padding:20px;
-  border-radius:10px;
-  width:400px;
-  max-height:90vh;
-  overflow:auto;
-  box-shadow:0 0 20px rgba(0,0,0,.5);
+  display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--bg);padding:20px;border-radius:10px;width:400px;
+  max-height:90vh;overflow:auto;box-shadow:0 0 20px rgba(0,0,0,.5);
 }
-input,select{
-  width:100%;
-  padding:6px;
-  margin:4px 0;
-}
-.admin-item{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:5px;
-}
+input,select{width:100%;padding:6px;margin:4px 0;}
+.admin-item{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px;}
+.whatsapp{background:#25D366;}
+.envio-box{margin-top:10px;}
 </style>
 </head>
 <body>
@@ -150,7 +66,17 @@ input,select{
   <button class="close-cart" onclick="toggleCart()">X</button>
   <h3>Carrito</h3>
   <div id="cartItems"></div>
+
+  <div class="envio-box">
+    <label>
+      <input type="checkbox" id="envioCheck" onchange="actualizarCarrito()">
+      Agregar envío (+$<span id="envioPrecioTexto">500</span>)
+    </label>
+  </div>
+
   <h3 id="total"></h3>
+
+  <button class="whatsapp" onclick="enviarWhatsApp()">Enviar por WhatsApp</button>
   <button onclick="confirmarCompra()">Confirmar Compra</button>
 </div>
 
@@ -174,7 +100,8 @@ input,select{
       <option value="2precio">2 pagás menos</option>
     </select>
 
-    <input id="precioEspecialInput" type="number" placeholder="Precio especial (ej: precio por 2)">
+    <input id="precioEspecialInput" type="number" placeholder="Precio especial (precio por 2)">
+    <input id="envioPrecioInput" type="number" placeholder="Precio envío (ej 500)">
 
     <button onclick="guardarProducto()">Guardar</button>
     <button onclick="cerrarAdmin()">Cerrar</button>
@@ -187,6 +114,7 @@ input,select{
 <script>
 let productos = JSON.parse(localStorage.getItem("productos")) || [];
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let envioPrecio = 500;
 let editIndex = null;
 
 const productosDiv = document.getElementById("productos");
@@ -194,6 +122,9 @@ const cartItems = document.getElementById("cartItems");
 const totalDiv = document.getElementById("total");
 const cartCount = document.getElementById("cartCount");
 const adminLista = document.getElementById("adminLista");
+const envioTexto = document.getElementById("envioPrecioTexto");
+
+envioTexto.innerText = envioPrecio;
 
 function guardarDatos(){
   localStorage.setItem("productos", JSON.stringify(productos));
@@ -203,21 +134,20 @@ function guardarDatos(){
 function renderProductos(){
   productosDiv.innerHTML="";
   productos.forEach((p,i)=>{
-
     let promoHTML="";
     if(p.promo?.tipo==="2precio"){
       let unitPromo=(p.promo.precioEspecial/2).toFixed(2);
       promoHTML=`<p class="promo">2x $${p.promo.precioEspecial} ($${unitPromo} c/u)</p>`;
     }
     if(p.promo?.tipo==="3x2"){
-      promoHTML=`<p class="promo">🎁 Promo 3x2 (Llevás 3 pagás 2)</p>`;
+      promoHTML=`<p class="promo">🎁 Promo 3x2</p>`;
     }
 
     productosDiv.innerHTML+=`
     <div class="card">
       <img src="${p.imagen}">
       <h4>${p.nombre}</h4>
-      <p>Precio normal: $${p.precio}</p>
+      <p>$${p.precio}</p>
       ${promoHTML}
       <p>Stock: ${p.stock}</p>
       <button onclick="agregarCarrito(${i})">Agregar</button>
@@ -257,19 +187,19 @@ function actualizarCarrito(){
 
     let precioHTML=`$${subtotal}`;
     if(ahorro>0){
-      precioHTML=`
-        <span class="tachado">$${precioNormal}</span><br>
-        <span class="promo">$${subtotal}</span><br>
-        <small class="promo">Ahorrás $${ahorro}</small>`;
+      precioHTML=`<span class="tachado">$${precioNormal}</span><br>
+      <span class="promo">$${subtotal}</span><br>
+      <small class="promo">Ahorrás $${ahorro}</small>`;
     }
 
     cartItems.innerHTML+=`
-      <p>
-        ${p.nombre} x${item.cantidad}<br>
-        ${precioHTML}
-        <button onclick="quitar(${i})">❌</button>
-      </p>`;
+      <p>${p.nombre} x${item.cantidad}<br>${precioHTML}
+      <button onclick="quitar(${i})">❌</button></p>`;
   });
+
+  if(document.getElementById("envioCheck").checked){
+    total+=envioPrecio;
+  }
 
   totalDiv.innerHTML=`Total: $${total}
   ${ahorroTotal>0?`<br><span class="promo">Ahorro total: $${ahorroTotal}</span>`:""}`;
@@ -293,6 +223,28 @@ function quitar(i){
   actualizarCarrito();
 }
 
+function enviarWhatsApp(){
+  if(carrito.length===0){alert("Carrito vacío");return;}
+
+  let mensaje="🛒 Pedido:%0A";
+  let total=0;
+
+  carrito.forEach(item=>{
+    let p=productos[item.index];
+    mensaje+=`${p.nombre} x${item.cantidad}%0A`;
+    total+=p.precio*item.cantidad;
+  });
+
+  if(document.getElementById("envioCheck").checked){
+    mensaje+="Envío incluido%0A";
+    total+=envioPrecio;
+  }
+
+  mensaje+=`Total: $${total}`;
+
+  window.open("https://wa.me/549XXXXXXXXXX?text="+mensaje,"_blank");
+}
+
 function confirmarCompra(){
   carrito.forEach(item=>{
     productos[item.index].stock-=item.cantidad;
@@ -304,10 +256,9 @@ function confirmarCompra(){
   alert("Compra confirmada ✅");
 }
 
-function toggleCart(){ document.getElementById("cartModal").classList.toggle("active"); }
-function abrirAdmin(){ document.getElementById("adminPanel").style.display="block"; }
-function cerrarAdmin(){ document.getElementById("adminPanel").style.display="none"; }
-
+function toggleCart(){document.getElementById("cartModal").classList.toggle("active");}
+function abrirAdmin(){document.getElementById("adminPanel").style.display="block";}
+function cerrarAdmin(){document.getElementById("adminPanel").style.display="none";}
 function verificarAdmin(){
   if(adminPass.value==="1234"){
     document.getElementById("adminContent").style.display="block";
@@ -328,9 +279,46 @@ function guardarProducto(){
     promo
   };
 
-  productos.push(nuevo);
+  if(editIndex!==null){
+    productos[editIndex]=nuevo;
+    editIndex=null;
+  } else {
+    productos.push(nuevo);
+  }
+
   guardarDatos();
   renderProductos();
+  renderAdmin();
+}
+
+function renderAdmin(){
+  adminLista.innerHTML="";
+  productos.forEach((p,i)=>{
+    adminLista.innerHTML+=`
+      <div class="admin-item">
+        ${p.nombre}
+        <div>
+          <button onclick="editarProducto(${i})">✏</button>
+          <button onclick="eliminarProducto(${i})">🗑</button>
+        </div>
+      </div>`;
+  });
+}
+
+function editarProducto(i){
+  let p=productos[i];
+  nombreInput.value=p.nombre;
+  precioInput.value=p.precio;
+  imagenInput.value=p.imagen;
+  stockInput.value=p.stock;
+  editIndex=i;
+}
+
+function eliminarProducto(i){
+  productos.splice(i,1);
+  guardarDatos();
+  renderProductos();
+  renderAdmin();
 }
 
 renderProductos();
