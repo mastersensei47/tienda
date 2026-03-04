@@ -27,13 +27,15 @@ header{display:flex;justify-content:space-between;align-items:center;padding:15p
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;padding:20px;}
 .card{background:var(--card);padding:15px;border-radius:10px;text-align:center;}
 .card img{width:100%;height:150px;object-fit:cover;border-radius:8px;}
-button{padding:6px 10px;margin-top:5px;border:none;border-radius:6px;cursor:pointer;background:var(--accent);color:white;}
+button{padding:6px 10px;margin:3px;border:none;border-radius:6px;cursor:pointer;background:var(--accent);color:white;}
 .promo{color:var(--green);font-weight:bold;}
 .tachado{text-decoration:line-through;color:gray;}
 
 #cartModal{position:fixed;top:0;right:-100%;width:350px;height:100%;background:var(--bg);box-shadow:-5px 0 15px rgba(0,0,0,.3);padding:20px;transition:.3s;overflow:auto;}
 #cartModal.active{right:0;}
 .close-cart{background:red;float:right;}
+
+.qty-btn{padding:3px 8px;font-size:14px}
 
 .admin-btn{
   position:fixed;bottom:15px;left:15px;width:40px;height:40px;
@@ -42,13 +44,20 @@ button{padding:6px 10px;margin-top:5px;border:none;border-radius:6px;cursor:poin
 }
 .admin-panel{
   display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:var(--bg);padding:20px;border-radius:10px;width:400px;
+  background:var(--bg);padding:20px;border-radius:10px;width:420px;
   max-height:90vh;overflow:auto;box-shadow:0 0 20px rgba(0,0,0,.5);
 }
+.admin-item{
+  background:var(--card);
+  padding:8px;
+  border-radius:6px;
+  margin-bottom:8px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 input,select{width:100%;padding:6px;margin:4px 0;}
-.admin-item{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px;}
 .whatsapp{background:#25D366;}
-.envio-box{margin-top:10px;}
 </style>
 </head>
 <body>
@@ -67,12 +76,10 @@ input,select{width:100%;padding:6px;margin:4px 0;}
   <h3>Carrito</h3>
   <div id="cartItems"></div>
 
-  <div class="envio-box">
-    <label>
-      <input type="checkbox" id="envioCheck" onchange="actualizarCarrito()">
-      Agregar envío (+$<span id="envioPrecioTexto"></span>)
-    </label>
-  </div>
+  <label>
+    <input type="checkbox" id="envioCheck" onchange="actualizarCarrito()">
+    Agregar envío (+$<span id="envioPrecioTexto"></span>)
+  </label>
 
   <h3 id="total"></h3>
 
@@ -101,10 +108,8 @@ input,select{width:100%;padding:6px;margin:4px 0;}
     </select>
 
     <input id="precioEspecialInput" type="number" placeholder="Precio especial (precio por 2)">
-    <input id="envioPrecioInput" type="number" placeholder="Precio envío">
 
-    <button onclick="guardarProducto()">Guardar</button>
-    <button onclick="guardarEnvio()">Guardar Envío</button>
+    <button onclick="guardarProducto()">Guardar Producto</button>
     <button onclick="cerrarAdmin()">Cerrar</button>
 
     <hr>
@@ -119,12 +124,14 @@ let envioPrecio = Number(localStorage.getItem("envioPrecio")) || 500;
 let editIndex = null;
 
 document.getElementById("envioPrecioTexto").innerText = envioPrecio;
-document.getElementById("envioPrecioInput").value = envioPrecio;
 
 function guardarDatos(){
   localStorage.setItem("productos", JSON.stringify(productos));
   localStorage.setItem("carrito", JSON.stringify(carrito));
-  localStorage.setItem("envioPrecio", envioPrecio);
+}
+
+function toggleCart(){
+  document.getElementById("cartModal").classList.toggle("active");
 }
 
 function calcularSubtotal(p, cantidad){
@@ -143,73 +150,67 @@ function calcularSubtotal(p, cantidad){
     subtotal=(grupos*(p.precio*2))+(resto*p.precio);
   }
 
-  return subtotal;
+  return {subtotal, precioNormal};
 }
 
 function actualizarCarrito(){
   cartItems.innerHTML="";
   let total=0;
+  let ahorroTotal=0;
   let cantidadTotal=0;
 
   carrito.forEach((item,i)=>{
     let p=productos[item.index];
-    let subtotal=calcularSubtotal(p,item.cantidad);
-    total+=subtotal;
+    let calc=calcularSubtotal(p,item.cantidad);
+    let ahorro=calc.precioNormal-calc.subtotal;
+
+    total+=calc.subtotal;
+    ahorroTotal+=ahorro;
     cantidadTotal+=item.cantidad;
 
     cartItems.innerHTML+=`
-      <p>${p.nombre} x${item.cantidad} - $${subtotal}
-      <button onclick="quitar(${i})">❌</button></p>`;
+    <div>
+      <strong>${p.nombre}</strong><br>
+      <button class="qty-btn" onclick="restar(${i})">−</button>
+      ${item.cantidad}
+      <button class="qty-btn" onclick="sumar(${i})">+</button><br>
+      ${ahorro>0?
+        `<span class="tachado">$${calc.precioNormal}</span><br>
+         <span class="promo">$${calc.subtotal}</span><br>
+         <small class="promo">Ahorrás $${ahorro}</small>`
+        :`$${calc.subtotal}`
+      }
+      <hr>
+    </div>`;
   });
 
   if(document.getElementById("envioCheck").checked){
     total+=envioPrecio;
   }
 
-  totalDiv.innerHTML=`Total: $${total}`;
+  totalDiv.innerHTML=`Total: $${total}
+  ${ahorroTotal>0?`<br><span class="promo">Ahorro total: $${ahorroTotal}</span>`:""}`;
+
   cartCount.innerText=cantidadTotal;
 }
 
-function enviarWhatsApp(){
-  if(carrito.length===0){alert("Carrito vacío");return;}
-
-  let mensaje="🛒 Pedido:%0A";
-  let total=0;
-
-  carrito.forEach(item=>{
-    let p=productos[item.index];
-    let subtotal=calcularSubtotal(p,item.cantidad);
-    mensaje+=`${p.nombre} x${item.cantidad} - $${subtotal}%0A`;
-    total+=subtotal;
-  });
-
-  if(document.getElementById("envioCheck").checked){
-    mensaje+=`Envío: $${envioPrecio}%0A`;
-    total+=envioPrecio;
+function sumar(i){
+  let item=carrito[i];
+  if(item.cantidad < productos[item.index].stock){
+    item.cantidad++;
   }
-
-  mensaje+=`Total: $${total}`;
-
-  window.open("https://wa.me/549XXXXXXXXXX?text="+mensaje,"_blank");
-}
-
-function confirmarCompra(){
-  carrito.forEach(item=>{
-    productos[item.index].stock-=item.cantidad;
-  });
-
-  carrito=[];
   guardarDatos();
-  renderProductos();
   actualizarCarrito();
-  alert("Compra confirmada ✅");
 }
 
-function guardarEnvio(){
-  envioPrecio = Number(envioPrecioInput.value);
+function restar(i){
+  let item=carrito[i];
+  item.cantidad--;
+  if(item.cantidad<=0){
+    carrito.splice(i,1);
+  }
   guardarDatos();
-  document.getElementById("envioPrecioTexto").innerText = envioPrecio;
-  alert("Precio de envío actualizado");
+  actualizarCarrito();
 }
 
 function agregarCarrito(i){
@@ -222,32 +223,109 @@ function agregarCarrito(i){
   actualizarCarrito();
 }
 
-function quitar(i){
-  carrito.splice(i,1);
+function confirmarCompra(){
+  carrito.forEach(item=>{
+    productos[item.index].stock-=item.cantidad;
+  });
+  carrito=[];
   guardarDatos();
+  renderProductos();
   actualizarCarrito();
+  alert("Compra confirmada ✅");
+}
+
+function abrirAdmin(){adminPanel.style.display="block";}
+function cerrarAdmin(){adminPanel.style.display="none";}
+
+function verificarAdmin(){
+  if(adminPass.value==="1234"){
+    document.getElementById("adminContent").style.display="block";
+    renderAdmin();
+  } else alert("Contraseña incorrecta");
+}
+
+function guardarProducto(){
+  let promo=null;
+
+  if(tipoPromo.value==="3x2") promo={tipo:"3x2"};
+  if(tipoPromo.value==="2precio") promo={tipo:"2precio",precioEspecial:Number(precioEspecialInput.value)};
+
+  let nuevo={
+    nombre:nombreInput.value,
+    precio:Number(precioInput.value),
+    imagen:imagenInput.value,
+    stock:Number(stockInput.value),
+    promo
+  };
+
+  if(editIndex!==null){
+    productos[editIndex]=nuevo;
+    editIndex=null;
+  } else {
+    productos.push(nuevo);
+  }
+
+  nombreInput.value="";
+  precioInput.value="";
+  imagenInput.value="";
+  stockInput.value="";
+  precioEspecialInput.value="";
+  tipoPromo.value="";
+
+  guardarDatos();
+  renderProductos();
 }
 
 function renderProductos(){
   productosDiv.innerHTML="";
   productos.forEach((p,i)=>{
+    let promoTexto="";
+    if(p.promo?.tipo==="3x2") promoTexto="🎁 3x2";
+    if(p.promo?.tipo==="2precio") promoTexto=`2x $${p.promo.precioEspecial}`;
+
     productosDiv.innerHTML+=`
     <div class="card">
       <img src="${p.imagen}">
       <h4>${p.nombre}</h4>
       <p>$${p.precio}</p>
+      ${promoTexto?`<p class="promo">${promoTexto}</p>`:""}
       <p>Stock: ${p.stock}</p>
       <button onclick="agregarCarrito(${i})">Agregar</button>
     </div>`;
   });
+  renderAdmin();
 }
 
-function abrirAdmin(){adminPanel.style.display="block";}
-function cerrarAdmin(){adminPanel.style.display="none";}
-function verificarAdmin(){
-  if(adminPass.value==="1234"){
-    document.getElementById("adminContent").style.display="block";
-  } else alert("Contraseña incorrecta");
+function renderAdmin(){
+  adminLista.innerHTML="";
+  productos.forEach((p,i)=>{
+    adminLista.innerHTML+=`
+      <div class="admin-item">
+        <div>
+          ${p.nombre}<br>
+          <small>Stock: ${p.stock}</small>
+        </div>
+        <div>
+          <button onclick="editarProducto(${i})">✏</button>
+          <button onclick="eliminarProducto(${i})">🗑</button>
+        </div>
+      </div>`;
+  });
+}
+
+function editarProducto(i){
+  let p=productos[i];
+  nombreInput.value=p.nombre;
+  precioInput.value=p.precio;
+  imagenInput.value=p.imagen;
+  stockInput.value=p.stock;
+  editIndex=i;
+}
+
+function eliminarProducto(i){
+  productos.splice(i,1);
+  guardarDatos();
+  renderProductos();
 }
 
 renderProductos();
