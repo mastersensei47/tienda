@@ -10,10 +10,12 @@
             --accent: #2563eb; --sidebar-bg: #1e40af;
             --shadow: 0 10px 30px rgba(0,0,0,0.5);
             --success: #10b981;
+            --coral: #ff8a80;
         }
         body.light { --bg: #f4f6f9; --card: #ffffff; --text: #111; --sidebar-bg: #2563eb; }
         body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition:.3s; overflow-x: hidden; }
         
+        /* HEADER SLIM */
         header { 
             display:flex; justify-content:space-between; align-items:center; 
             padding:5px 20px; background:var(--card); box-shadow:var(--shadow); 
@@ -28,15 +30,28 @@
         .icon { cursor:pointer; font-size:18px; position: relative; }
         .badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 10px; padding: 1px 5px; border-radius: 10px; }
 
+        /* SIDEBAR ESTILO IMAGEN */
+        .sidebar { 
+            position: fixed; left: -280px; top: 0; width: 260px; height: 100%; 
+            background: var(--sidebar-bg); color: white; transition: 0.3s; z-index: 2000;
+            display: flex; flex-direction: column;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-header { padding: 20px; font-weight: bold; font-size: 18px; border-bottom: 1px solid #ffffff22; }
+        .sidebar-nav { flex-grow: 1; }
+        .sidebar a { display: block; padding: 15px 20px; color: white; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .sidebar a:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-promo { background: var(--coral); padding: 20px; color: white; font-weight: bold; text-align: center; cursor: pointer; font-size: 14px; }
+
+        /* CARRITO */
         .cart-drawer {
             position: fixed; right: -350px; top: 0; width: 320px; height: 100%;
             background: var(--card); transition: 0.3s; z-index: 3000; padding: 15px; box-shadow: -5px 0 20px rgba(0,0,0,0.5);
             display: flex; flex-direction: column; box-sizing: border-box;
         }
         .cart-drawer.active { right: 0; }
-        .cart-items { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; font-size: 14px; }
+        .cart-items { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; font-size: 13px; }
         
-        /* SECCIÓN DE ENVÍO MOVIDA HACIA ARRIBA */
         .delivery-section { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #334155; }
         .delivery-section h4 { margin: 0 0 10px 0; font-size: 14px; color: var(--accent); }
         .delivery-section label { font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -44,22 +59,21 @@
         
         .cart-input { width: 100%; padding: 8px; margin: 4px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: white; font-size: 12px; box-sizing: border-box; }
 
+        /* PRODUCTOS */
         .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:15px; padding:15px; }
-        .card { background:var(--card); padding:12px; border-radius:12px; text-align:center; box-shadow: var(--shadow); }
+        .card { background:var(--card); padding:12px; border-radius:12px; text-align:center; box-shadow: var(--shadow); transition: 0.3s; }
+        .card:hover { transform: translateY(-3px); }
         .card img { width: 100%; height: 110px; object-fit: contain; margin-bottom: 8px; }
         .price-main { font-size: 1.1em; font-weight: bold; color: var(--accent); }
 
-        .sidebar { position: fixed; left: -280px; top: 0; width: 260px; height: 100%; background: var(--sidebar-bg); color: white; transition: 0.3s; z-index: 2000; }
-        .sidebar.active { left: 0; }
-        .sidebar a { display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; }
-        
+        /* MODAL ADMIN */
         .admin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
         .admin-content { background: var(--card); width: 90%; max-width: 550px; max-height: 85vh; border-radius: 15px; padding: 20px; overflow-y: auto; position: relative; }
         
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1500; }
         .overlay.show { display: block; }
         button { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
-        .btn-wa { background: #25d366; margin-top: 10px; }
+        .btn-wa { background: #25d366; margin-top: 10px; font-size: 15px; }
     </style>
 </head>
 <body>
@@ -82,13 +96,20 @@
 <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
 <nav class="sidebar" id="sidebar">
-    <div style="padding: 15px; font-weight: bold; border-bottom: 1px solid #ffffff22;">MENÚ</div>
-    <a href="#" onclick="closeAll()">🏠 Inicio</a>
-    <a href="https://instagram.com" target="_blank">📸 Instagram</a>
+    <div class="sidebar-header">MENU</div>
+    <div class="sidebar-nav">
+        <a href="#" onclick="closeAll()">🏠 Inicio</a>
+        <a href="#" onclick="alert('Informacion de la tienda')">ℹ️ Información</a>
+        <a href="#" onclick="alert('Ubicación: Calle Falsa 123')">📍 Ubicación</a>
+        <a href="https://instagram.com" target="_blank">📸 Instagram</a>
+    </div>
+    <div class="sidebar-promo" onclick="window.open('https://wa.me/5493434508948?text=Hola!%20Quiero%20una%20tienda%20asi%20para%20mi%20emprendimiento!')">
+        ¡Quiero una tienda así para mi emprendimiento!
+    </div>
 </nav>
 
 <div class="cart-drawer" id="cartDrawer">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
         <h3 style="margin:0; font-size:18px;">Mi Carrito</h3>
         <span onclick="toggleCart()" style="cursor:pointer; font-size: 20px;">✕</span>
     </div>
@@ -97,21 +118,21 @@
     
     <div class="delivery-section">
         <h4>Método de Entrega</h4>
-        <label><input type="radio" name="delivery" value="Local" checked onclick="toggleEnvio(false)"> 🏪 Retiro por local</label>
-        <label><input type="radio" name="delivery" value="Envio" onclick="toggleEnvio(true)"> 🚀 Envío a domicilio</label>
+        <label><input type="radio" name="delivery" value="Local" checked onclick="toggleEnvio(false)"> Retiro por local</label>
+        <label><input type="radio" name="delivery" value="Envio" onclick="toggleEnvio(true)"> Envío a domicilio</label>
         
         <div id="form-envio">
             <input id="f_nombre" class="cart-input" placeholder="Nombre completo">
-            <input id="f_direccion" class="cart-input" placeholder="Dirección exacta">
-            <input id="f_telefono" class="cart-input" placeholder="Teléfono de contacto">
+            <input id="f_direccion" class="cart-input" placeholder="Dirección">
+            <input id="f_telefono" class="cart-input" placeholder="Teléfono">
         </div>
     </div>
 
-    <div style="border-top: 2px solid #444; padding-top: 10px; background: var(--card);">
-        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-weight: bold; font-size: 1.1em;">
+    <div style="border-top: 2px solid #444; padding-top: 10px;">
+        <div style="display:flex; justify-content:space-between; font-weight: bold; font-size: 1.1em;">
             <span>Total:</span> <span id="cartTotal">$0</span>
         </div>
-        <div id="savingsBox" style="color: #10b981; font-size: 12px; margin-bottom: 10px; font-weight: bold;"></div>
+        <div id="savingsBox" style="color: #10b981; font-size: 11px; margin-top: 4px; font-weight: bold;"></div>
         <button onclick="enviarPedido()" class="btn-wa">Confirmar Pedido</button>
     </div>
 </div>
@@ -120,26 +141,26 @@
 
 <div class="admin-modal" id="adminModal">
     <div class="admin-content">
-        <span style="float:right; cursor:pointer;" onclick="document.getElementById('adminModal').style.display='none'">✕</span>
+        <span style="float:right; cursor:pointer; font-size:20px;" onclick="document.getElementById('adminModal').style.display='none'">✕</span>
         <h3>Panel Admin</h3>
         <input type="hidden" id="editIndex">
         <input id="n" class="cart-input" placeholder="Nombre">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
             <input id="p_ind" type="number" class="cart-input" placeholder="Precio Un.">
             <input id="p_x2" type="number" class="cart-input" placeholder="Precio x2">
-            <input id="p_may" type="number" class="cart-input" placeholder="Mayorista">
+            <input id="p_may" type="number" class="cart-input" placeholder="Precio Mayorista">
             <input id="stock" type="number" class="cart-input" placeholder="Stock">
         </div>
         <input id="img" class="cart-input" placeholder="URL Imagen">
-        <button onclick="guardar()">Guardar</button>
-        <div id="listaAdmin" style="margin-top:20px;"></div>
+        <button onclick="guardar()" id="btnGuardar">Guardar Producto</button>
+        <div id="listaAdmin" style="margin-top:20px; border-top:1px solid #444; padding-top:10px;"></div>
     </div>
 </div>
 
 <script>
     let products = JSON.parse(localStorage.getItem("products")) || [];
     let cart = [];
-    let currentUser = null; // Para activar precios mayoristas si hiciera falta
+    let currentUser = null; // Simula usuario logueado. Si es {} se activa precio mayorista.
 
     function render(filtro = "") {
         const container = document.getElementById("products");
@@ -157,9 +178,7 @@
         }).join("");
     }
 
-    function toggleEnvio(show) {
-        document.getElementById('form-envio').style.display = show ? 'block' : 'none';
-    }
+    function toggleEnvio(show) { document.getElementById('form-envio').style.display = show ? 'block' : 'none'; }
 
     function addToCart(index) {
         const item = cart.find(c => c.id === index);
@@ -167,7 +186,7 @@
         updateCart();
     }
 
-    // --- CORRECCIÓN DE LA CUENTA (PROMOS X2 INCLUIDAS) ---
+    // CUENTA CON MAYORISTA Y PROMOS
     function updateCart() {
         const list = document.getElementById("cartList");
         let total = 0; let count = 0; let ahorro = 0;
@@ -176,8 +195,10 @@
             const p = products[item.id];
             let subtotal = 0;
             
-            // Lógica de Promo x2: si lleva 2 o más y el precio x2 existe
-            if (p.p_x2 > 0 && item.qty >= 2) {
+            if (currentUser && p.p_may > 0) {
+                subtotal = item.qty * p.p_may;
+                ahorro += (item.qty * p.p_ind) - subtotal;
+            } else if (p.p_x2 > 0 && item.qty >= 2) {
                 let pares = Math.floor(item.qty / 2);
                 let sueltos = item.qty % 2;
                 subtotal = (pares * p.p_x2) + (sueltos * p.p_ind);
@@ -186,19 +207,17 @@
                 subtotal = item.qty * p.p_ind;
             }
 
-            total += subtotal;
-            count += item.qty;
-            
+            total += subtotal; count += item.qty;
             return `
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom: 1px solid #334155; padding-bottom:4px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; border-bottom: 1px solid #334155; padding-bottom:3px;">
                     <span>${p.name} (x${item.qty})</span>
-                    <span>$${subtotal} <b onclick="removeFromCart(${idx})" style="color:red; cursor:pointer; margin-left:8px;">✕</b></span>
+                    <span>$${subtotal} <b onclick="removeFromCart(${idx})" style="color:red; cursor:pointer; margin-left:5px;">✕</b></span>
                 </div>`;
         }).join("");
 
         document.getElementById("cartTotal").innerText = "$" + total;
         document.getElementById("cartCount").innerText = count;
-        document.getElementById("savingsBox").innerText = ahorro > 0 ? `¡Ahorraste $${ahorro} por las promos! ⚡` : "";
+        document.getElementById("savingsBox").innerText = ahorro > 0 ? `Ahorraste $${ahorro} ⚡` : "";
     }
 
     function removeFromCart(idx) { cart.splice(idx, 1); updateCart(); }
@@ -206,29 +225,29 @@
     function enviarPedido() {
         if(cart.length === 0) return;
         const entrega = document.querySelector('input[name="delivery"]:checked').value;
-        let datosEnvio = `\n📍 Entrega: ${entrega}`;
+        let datosEnvio = `\nMETODO DE ENTREGA: ${entrega.toUpperCase()}`;
         
         if(entrega === "Envio") {
             const nom = document.getElementById("f_nombre").value;
             const dir = document.getElementById("f_direccion").value;
             const tel = document.getElementById("f_telefono").value;
-            if(!nom || !dir) return alert("Por favor, completa los datos de envío.");
-            datosEnvio += `\n👤 Cliente: ${nom}\n🏠 Dirección: ${dir}\n📞 Tel: ${tel}`;
+            if(!nom || !dir) return alert("Completa los datos de envío.");
+            datosEnvio += `\n--------------------------\nCLIENTE: ${nom}\nDIRECCION: ${dir}\nTEL: ${tel}`;
         }
 
-        let msg = "✅ NUEVO PEDIDO\n--------------------------\n";
+        let msg = `NUEVO PEDIDO ${currentUser ? '(MAYORISTA)' : ''}\n--------------------------\n`;
         cart.forEach(c => {
             const p = products[c.id];
-            msg += `• ${p.name} (x${c.qty})\n`;
+            msg += `- ${p.name} (x${c.qty})\n`;
         });
-        msg += `--------------------------\n💰 TOTAL: ${document.getElementById("cartTotal").innerText}${datosEnvio}`;
+        msg += `--------------------------\nTOTAL A PAGAR: ${document.getElementById("cartTotal").innerText}\n${datosEnvio}`;
         
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
     }
 
-    // --- FUNCIONES ADMIN ---
+    // ADMIN
     function abrirAdmin() {
-        if(prompt("Pass:") === "admin") {
+        if(prompt("Clave:") === "admin") {
             document.getElementById("adminModal").style.display = "flex";
             cargarAdminList();
         }
@@ -251,9 +270,9 @@
 
     function cargarAdminList() {
         document.getElementById("listaAdmin").innerHTML = products.map((p, i) => `
-            <div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #444; font-size:12px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px;">
                 <span>${p.name}</span>
-                <span onclick="eliminar(${i})" style="color:red; cursor:pointer">✕</span>
+                <span onclick="eliminar(${i})" style="color:red; cursor:pointer">Eliminar ✕</span>
             </div>`).join("");
     }
 
@@ -261,7 +280,7 @@
     function filtrarProductos() { render(document.getElementById("searchInput").value); }
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
     function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
-    function closeAll() { document.getElementById("sidebar").classList.remove("active"); document.getElementById("cartDrawer").classList.remove("active"); document.getElementById("overlay").classList.remove("show"); }
+    function closeAll() { document.querySelectorAll(".active, .show").forEach(el => el.classList.remove("active", "show")); }
     function toggleLightMode() { document.body.classList.toggle("light"); }
 
     render();
