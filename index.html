@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEO REPUESTOS - OFICIAL</title>
+    <title>NEO REPUESTOS - SISTEMA INTEGRAL</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #3b82f6; --promo: #f59e0b; --success: #10b981; }
+        :root { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #3b82f6; --promo: #f59e0b; --success: #10b981; --danger: #ef4444; }
         body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); overflow-x: hidden; }
         
+        /* HEADER */
         header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--card); position: sticky; top: 0; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         .cart-icon { cursor: pointer; position: relative; font-size: 22px; }
-        .badge { position: absolute; top: -8px; right: -10px; background: #ef4444; color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
+        .badge { position: absolute; top: -8px; right: -10px; background: var(--danger); color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
 
+        /* GRID */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
         .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; position: relative; }
         .promo-tag { background: var(--promo); color: #000; font-size: 11px; font-weight: 800; padding: 6px; text-align: center; }
@@ -22,57 +24,70 @@
         .info { padding: 12px; flex-grow: 1; }
         .price { font-size: 19px; font-weight: 900; color: var(--accent); margin-top: 5px; }
         
-        #cartSide { position: fixed; right: -100%; top: 0; width: 100%; max-width: 360px; height: 100%; background: #111827; z-index: 4000; transition: 0.4s; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
-        #cartSide.open { right: 0; }
+        /* CARRITO & ADMIN PANELS */
+        .side-panel { position: fixed; right: -100%; top: 0; width: 100%; max-width: 380px; height: 100%; background: #111827; z-index: 4000; transition: 0.4s; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+        .side-panel.open { right: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 3000; display: none; backdrop-filter: blur(4px); }
         
-        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; transition: 0.2s; }
-        .btn-add { background: var(--accent); color: white; }
-        .btn-wa { background: #25d366; color: white; margin-top: 20px; font-size: 16px; }
+        /* UI ELEMENTS */
+        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-wa { background: #25d366; color: white; margin-top: 20px; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; box-sizing: border-box; }
         
-        select, input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; box-sizing: border-box; }
         #envioFields { display: none; margin-top: 10px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--accent); }
+        .admin-controls { display: flex; gap: 5px; margin-top: 10px; }
+        .btn-edit { background: #64748b; color: white; font-size: 10px; padding: 5px; }
+        .btn-del { background: var(--danger); color: white; font-size: 10px; padding: 5px; }
     </style>
 </head>
 <body>
 
 <header>
-    <b style="letter-spacing: 1px;">NEO <span style="color:var(--accent)">REPUESTOS</span></b>
-    <div class="cart-icon" onclick="toggleCart(true)">
+    <b onclick="checkAdmin()" style="cursor:pointer">NEO <span style="color:var(--accent)">REPUESTOS</span></b>
+    <div class="cart-icon" onclick="togglePanel('cartSide', true)">
         🛒 <span class="badge" id="cartBadge">0</span>
     </div>
 </header>
 
-<div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
 <div class="grid" id="mainGrid"></div>
 
-<div id="cartSide">
+<div id="cartSide" class="side-panel">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-        <h2 style="margin:0">Mi Pedido</h2>
-        <span onclick="toggleCart(false)" style="cursor:pointer; font-size:28px">&times;</span>
+        <h2>Mi Pedido</h2>
+        <span onclick="closeAll()" style="cursor:pointer; font-size:28px">&times;</span>
     </div>
-
-    <div id="cartList" style="flex-grow:1; overflow-y:auto; font-size: 14px;"></div>
-
-    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-        <label style="font-size:12px; color:var(--accent); font-weight:bold">MÉTODO DE ENTREGA</label>
+    <div id="cartList" style="flex-grow:1; overflow-y:auto;"></div>
+    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
         <select id="shipMethod" onchange="updateCartUI()">
             <option value="retiro">Retiro en Local</option>
             <option value="envio">Envío a Domicilio</option>
         </select>
-
         <div id="envioFields">
-            <input type="text" id="shipName" placeholder="Nombre completo">
+            <input type="text" id="shipName" placeholder="Tu nombre">
             <input type="text" id="shipDir" placeholder="Dirección">
             <input type="text" id="shipLoc" placeholder="Localidad">
         </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 15px;">
-            <span style="font-size:18px">Total:</span>
-            <b id="cartTotal" style="font-size:24px; color:var(--success)">$0</b>
+        <div style="display:flex; justify-content:space-between; margin-top: 10px;">
+            <span>Total:</span>
+            <b id="cartTotal" style="font-size:22px; color:var(--success)">$0</b>
         </div>
-        
         <button class="btn btn-wa" onclick="sendWA()">PEDIR POR WHATSAPP</button>
+    </div>
+</div>
+
+<div id="adminSide" class="side-panel">
+    <h3>Panel de Control</h3>
+    <div style="overflow-y:auto; flex-grow:1; padding-right:5px">
+        <input type="text" id="pNombre" placeholder="Nombre Producto">
+        <input type="number" id="pPrecio" placeholder="Precio Base">
+        <input type="text" id="pPromo" placeholder="Promo (ej: 2 x 2500)">
+        <input type="number" id="pStock" placeholder="Stock Inicial">
+        <input type="text" id="pImg" placeholder="Link de Imagen">
+        <button class="btn btn-accent" onclick="saveProduct()">GUARDAR PRODUCTO</button>
+        <hr style="opacity:0.1; margin: 20px 0;">
+        <button class="btn" style="background:#475569" onclick="logoutAdmin()">CERRAR SESIÓN</button>
     </div>
 </div>
 
@@ -90,7 +105,9 @@
 
     let prods = [];
     let cart = [];
+    let isAdmin = false;
 
+    // 1. CARGAR DATOS
     db.collection("productos").onSnapshot(snap => {
         prods = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderProds();
@@ -103,112 +120,116 @@
                 ${p.promo ? `<div class="promo-tag">${p.promo}</div>` : ''}
                 <div class="img-container"><img src="${p.imagen}"></div>
                 <div class="info">
-                    <small style="opacity:0.6; font-size:10px">📦 STOCK: ${p.stock || 0}</small>
+                    <small style="opacity:0.6; font-size:10px">STOCK: ${p.stock || 0}</small>
                     <div style="font-weight:700; font-size:14px; margin-top:4px">${p.nombre}</div>
                     <div class="price">$${p.precio}</div>
-                    <button class="btn btn-add" onclick="addCart('${p.id}')">AGREGAR</button>
+                    <button class="btn btn-add" style="background:var(--accent); color:white" onclick="addCart('${p.id}')">AGREGAR</button>
+                    ${isAdmin ? `
+                        <div class="admin-controls">
+                            <button class="btn btn-edit" onclick="editStock('${p.id}', ${p.stock})">STOCK</button>
+                            <button class="btn btn-del" onclick="deleteProd('${p.id}')">ELIMINAR</button>
+                        </div>
+                    ` : ''}
                 </div>
             </div>`).join("");
     }
 
+    // 2. LÓGICA CARRITO
     function addCart(id) {
         const item = cart.find(c => c.id === id);
         if(item) item.q++; else cart.push({id, q:1});
         updateCartUI();
-        toggleCart(true);
-    }
-
-    function toggleCart(show) {
-        document.getElementById("cartSide").classList.toggle("open", show);
-        document.getElementById("overlay").style.display = show ? "block" : "none";
+        togglePanel('cartSide', true);
     }
 
     function updateCartUI() {
         const list = document.getElementById("cartList");
         const totalTxt = document.getElementById("cartTotal");
-        const badge = document.getElementById("cartBadge");
         const method = document.getElementById("shipMethod").value;
-        
         document.getElementById("envioFields").style.display = method === "envio" ? "block" : "none";
 
         let total = 0;
         let html = "";
-        let count = 0;
-
         cart.forEach(item => {
             const p = prods.find(x => x.id === item.id);
             if(!p) return;
-
-            let pFinal = parseFloat(p.precio);
-            
-            if(p.promo) {
-                const nums = p.promo.match(/\d+/g);
-                if(nums && nums.length >= 2) {
-                    const cantOferta = parseInt(nums[0]);
-                    const precioOfertaTotal = parseInt(nums[1]);
-                    if(item.q >= cantOferta) {
-                        pFinal = precioOfertaTotal / cantOferta;
-                    }
-                }
-            }
-
-            const sub = pFinal * item.q;
-            total += sub;
-            count += item.q;
-
-            html += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px">
-                    <div>
-                        <div style="font-weight:bold">${p.nombre}</div>
-                        <div style="font-size:12px; opacity:0.7">${item.q} x $${pFinal.toFixed(0)}</div>
-                    </div>
-                    <div style="font-weight:bold; color:var(--accent)">$${sub.toFixed(0)}</div>
-                </div>`;
-        });
-
-        list.innerHTML = html || "<p style='text-align:center; opacity:0.5'>El carrito está vacío</p>";
-        badge.innerText = count;
-        totalTxt.innerText = "$" + total.toFixed(0);
-    }
-
-    function sendWA() {
-        if(cart.length === 0) return alert("El carrito está vacío");
-
-        const method = document.getElementById("shipMethod").value;
-        const name = document.getElementById("shipName").value;
-        const dir = document.getElementById("shipDir").value;
-        const loc = document.getElementById("shipLoc").value;
-
-        if(method === "envio" && (!name || !dir || !loc)) {
-            return alert("Por favor completa los datos de envío");
-        }
-
-        let msg = "*NEO REPUESTOS - NUEVO PEDIDO*\n";
-        msg += "---------------------------------\n";
-        
-        let grandTotal = 0;
-        cart.forEach(item => {
-            const p = prods.find(x => x.id === item.id);
             let pFinal = parseFloat(p.precio);
             if(p.promo) {
                 const n = p.promo.match(/\d+/g);
-                if(n && n.length >= 2 && item.q >= parseInt(n[0])) {
-                    pFinal = parseInt(n[1]) / parseInt(n[0]);
-                }
+                if(n && n.length >= 2 && item.q >= parseInt(n[0])) pFinal = parseInt(n[1]) / parseInt(n[0]);
             }
             const sub = pFinal * item.q;
-            grandTotal += sub;
-            msg += `• ${p.nombre} (x${item.q}) - $${sub.toFixed(0)}\n`;
+            total += sub;
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span>${p.nombre} (x${item.q})</span>
+                <b>$${sub.toFixed(0)}</b>
+            </div>`;
         });
+        list.innerHTML = html || "Carrito vacío";
+        document.getElementById("cartBadge").innerText = cart.reduce((a,b) => a + b.q, 0);
+        totalTxt.innerText = "$" + total.toFixed(0);
+    }
 
-        msg += "---------------------------------\n";
-        msg += `*TOTAL A PAGAR: $${grandTotal.toFixed(0)}*\n\n`;
-        msg += `📍 *ENTREGA:* ${method === 'envio' ? 'Envío a domicilio' : 'Retiro en local'}\n`;
-        
-        if(method === "envio") {
-            msg += `👤 *Cliente:* ${name}\n🏠 *Dir:* ${dir}\n🏙️ *Loc:* ${loc}`;
+    // 3. ADMIN FUNCTIONS
+    function checkAdmin() {
+        const pass = prompt("Contraseña de Administrador:");
+        if(pass === "neo2024") {
+            isAdmin = true;
+            togglePanel('adminSide', true);
+            renderProds();
         }
+    }
 
+    function saveProduct() {
+        const p = {
+            nombre: document.getElementById("pNombre").value,
+            precio: document.getElementById("pPrecio").value,
+            promo: document.getElementById("pPromo").value,
+            stock: parseInt(document.getElementById("pStock").value),
+            imagen: document.getElementById("pImg").value
+        };
+        db.collection("productos").add(p).then(() => {
+            alert("Producto guardado");
+            closeAll();
+        });
+    }
+
+    function editStock(id, current) {
+        const nuevo = prompt("Nuevo Stock:", current);
+        if(nuevo !== null) db.collection("productos").doc(id).update({stock: parseInt(nuevo)});
+    }
+
+    function deleteProd(id) {
+        if(confirm("¿Eliminar producto?")) db.collection("productos").doc(id).delete();
+    }
+
+    // 4. GENERAL
+    function togglePanel(id, show) {
+        document.getElementById(id).classList.toggle("open", show);
+        document.getElementById("overlay").style.display = show ? "block" : "none";
+    }
+
+    function closeAll() {
+        document.querySelectorAll('.side-panel').forEach(p => p.classList.remove('open'));
+        document.getElementById("overlay").style.display = "none";
+    }
+
+    function sendWA() {
+        let msg = "*NUEVO PEDIDO*\n";
+        let total = 0;
+        cart.forEach(c => {
+            const p = prods.find(x => x.id === c.id);
+            let pPrice = p.precio;
+            const n = p.promo ? p.promo.match(/\d+/g) : null;
+            if(n && n.length >= 2 && c.q >= n[0]) pPrice = n[1]/n[0];
+            const sub = pPrice * c.q;
+            total += sub;
+            msg += `- ${p.nombre} x${c.q}: $${sub}\n`;
+        });
+        msg += `\n*TOTAL: $${total}*`;
+        const method = document.getElementById("shipMethod").value;
+        msg += `\n📍 ENTREGA: ${method.toUpperCase()}`;
+        if(method === "envio") msg += `\n👤 ${document.getElementById("shipName").value}\n🏠 ${document.getElementById("shipDir").value}`;
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
     }
 </script>
