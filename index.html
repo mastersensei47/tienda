@@ -1,162 +1,773 @@
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repuestos PRO</title>
+
+    <title>Repuestos PRO - Oficial</title>
+
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #2563eb; }
-        body { margin:0; font-family: sans-serif; background:var(--bg); color:var(--text); }
-        header { display:flex; justify-content:space-between; padding:10px 20px; background:var(--card); align-items:center; }
-        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:15px; padding:20px; }
-        .card { background:var(--card); padding:15px; border-radius:12px; text-align:center; }
-        .card img { width: 100%; height: 100px; object-fit: contain; }
-        .admin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-        .admin-content { background: #1e293b; padding: 20px; border-radius: 10px; width: 300px; }
-        input { width: 100%; margin: 5px 0; padding: 8px; box-sizing: border-box; }
-        button { background: var(--accent); color: white; border: none; padding: 10px; width: 100%; cursor: pointer; margin-top: 5px; border-radius: 5px; }
-        .cart-drawer { position: fixed; right: -350px; top: 0; width: 300px; height: 100%; background: #1e293b; transition: 0.3s; padding: 20px; z-index: 5000; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
+
+        :root {
+
+            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
+
+            --accent: #2563eb; --sidebar-bg: #1e40af;
+
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+            --success: #10b981;
+
+            --coral: #ff8a80;
+
+        }
+
+        body.light { --bg: #f4f6f9; --card: #ffffff; --text: #111; --sidebar-bg: #2563eb; }
+
+        body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition:.3s; overflow-x: hidden; }
+
+        
+
+        /* HEADER SLIM */
+
+        header { 
+
+            display:flex; justify-content:space-between; align-items:center; 
+
+            padding:5px 20px; background:var(--card); box-shadow:var(--shadow); 
+
+            position:sticky; top:0; z-index:1000; height: 50px;
+
+        }
+
+        .search-bar { flex-grow: 1; max-width: 350px; margin: 0 15px; }
+
+        .search-bar input {
+
+            width: 100%; padding: 6px 15px; border-radius: 20px; border: 1px solid #444;
+
+            background: rgba(0,0,0,0.2); color: white; font-size: 13px; outline: none;
+
+        }
+
+        .icon-group { display: flex; gap: 12px; align-items: center; }
+
+        .icon { cursor:pointer; font-size:18px; position: relative; }
+
+        .badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 10px; padding: 1px 5px; border-radius: 10px; }
+
+
+
+        /* SIDEBAR ESTILO IMAGEN */
+
+        .sidebar { 
+
+            position: fixed; left: -280px; top: 0; width: 260px; height: 100%; 
+
+            background: var(--sidebar-bg); color: white; transition: 0.3s; z-index: 2000;
+
+            display: flex; flex-direction: column;
+
+        }
+
+        .sidebar.active { left: 0; }
+
+        .sidebar-header { padding: 20px; font-weight: bold; font-size: 18px; border-bottom: 1px solid #ffffff22; }
+
+        .sidebar-nav { flex-grow: 1; }
+
+        .sidebar a { display: block; padding: 15px 20px; color: white; text-decoration: none; font-size: 14px; transition: 0.2s; }
+
+        .sidebar a:hover { background: rgba(255,255,255,0.1); }
+
+        .sidebar-promo { background: var(--coral); padding: 20px; color: white; font-weight: bold; text-align: center; cursor: pointer; font-size: 14px; }
+
+
+
+        /* CARRITO */
+
+        .cart-drawer {
+
+            position: fixed; right: -350px; top: 0; width: 320px; height: 100%;
+
+            background: var(--card); transition: 0.3s; z-index: 3000; padding: 15px; box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+
+            display: flex; flex-direction: column; box-sizing: border-box;
+
+        }
+
         .cart-drawer.active { right: 0; }
-        .badge { background: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 12px; }
+
+        .cart-items { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; font-size: 13px; }
+
+        
+
+        .delivery-section { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #334155; }
+
+        .delivery-section h4 { margin: 0 0 10px 0; font-size: 14px; color: var(--accent); }
+
+        .delivery-section label { font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+
+        #form-envio { display: none; margin-top: 10px; border-top: 1px solid #444; padding-top: 10px; }
+
+        
+
+        .cart-input { width: 100%; padding: 8px; margin: 4px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: white; font-size: 12px; box-sizing: border-box; }
+
+
+
+        /* PRODUCTOS */
+
+        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:15px; padding:15px; }
+
+        .card { background:var(--card); padding:12px; border-radius:12px; text-align:center; box-shadow: var(--shadow); transition: 0.3s; }
+
+        .card:hover { transform: translateY(-3px); }
+
+        .card img { width: 100%; height: 110px; object-fit: contain; margin-bottom: 8px; }
+
+        .price-main { font-size: 1.1em; font-weight: bold; color: var(--accent); }
+
+
+
+        /* MODAL ADMIN */
+
+        .admin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
+
+        .admin-content { background: var(--card); width: 90%; max-width: 550px; max-height: 85vh; border-radius: 15px; padding: 20px; overflow-y: auto; position: relative; }
+
+        
+
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1500; }
+
+        .overlay.show { display: block; }
+
+        button { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+
+        .btn-wa { background: #25d366; margin-top: 10px; font-size: 15px; }
+
     </style>
+
 </head>
+
 <body>
 
+
+
 <header>
-    <div onclick="location.reload()" style="cursor:pointer; font-weight:bold;">NEO REPUESTOS</div>
-    <div style="display:flex; gap:15px; align-items:center;">
-        <span onclick="abrirLogin()" style="cursor:pointer">👤 Mayorista</span>
-        <span onclick="abrirAdmin()" style="cursor:pointer">🔑 Admin</span>
-        <span onclick="toggleCart()" style="cursor:pointer">🛒 <span id="cartCount" class="badge">0</span></span>
+
+    <div style="display: flex; align-items: center; gap: 10px;">
+
+        <span style="cursor:pointer; font-size: 22px;" onclick="toggleSidebar()">☰</span>
+
+        <div style="font-weight:bold; font-size: 14px;">NEO REPUESTOS</div>
+
     </div>
+
+    <div class="search-bar">
+
+        <input type="text" id="searchInput" placeholder="Buscar producto..." onkeyup="filtrarProductos()">
+
+    </div>
+
+    <div class="icon-group">
+
+        <span class="icon" onclick="abrirLogin()">👤</span>
+
+        <span class="icon" onclick="toggleLightMode()">🌗</span>
+
+        <span class="icon" onclick="abrirAdmin()">🔑</span>
+
+        <span class="icon" onclick="toggleCart()">🛒<span id="cartCount" class="badge">0</span></span>
+
+    </div>
+
 </header>
+
+
+
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+
+
+<nav class="sidebar" id="sidebar">
+
+    <div class="sidebar-header">MENU</div>
+
+    <div class="sidebar-nav">
+
+        <a href="#" onclick="closeAll()">🏠 Inicio</a>
+
+        <a href="#" onclick="alert('Informacion de la tienda')">ℹ️ Información</a>
+
+        <a href="#" onclick="alert('Ubicación: Calle Falsa 123')">📍 Ubicación</a>
+
+        <a href="https://instagram.com" target="_blank">📸 Instagram</a>
+
+    </div>
+
+    <div class="sidebar-promo" onclick="window.open('https://wa.me/5493434508948?text=Hola!%20Quiero%20una%20tienda%20asi%20para%20mi%20emprendimiento!')">
+
+        ¡Quiero una tienda así para mi emprendimiento!
+
+    </div>
+
+</nav>
+
+
+
+<div class="cart-drawer" id="cartDrawer">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+
+        <h3 style="margin:0; font-size:18px;">Mi Carrito</h3>
+
+        <span onclick="toggleCart()" style="cursor:pointer; font-size: 20px;">✕</span>
+
+    </div>
+
+    
+
+    <div class="cart-items" id="cartList"></div>
+
+    
+
+    <div class="delivery-section">
+
+        <h4>Método de Entrega</h4>
+
+        <label><input type="radio" name="delivery" value="Local" checked onclick="toggleEnvio(false)"> Retiro por local</label>
+
+        <label><input type="radio" name="delivery" value="Envio" onclick="toggleEnvio(true)"> Envío a domicilio</label>
+
+        
+
+        <div id="form-envio">
+
+            <input id="f_nombre" class="cart-input" placeholder="Nombre completo">
+
+            <input id="f_direccion" class="cart-input" placeholder="Dirección">
+
+            <input id="f_telefono" class="cart-input" placeholder="Teléfono">
+
+        </div>
+
+    </div>
+
+
+
+    <div style="border-top: 2px solid #444; padding-top: 10px;">
+
+        <div style="display:flex; justify-content:space-between; font-weight: bold; font-size: 1.1em;">
+
+            <span>Total:</span> <span id="cartTotal">$0</span>
+
+        </div>
+
+        <div id="savingsBox" style="color: #10b981; font-size: 11px; margin-top: 4px; font-weight: bold;"></div>
+
+        <button onclick="enviarPedido()" class="btn-wa">Confirmar Pedido</button>
+
+    </div>
+
+</div>
+
+
 
 <div class="products" id="products"></div>
 
-<div class="admin-modal" id="loginModal">
-    <div class="admin-content">
-        <h3 style="margin-top:0">Login Mayorista</h3>
-        <input id="lEmail" placeholder="Email">
-        <input id="lPass" type="password" placeholder="Contraseña">
-        <button onclick="login()">Entrar</button>
-        <button onclick="registrar()" style="background:#444">Registrarse</button>
-        <button onclick="cerrarModales()" style="background:none; color:gray">Cerrar</button>
-    </div>
-</div>
+
 
 <div class="admin-modal" id="adminModal">
+
     <div class="admin-content">
-        <h3>Nuevo Producto</h3>
-        <input id="n" placeholder="Nombre">
-        <input id="p1" type="number" placeholder="Precio Normal">
-        <input id="pm" type="number" placeholder="Precio Mayorista">
-        <input id="img" placeholder="URL Imagen">
-        <button onclick="agregarProd()">Guardar</button>
-        <button onclick="cerrarModales()" style="background:none; color:gray">Cerrar</button>
+
+        <span style="float:right; cursor:pointer; font-size:20px;" onclick="document.getElementById('adminModal').style.display='none'">✕</span>
+
+        <h3>Panel Admin</h3>
+
+        <input type="hidden" id="editIndex">
+
+        <input id="n" class="cart-input" placeholder="Nombre">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+
+            <input id="p_ind" type="number" class="cart-input" placeholder="Precio Un.">
+
+            <input id="p_x2" type="number" class="cart-input" placeholder="Precio x2">
+
+            <input id="p_may" type="number" class="cart-input" placeholder="Precio Mayorista">
+
+            <input id="stock" type="number" class="cart-input" placeholder="Stock">
+
+        </div>
+
+        <input id="img" class="cart-input" placeholder="URL Imagen">
+
+        <button onclick="guardar()" id="btnGuardar">Guardar Producto</button>
+
+        <div id="listaAdmin" style="margin-top:20px; border-top:1px solid #444; padding-top:10px;"></div>
+
     </div>
+
 </div>
 
-<div class="cart-drawer" id="cartDrawer">
-    <h3>Tu Carrito</h3>
-    <div id="cartList" style="height: 70vh; overflow-y: auto;"></div>
-    <hr>
-    <div style="display:flex; justify-content:space-between">
-        <b>Total:</b> <span id="cartTotal">$0</span>
-    </div>
-    <button onclick="finalizarPedido()" style="background:#25d366">WhatsApp</button>
-    <button onclick="toggleCart()" style="background:none">Cerrar</button>
-</div>
+
 
 <script>
-    // 1. CARGA DE DATOS
-    let productos = JSON.parse(localStorage.getItem("products")) || [
-        {name: "Filtro Aceite", p_ind: 5000, p_may: 3500, img: "https://via.placeholder.com/150"},
-        {name: "Bujía Premium", p_ind: 1200, p_may: 800, img: "https://via.placeholder.com/150"}
-    ];
-    let mayoristas = JSON.parse(localStorage.getItem("mayoristas")) || [];
-    let currentUser = JSON.parse(sessionStorage.getItem("currentUser")) || null;
-    let carrito = [];
 
-    // 2. FUNCIONES DE INTERFAZ
-    function render() {
-        const cont = document.getElementById("products");
-        cont.innerHTML = "";
-        productos.forEach((p, i) => {
-            let precio = (currentUser && p.p_may > 0) ? p.p_may : p.p_ind;
-            cont.innerHTML += `
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+
+    let cart = [];
+
+    let currentUser = null; // Simula usuario logueado. Si es {} se activa precio mayorista.
+
+
+
+    function render(filtro = "") {
+
+        const container = document.getElementById("products");
+
+        const filtrados = products.filter(p => p.name.toLowerCase().includes(filtro.toLowerCase()));
+
+        container.innerHTML = filtrados.map((p, i) => {
+
+            const realIdx = products.indexOf(p);
+
+            return `
+
                 <div class="card">
-                    <img src="${p.img}">
-                    <h4>${p.name}</h4>
-                    <p style="color:#2563eb; font-weight:bold">$${precio} ${currentUser ? '<b>(MAY)</b>' : ''}</p>
-                    <button onclick="add(${i})">Agregar</button>
+
+                    <img src="${p.img || 'https://via.placeholder.com/150'}">
+
+                    <h4 style="font-size:14px; margin:5px 0;">${p.name}</h4>
+
+                    <div class="price-main">$${p.p_ind}</div>
+
+                    ${p.p_x2 > 0 ? `<div style="color:#10b981; font-size:11px;">Promo x2: $${p.p_x2}</div>` : ''}
+
+                    <button onclick="addToCart(${realIdx})" style="margin-top:8px;">🛒 Agregar</button>
+
                 </div>`;
-        });
+
+        }).join("");
+
     }
 
-    function abrirLogin() { document.getElementById("loginModal").style.display = "flex"; }
-    function abrirAdmin() { if(prompt("Clave:") === "admin") document.getElementById("adminModal").style.display = "flex"; }
-    function cerrarModales() { document.querySelectorAll(".admin-modal").forEach(m => m.style.display="none"); }
-    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); }
 
-    // 3. LÓGICA DE NEGOCIO
-    function registrar() {
-        const e = document.getElementById("lEmail").value, p = document.getElementById("lPass").value;
-        if(!e || !p) return alert("Completa los datos");
-        mayoristas.push({email: e, pass: p});
-        localStorage.setItem("mayoristas", JSON.stringify(mayoristas));
-        alert("Cuenta creada!");
+
+    function toggleEnvio(show) { document.getElementById('form-envio').style.display = show ? 'block' : 'none'; }
+
+
+
+    function addToCart(index) {
+
+        const item = cart.find(c => c.id === index);
+
+        if (item) item.qty++; else cart.push({ id: index, qty: 1 });
+
+        updateCart();
+
     }
 
-    function login() {
-        const e = document.getElementById("lEmail").value, p = document.getElementById("lPass").value;
-        const user = mayoristas.find(u => u.email === e && u.pass === p);
-        if(user) {
-            currentUser = user;
-            sessionStorage.setItem("currentUser", JSON.stringify(user));
-            cerrarModales();
-            render();
-            alert("Hola Mayorista!");
-        } else alert("Datos incorrectos");
-    }
 
-    function agregarProd() {
-        const n = document.getElementById("n").value, p1 = document.getElementById("p1").value, pm = document.getElementById("pm").value, img = document.getElementById("img").value;
-        productos.push({name: n, p_ind: parseInt(p1), p_may: parseInt(pm), img: img});
-        localStorage.setItem("products", JSON.stringify(productos));
-        location.reload();
-    }
 
-    function add(i) {
-        const p = productos[i];
-        carrito.push(p);
-        actualizarCarrito();
-    }
+    // CUENTA CON MAYORISTA Y PROMOS
 
-    function actualizarCarrito() {
+    function updateCart() {
+
         const list = document.getElementById("cartList");
-        let total = 0;
-        list.innerHTML = "";
-        carrito.forEach((p, idx) => {
-            let precio = (currentUser && p.p_may > 0) ? p.p_may : p.p_ind;
-            total += precio;
-            list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px">
-                <span>${p.name}</span> <span>$${precio}</span>
-            </div>`;
-        });
+
+        let total = 0; let count = 0; let ahorro = 0;
+
+
+
+        list.innerHTML = cart.map((item, idx) => {
+
+            const p = products[item.id];
+
+            let subtotal = 0;
+
+            
+
+            if (currentUser && p.p_may > 0) {
+
+                subtotal = item.qty * p.p_may;
+
+                ahorro += (item.qty * p.p_ind) - subtotal;
+
+            } else if (p.p_x2 > 0 && item.qty >= 2) {
+
+                let pares = Math.floor(item.qty / 2);
+
+                let sueltos = item.qty % 2;
+
+                subtotal = (pares * p.p_x2) + (sueltos * p.p_ind);
+
+                ahorro += (item.qty * p.p_ind) - subtotal;
+
+            } else {
+
+                subtotal = item.qty * p.p_ind;
+
+            }
+
+
+
+            total += subtotal; count += item.qty;
+
+            return `
+
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; border-bottom: 1px solid #334155; padding-bottom:3px;">
+
+                    <span>${p.name} (x${item.qty})</span>
+
+                    <span>$${subtotal} <b onclick="removeFromCart(${idx})" style="color:red; cursor:pointer; margin-left:5px;">✕</b></span>
+
+                </div>`;
+
+        }).join("");
+
+
+
         document.getElementById("cartTotal").innerText = "$" + total;
-        document.getElementById("cartCount").innerText = carrito.length;
+
+        document.getElementById("cartCount").innerText = count;
+
+        document.getElementById("savingsBox").innerText = ahorro > 0 ? `Ahorraste $${ahorro} ⚡` : "";
+
     }
 
-    function finalizarPedido() {
-        let msg = "Hola, mi pedido es:\n";
-        carrito.forEach(p => msg += `- ${p.name}\n`);
-        msg += "Total: " + document.getElementById("cartTotal").innerText;
+
+
+    function removeFromCart(idx) { cart.splice(idx, 1); updateCart(); }
+
+
+
+    function enviarPedido() {
+
+        if(cart.length === 0) return;
+
+        const entrega = document.querySelector('input[name="delivery"]:checked').value;
+
+        let datosEnvio = `\nMETODO DE ENTREGA: ${entrega.toUpperCase()}`;
+
+        
+
+        if(entrega === "Envio") {
+
+            const nom = document.getElementById("f_nombre").value;
+
+            const dir = document.getElementById("f_direccion").value;
+
+            const tel = document.getElementById("f_telefono").value;
+
+            if(!nom || !dir) return alert("Completa los datos de envío.");
+
+            datosEnvio += `\n--------------------------\nCLIENTE: ${nom}\nDIRECCION: ${dir}\nTEL: ${tel}`;
+
+        }
+
+
+
+        let msg = `NUEVO PEDIDO ${currentUser ? '(MAYORISTA)' : ''}\n--------------------------\n`;
+
+        cart.forEach(c => {
+
+            const p = products[c.id];
+
+            msg += `- ${p.name} (x${c.qty})\n`;
+
+        });
+
+        msg += `--------------------------\nTOTAL A PAGAR: ${document.getElementById("cartTotal").innerText}\n${datosEnvio}`;
+
+        
+
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
+
     }
 
-    // Arrancar
-    render();
-</script>
 
-</body>
-</html>
+
+    // ADMIN
+
+    function abrirAdmin() {
+
+        if(prompt("Clave:") === "admin") {
+
+            document.getElementById("adminModal").style.display = "flex";
+
+            cargarAdminList();
+
+        }
+
+    }
+
+
+
+    function guardar() {
+
+        const idx = document.getElementById("editIndex").value;
+
+        const p = {
+
+            name: document.getElementById("n").value,
+
+            p_ind: parseInt(document.getElementById("p_ind").value) || 0,
+
+            p_x2: parseInt(document.getElementById("p_x2").value) || 0,
+
+            p_may: parseInt(document.getElementById("p_may").value) || 0,
+
+            stock: parseInt(document.getElementById("stock").value) || 0,
+
+            img: document.getElementById("img").value
+
+        };
+
+        if (idx === "") products.push(p); else products[idx] = p;
+
+        localStorage.setItem("products", JSON.stringify(products));
+
+        location.reload();
+
+    }
+
+
+
+    function cargarAdminList() {
+
+        document.getElementById("listaAdmin").innerHTML = products.map((p, i) => `
+
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px;">
+
+                <span>${p.name}</span>
+
+                <span onclick="eliminar(${i})" style="color:red; cursor:pointer">Eliminar ✕</span>
+
+            </div>`).join("");
+
+    }
+
+
+
+    function eliminar(i) { if(confirm("¿Eliminar?")) { products.splice(i, 1); localStorage.setItem("products", JSON.stringify(products)); location.reload(); } }
+
+    function filtrarProductos() { render(document.getElementById("searchInput").value); }
+
+    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
+
+    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
+
+    function closeAll() { document.querySelectorAll(".active, .show").forEach(el => el.classList.remove("active", "show")); }
+
+    function toggleLightMode() { document.body.classList.toggle("light"); }
+
+// GESTION MAYORISTAS
+
+let mayoristas = JSON.parse(localStorage.getItem("mayoristas")) || []; // {email, pass}
+
+
+
+// ABRIR LOGIN
+
+function abrirLogin() { 
+
+    document.getElementById('loginModal').style.display = 'flex'; 
+
+}
+
+
+
+// LOGIN
+
+function loginMayorista() {
+
+    const email = document.getElementById("loginEmail").value;
+
+    const pass = document.getElementById("loginPass").value;
+
+    const user = mayoristas.find(u => u.email === email && u.pass === pass);
+
+    if(user) {
+
+        currentUser = user;
+
+        alert("¡Bienvenido mayorista!");
+
+        document.getElementById('loginModal').style.display = 'none';
+
+        updateCart();
+
+        render();
+
+    } else {
+
+        alert("Credenciales incorrectas.");
+
+    }
+
+}
+
+
+
+<div class="admin-modal" id="loginModal" style="display:none;">
+
+    <div class="admin-content">
+
+        <span style="float:right; cursor:pointer; font-size:20px;" onclick="document.getElementById('loginModal').style.display='none'">✕</span>
+
+        <h3>Login Mayorista</h3>
+
+        <input id="loginEmail" class="cart-input" placeholder="Email">
+
+        <input id="loginPass" class="cart-input" type="password" placeholder="Contraseña">
+
+        <button onclick="loginMayorista()">Ingresar</button>
+
+        <p style="font-size:12px; margin-top:10px;">Si no tienes cuenta, usa <b>registrarse</b>.</p>
+
+        <button onclick="registrarMayorista()" style="background:#2563eb; margin-top:5px;">Registrarse</button>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+// 2. INICIALIZACIÓN DE VARIABLES
+
+let mayoristas = JSON.parse(localStorage.getItem("mayoristas")) || [];
+
+let currentUser = JSON.parse(sessionStorage.getItem("currentUser")) || null; // Persistencia de sesión
+
+
+
+// REGISTRAR NUEVO MAYORISTA
+
+function registrarMayorista() {
+
+    const email = document.getElementById("loginEmail").value;
+
+    const pass = document.getElementById("loginPass").value;
+
+    
+
+    if(!email || !pass) return alert("Completa todos los campos");
+
+    if(mayoristas.find(u => u.email === email)) return alert("El email ya existe");
+
+    
+
+    mayoristas.push({email, pass});
+
+    localStorage.setItem("mayoristas", JSON.stringify(mayoristas));
+
+    alert("Cuenta creada, ya puedes iniciar sesión");
+
+}
+
+
+
+// LOGIN MAYORISTA (Faltaba esta función)
+
+function loginMayorista() {
+
+    const email = document.getElementById("loginEmail").value;
+
+    const pass = document.getElementById("loginPass").value;
+
+    
+
+    const user = mayoristas.find(u => u.email === email && u.pass === pass);
+
+    
+
+    if(user) {
+
+        currentUser = user;
+
+        sessionStorage.setItem("currentUser", JSON.stringify(user));
+
+        alert("Bienvenido, precios mayoristas activados");
+
+        document.getElementById('loginModal').style.display = 'none';
+
+        render(); // Re-renderizar para mostrar nuevos precios
+
+    } else {
+
+        alert("Credenciales incorrectas");
+
+    }
+
+}
+
+
+
+// RENDERIZADO
+
+function render(filtro = "") {
+
+    const container = document.getElementById("products");
+
+    if(!container) return; // Evita error si el div no existe aún
+
+
+
+    const filtrados = products.filter(p => p.name.toLowerCase().includes(filtro.toLowerCase()));
+
+    
+
+    container.innerHTML = filtrados.map((p, i) => {
+
+        const realIdx = products.indexOf(p);
+
+        
+
+        // Lógica de precios
+
+        let precio = p.p_ind; 
+
+        const esMayorista = currentUser && p.p_may > 0;
+
+        
+
+        if(esMayorista) precio = p.p_may;
+
+
+
+        return `
+
+            <div class="card">
+
+                <img src="${p.img || 'https://via.placeholder.com/150'}">
+
+                <h4 style="font-size:14px; margin:5px 0;">${p.name}</h4>
+
+                <div class="price-main">$${precio} ${esMayorista ? '<small>(Mayorista)</small>' : ''}</div>
+
+                ${p.p_x2 > 0 && !esMayorista ? `<div style="color:#10b981; font-size:11px;">Promo x2: $${p.p_x2}</div>` : ''}
+
+                <button onclick="addToCart(${realIdx})" style="margin-top:8px;">🛒 Agregar</button>
+
+            </div>`;
+
+    }).join("");
+
+}
+
+
+
+// Ejecutar al cargar
+
+render();
+
+</script>
