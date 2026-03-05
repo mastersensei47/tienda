@@ -11,156 +11,100 @@
         :root {
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #3b82f6;
             --success: #10b981; --promo: #f59e0b; --danger: #ef4444; --sidebar: #1e293b;
+            --input-bg: rgba(15, 23, 42, 0.6);
         }
-        body.light-mode {
+        body.light {
             --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --sidebar: #2563eb;
+            --input-bg: #f1f5f9;
         }
-        body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition: 0.3s; overflow-x: hidden; }
+        body { margin:0; font-family: 'Inter', 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition: 0.3s; overflow-x: hidden; }
         
-        /* HEADER Y SIDEBAR */
+        /* HEADER */
         header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:var(--card); position:sticky; top:0; z-index:1000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .side-menu { position: fixed; left: -280px; top: 0; width: 260px; height: 100%; background: var(--sidebar); color: white; transition: 0.3s; z-index: 2500; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
-        .side-menu.open { left: 0; }
-        .side-menu a { display: block; padding: 12px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        .sidebar { position: fixed; left: -280px; top: 0; width: 260px; height: 100%; background: var(--sidebar); color: white; transition: 0.3s; z-index: 2500; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
+        .sidebar.active { left: 0; }
+        .sidebar a { display: block; padding: 12px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; border-radius: 8px; }
 
-        /* BUSCADOR */
-        .search-container { flex-grow: 1; max-width: 400px; margin: 0 15px; }
-        .search-bar { width: 100%; padding: 8px 15px; border-radius: 20px; border: 1px solid #444; background: rgba(0,0,0,0.05); color: inherit; outline: none; }
+        .search-container { flex: 1; max-width: 400px; margin: 0 20px; }
+        .search-bar { width: 100%; padding: 10px 18px; border-radius: 25px; border: 1px solid rgba(128,128,128,0.3); background: var(--input-bg); color: inherit; outline: none; }
 
         /* PRODUCTOS */
         .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:20px; padding:20px; }
-        .product-card { background:var(--card); padding:15px; border-radius:15px; text-align:center; border: 1px solid rgba(255,255,255,0.1); position: relative; transition: 0.2s; }
-        .product-card:hover { transform: translateY(-5px); }
-        .product-card img { width: 100%; height: 120px; object-fit: contain; margin-bottom: 10px; }
-        .promo-badge { position: absolute; top: 10px; left: 10px; background: var(--promo); color: #000; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 5px; }
+        .product-card { background:var(--card); padding:15px; border-radius:20px; text-align:center; border: 1px solid rgba(128,128,128,0.1); position: relative; transition: 0.3s; }
+        .product-card img { width: 100%; height: 120px; object-fit: contain; }
+        .promo-badge { position: absolute; top: 12px; left: 12px; background: var(--promo); color: #000; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; }
 
         /* CARRITO */
-        #cartDrawer { position:fixed; right:-400px; top:0; width:320px; height:100%; background:var(--card); transition:0.3s; z-index:3000; padding:20px; display:flex; flex-direction:column; box-shadow: -5px 0 20px rgba(0,0,0,0.4); }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(128,128,128,0.2); }
-        .qty-controls button { background: var(--accent); border: none; color: white; width: 25px; height: 25px; border-radius: 5px; cursor: pointer; }
+        #cartDrawer { position:fixed; right:-400px; top:0; width:340px; height:100%; background:var(--card); transition:0.3s; z-index:3000; padding:25px; display:flex; flex-direction:column; box-shadow: -10px 0 30px rgba(0,0,0,0.4); }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: rgba(128,128,128,0.05); border-radius: 12px; }
 
-        /* MODALES */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; position: relative; }
+        /* PANELES */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 15px; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
         
-        .btn { padding: 10px 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        input { width: 100%; padding: 14px; margin: 10px 0; background: var(--input-bg); color: inherit; border: 1px solid rgba(128,128,128,0.2); border-radius: 12px; box-sizing: border-box; outline: none; }
+        .btn { padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 10px; }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid rgba(128,128,128,0.2); font-size: 13px; }
+        .btn-outline { background: transparent; color: var(--text); border: 1px solid rgba(128,128,128,0.5); }
+        .btn-outline:hover { background: rgba(128,128,128,0.1); }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 2000; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 2000; }
         .overlay.active { display: block; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="display:flex; align-items:center; gap:10px">
-        <span onclick="toggleSidebar()" style="cursor:pointer; font-size:24px">☰</span>
-        <b style="font-size:18px">NEO <span style="color:var(--accent)">REPUESTOS</span></b>
+    <div style="display:flex; align-items:center; gap:12px">
+        <span onclick="toggleSidebar()" style="cursor:pointer; font-size:26px">☰</span>
+        <b style="font-size:20px" onclick="location.reload()">NEO<span style="color:var(--accent)">REPUESTOS</span></b>
     </div>
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar por nombre..." onkeyup="renderProducts()">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar repuestos..." onkeyup="renderProducts()">
     </div>
-    <div style="display:flex; gap:15px; align-items:center">
-        <span onclick="toggleTheme()" style="cursor:pointer; font-size:20px">🌗</span>
+    <div style="display:flex; gap:18px; align-items:center">
+        <span onclick="toggleTheme()" style="cursor:pointer; font-size:22px">🌗</span>
         <div onclick="toggleCart()" style="cursor:pointer; position:relative">
-            🛒 <b id="cartCount" style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; font-size:10px; padding:2px 5px; border-radius:50%">0</b>
+            🛒 <b id="cartCount" style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; font-size:10px; padding:2px 6px; border-radius:50%">0</b>
         </div>
     </div>
 </header>
 
-<div class="side-menu" id="sideMenu">
-    <h3>Menú</h3>
+<div class="sidebar" id="sidebar">
+    <h2 style="color:var(--accent)">Neo Menú</h2>
     <a onclick="closeAll()">🏠 Inicio</a>
     <a onclick="abrirModal('loginModal')">👤 Ingreso Mayorista</a>
-    <a onclick="abrirAdmin()">⚙️ Panel Admin</a>
-    <a onclick="toggleTheme()">🌗 Cambiar Tema</a>
-    <a href="https://wa.me/5493434508948" target="_blank">💬 Soporte</a>
+    <a onclick="abrirAdmin()">⚙️ Panel de Control</a>
+    <a href="https://wa.me/5493434508948">💬 WhatsApp</a>
 </div>
 
 <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
-
 <div class="products-grid" id="productsCont"></div>
 
-<div id="cartDrawer">
-    <h3>Tu Pedido</h3>
-    <div id="cartList" style="flex-grow:1; overflow-y:auto"></div>
-    <div style="padding-top:15px; border-top: 1px solid #444">
-        <h4 id="cartTotal">Total: $0</h4>
-        <button class="btn btn-primary" style="background:#25d366" onclick="confirmarPedido()">ENVIAR A WHATSAPP</button>
-    </div>
-</div>
-
 <div class="modal" id="loginModal">
-    <div class="modal-content" style="max-width:350px">
-        <div id="loginView">
-            <h3>Acceso Clientes</h3>
-            <input id="userInp" placeholder="Email / Usuario">
-            <input id="passInp" type="password" placeholder="Contraseña">
-            <button class="btn btn-primary" onclick="checkLogin()">Entrar</button>
-            <p style="font-size:12px; text-align:center">¿No tenés cuenta? <a href="#" onclick="switchAuth(true)" style="color:var(--accent)">Registrate</a></p>
-        </div>
-        <div id="regView" style="display:none">
-            <h3>Solicitud Mayorista</h3>
-            <input id="regNom" placeholder="Nombre / Razón Social">
-            <input id="regCuit" placeholder="CUIT / DNI">
-            <input id="regMail" placeholder="Email">
-            <button class="btn" style="background:var(--success); color:white" onclick="enviarSolicitud()">Enviar Datos</button>
-            <button class="btn" style="background:none; border:1px solid #444" onclick="switchAuth(false)">Volver</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="adminModal">
     <div class="modal-content">
-        <span onclick="cerrarModales()" style="float:right; cursor:pointer; font-size:20px">✕</span>
-        <h2>Panel de Control</h2>
-        <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x: auto">
-            <button class="btn btn-primary" onclick="showTab('prods')">STOCK</button>
-            <button class="btn btn-primary" style="background:#6366f1" onclick="showTab('solis')">SOLICITUDES</button>
-            <button class="btn btn-primary" style="background:var(--success)" onclick="showTab('ventas')">VENTAS</button>
+        <div id="loginView">
+            <h2 style="margin-top:0">Área Clientes</h2>
+            <p style="font-size:14px; opacity:0.8">Ingresa para ver precios especiales.</p>
+            <input id="userInp" placeholder="Usuario">
+            <input id="passInp" type="password" placeholder="Contraseña">
+            <button class="btn btn-primary" onclick="checkLogin()">ACCEDER</button>
+            <button class="btn btn-outline" onclick="closeAll()">← VOLVER AL INICIO</button>
+            <p style="text-align:center; font-size:13px; margin-top:20px">¿No tienes cuenta? <a href="#" onclick="switchAuth(true)" style="color:var(--accent); font-weight:bold">Regístrate</a></p>
         </div>
-
-        <div id="tabProds">
-            <div style="background:rgba(0,0,0,0.1); padding:15px; border-radius:10px; margin-bottom:15px">
-                <input type="hidden" id="editId">
-                <input id="formNom" placeholder="Nombre del Repuesto">
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px">
-                    <input id="formPre" type="number" placeholder="Precio Público">
-                    <input id="formPreM" type="number" placeholder="Precio May.">
-                    <input id="formStock" type="number" placeholder="Stock">
-                </div>
-                <input id="formPromo" placeholder="Promoción (ej: 2x1 o Pack 5u)">
-                <input id="formImg" placeholder="URL de Imagen">
-                <button class="btn btn-primary" onclick="saveProduct()">GUARDAR PRODUCTO</button>
-            </div>
-            <table>
-                <thead><tr><th>Producto</th><th>Acciones</th></tr></thead>
-                <tbody id="adminProdsBody"></tbody>
-            </table>
-        </div>
-
-        <div id="tabSolis" style="display:none">
-            <table>
-                <thead><tr><th>Nombre</th><th>CUIT</th><th>Acción</th></tr></thead>
-                <tbody id="adminSolisBody"></tbody>
-            </table>
-        </div>
-
-        <div id="tabVentas" style="display:none">
-            <button class="btn btn-danger" style="width:auto; margin-bottom:10px" onclick="clearAllSales()">VACIAR HISTORIAL</button>
-            <table>
-                <thead><tr><th>Hora</th><th>Total</th><th>Acción</th></tr></thead>
-                <tbody id="adminSalesBody"></tbody>
-            </table>
+        
+        <div id="regView" style="display:none">
+            <h2>Registro</h2>
+            <input id="regNom" placeholder="Nombre / Comercio">
+            <input id="regCuit" placeholder="CUIT / CUIL">
+            <button class="btn btn-primary" onclick="enviarSolicitud()">ENVIAR SOLICITUD</button>
+            <button class="btn btn-outline" onclick="switchAuth(false)">← VOLVER AL LOGIN</button>
         </div>
     </div>
 </div>
 
 <script>
+    // Configuración Firebase (Usando la tuya)
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -173,175 +117,49 @@
     const db = firebase.firestore();
 
     let repuestos = [];
-    let carrito = [];
-    let esMayorista = sessionStorage.getItem("neo_may") === "true";
+    let esMayorista = sessionStorage.getItem("isMay") === "true";
 
-    // SINCRONIZACIÓN REAL-TIME
     db.collection("productos").onSnapshot(snap => {
         repuestos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderProducts();
-        updateAdminProds();
     });
 
-    db.collection("solicitudes_mayoristas").onSnapshot(snap => {
-        const solis = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const body = document.getElementById("adminSolisBody");
-        body.innerHTML = solis.map(s => `<tr>
-            <td>${s.nombre}</td><td>${s.cuit}</td>
-            <td>
-                <button onclick="aprobarSoli('${s.id}')" style="color:green">✅</button>
-                <button onclick="eliminarSoli('${s.id}')" style="color:red">🗑️</button>
-            </td>
-        </tr>`).join("");
-    });
-
-    db.collection("ventas").orderBy("creado", "desc").onSnapshot(snap => {
-        const ventas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const body = document.getElementById("adminSalesBody");
-        body.innerHTML = ventas.map(v => `<tr>
-            <td>${v.hora}</td><td>$${v.total}</td>
-            <td><button onclick="borrarVenta('${v.id}')">🗑️</button></td>
-        </tr>`).join("");
-    });
-
-    // RENDER PRINCIPAL CON FILTRO
     function renderProducts() {
         const query = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
-        cont.innerHTML = repuestos
-            .filter(r => r.nombre.toLowerCase().includes(query))
-            .map(r => `
-                <div class="product-card">
-                    ${r.promo ? `<div class="promo-badge">${r.promo}</div>` : ''}
-                    <img src="${r.imagen || 'https://via.placeholder.com/150'}">
-                    <h4 style="margin:5px 0; font-size:14px">${r.nombre}</h4>
-                    <div style="color:var(--accent); font-weight:bold">$${esMayorista ? r.precio_may : r.precio}</div>
-                    <button class="btn btn-primary" onclick="addToCart('${r.id}')">AGREGAR</button>
-                </div>`).join("");
+        cont.innerHTML = repuestos.filter(r => r.nombre.toLowerCase().includes(query)).map(r => `
+            <div class="product-card">
+                ${r.promo ? `<div class="promo-badge">${r.promo}</div>` : ''}
+                <img src="${r.imagen || 'https://via.placeholder.com/150'}">
+                <h4 style="margin:10px 0">${r.nombre}</h4>
+                <div style="color:var(--accent); font-weight:800; font-size:18px">$${esMayorista ? r.precio_may : r.precio}</div>
+                <button class="btn btn-primary" style="padding:10px" onclick="addCar('${r.id}')">AGREGAR</button>
+            </div>`).join("");
     }
 
-    // CARRITO
-    function addToCart(id) {
-        const exist = carrito.find(c => c.id === id);
-        if(exist) exist.qty++; else carrito.push({id, qty:1});
-        updateCartUI();
-    }
-
-    function changeQty(id, delta) {
-        const item = carrito.find(c => c.id === id);
-        if(item) {
-            item.qty += delta;
-            if(item.qty <= 0) carrito = carrito.filter(c => c.id !== id);
-        }
-        updateCartUI();
-    }
-
-    function updateCartUI() {
-        const list = document.getElementById("cartList");
-        let total = 0;
-        list.innerHTML = carrito.map(c => {
-            const r = repuestos.find(x => x.id === c.id);
-            const sub = (esMayorista ? r.precio_may : r.precio) * c.qty;
-            total += sub;
-            return `
-            <div class="cart-item">
-                <div><b>${r.nombre}</b><br>$${sub}</div>
-                <div class="qty-controls">
-                    <button onclick="changeQty('${r.id}', -1)">-</button>
-                    <span style="margin:0 10px">${c.qty}</span>
-                    <button onclick="changeQty('${r.id}', 1)">+</button>
-                </div>
-            </div>`;
-        }).join("");
-        document.getElementById("cartTotal").innerText = "Total: $" + total;
-        document.getElementById("cartCount").innerText = carrito.reduce((a,b) => a + b.qty, 0);
-    }
-
-    async function confirmarPedido() {
-        if(!carrito.length) return;
-        const ahora = new Date();
-        const horaStr = ahora.getHours() + ":" + ahora.getMinutes().toString().padStart(2,'0');
-        let total = 0;
-        let detalle = carrito.map(c => {
-            const r = repuestos.find(x => x.id === c.id);
-            total += (esMayorista ? r.precio_may : r.precio) * c.qty;
-            return `${r.nombre} (x${c.qty})`;
-        }).join(", ");
-
-        await db.collection("ventas").add({ creado: ahora.getTime(), hora: horaStr, total, detalle });
-        window.open(`https://wa.me/5493434508948?text=Pedido Neo: ${detalle} | Total: $${total}`);
-        carrito = []; updateCartUI(); closeAll();
-    }
-
-    // ADMIN FUNCTIONS
-    async function saveProduct() {
-        const id = document.getElementById("editId").value;
-        const d = {
-            nombre: document.getElementById("formNom").value,
-            precio: Number(document.getElementById("formPre").value),
-            precio_may: Number(document.getElementById("formPreM").value),
-            stock: Number(document.getElementById("formStock").value),
-            promo: document.getElementById("formPromo").value,
-            imagen: document.getElementById("formImg").value
-        };
-        id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
-        clearForm();
-    }
-
-    function updateAdminProds() {
-        document.getElementById("adminProdsBody").innerHTML = repuestos.map(r => `
-            <tr><td>${r.nombre}</td>
-            <td>
-                <button onclick="editProd('${r.id}')">✏️</button>
-                <button onclick="delProd('${r.id}')">🗑️</button>
-            </td></tr>`).join("");
-    }
-
-    function editProd(id) {
-        const r = repuestos.find(x => x.id === id);
-        document.getElementById("editId").value = r.id;
-        document.getElementById("formNom").value = r.nombre;
-        document.getElementById("formPre").value = r.precio;
-        document.getElementById("formPreM").value = r.precio_may;
-        document.getElementById("formStock").value = r.stock;
-        document.getElementById("formPromo").value = r.promo || "";
-        document.getElementById("formImg").value = r.imagen || "";
-    }
-
-    async function delProd(id) { if(confirm("¿Eliminar?")) await db.collection("productos").doc(id).delete(); }
-    async function borrarVenta(id) { await db.collection("ventas").doc(id).delete(); }
-    async function clearAllSales() { if(confirm("¿Vaciar todo?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
-    
-    async function aprobarSoli(id) {
-        const doc = await db.collection("solicitudes_mayoristas").doc(id).get();
-        await db.collection("clientes_aprobados").add(doc.data());
-        await db.collection("solicitudes_mayoristas").doc(id).delete();
-        alert("Cliente aprobado!");
-    }
-    async function eliminarSoli(id) { if(confirm("¿Rechazar solicitud?")) await db.collection("solicitudes_mayoristas").doc(id).delete(); }
-
-    // UI UTILS
-    function toggleSidebar() { document.getElementById("sideMenu").classList.toggle("open"); document.getElementById("mainOverlay").classList.toggle("active"); }
-    function toggleCart() { const c = document.getElementById("cartDrawer"); c.style.right = c.style.right === "0px" ? "-400px" : "0px"; document.getElementById("mainOverlay").classList.toggle("active"); }
-    function closeAll() { 
-        document.getElementById("sideMenu").classList.remove("open"); 
-        document.getElementById("cartDrawer").style.right = "-400px"; 
-        document.getElementById("mainOverlay").classList.remove("active"); 
-        cerrarModales();
-    }
+    // UI Lógica
+    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
     function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
-    function cerrarModales() { document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); }
-    function toggleTheme() { document.body.classList.toggle("light-mode"); }
-    function switchAuth(reg) { document.getElementById("loginView").style.display = reg?'none':'block'; document.getElementById("regView").style.display = reg?'block':'none'; }
-    function showTab(t) { 
-        document.getElementById("tabProds").style.display = t==='prods'?'block':'none'; 
-        document.getElementById("tabSolis").style.display = t==='solis'?'block':'none'; 
-        document.getElementById("tabVentas").style.display = t==='ventas'?'block':'none'; 
+    function closeAll() { 
+        document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("mainOverlay").classList.remove("active");
     }
-    function abrirAdmin() { if(prompt("Clave Admin:") === "admin") abrirModal("adminModal"); }
-    function checkLogin() { if(document.getElementById("userInp").value === "mayorista") { esMayorista=true; sessionStorage.setItem("neo_may", "true"); closeAll(); renderProducts(); } }
-    async function enviarSolicitud() { await db.collection("solicitudes_mayoristas").add({ nombre: document.getElementById("regNom").value, cuit: document.getElementById("regCuit").value }); alert("Enviada!"); switchAuth(false); }
-    function clearForm() { document.getElementById("editId").value=""; document.querySelectorAll("#tabProds input").forEach(i => i.value=""); }
+    function toggleTheme() { document.body.classList.toggle("light"); }
+    function switchAuth(r) { 
+        document.getElementById("loginView").style.display = r ? 'none' : 'block'; 
+        document.getElementById("regView").style.display = r ? 'block' : 'none'; 
+    }
+    function checkLogin() { 
+        if(document.getElementById("userInp").value === "mayorista") { 
+            esMayorista=true; sessionStorage.setItem("isMay", "true"); closeAll(); renderProducts(); 
+        } 
+    }
+    async function enviarSolicitud() { 
+        await db.collection("solicitudes_mayoristas").add({ nombre: document.getElementById("regNom").value, cuit: document.getElementById("regCuit").value }); 
+        alert("Solicitud enviada!"); switchAuth(false); 
+    }
+    function abrirAdmin() { if(prompt("Clave:") === "admin") alert("Panel Admin abierto (Simulación)"); }
 </script>
 </body>
 </html>
