@@ -88,7 +88,7 @@
         #cartDrawer { position: fixed; right: -100%; top: 0; width: 100%; max-width: 350px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 20px; box-shadow: -10px 0 40px rgba(0,0,0,0.5); display:flex; flex-direction:column; box-sizing: border-box; }
         #cartDrawer.active { right: 0; }
         
-        input { width: 100%; padding: 12px; margin: 8px 0; background: var(--input-bg); color: inherit; border: 1px solid rgba(128,128,128,0.2); border-radius: 10px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: var(--input-bg); color: inherit; border: 1px solid rgba(128,128,128,0.2); border-radius: 10px; box-sizing: border-box; font-size: 14px; }
         .btn { padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 5px; font-size: 14px; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-back { background: transparent; color: var(--text); border: 1px solid rgba(128,128,128,0.3); margin-top: 10px; }
@@ -96,6 +96,10 @@
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 2000; }
         .overlay.active { display: block; }
         .qty-badge { position: absolute; top: -5px; right: -8px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; }
+
+        /* SECCIÓN ENVÍO */
+        #deliveryForm { background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px; margin-top: 10px; display: none; }
+        .cart-section-title { font-size: 12px; font-weight: bold; text-transform: uppercase; opacity: 0.7; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -195,9 +199,23 @@
         <h2 style="margin:0">Mi Carrito</h2>
         <span onclick="toggleCart()" style="cursor:pointer; font-size:24px">✕</span>
     </div>
+    
     <div id="cartItemsList" style="flex-grow:1; overflow-y:auto"></div>
+
     <div style="padding-top:15px; border-top:1px solid rgba(128,128,128,0.2)">
-        <h3 id="cartTotalText">Total: $0</h3>
+        <div class="cart-section-title">Método de entrega</div>
+        <select id="deliveryMethod" onchange="toggleDeliveryForm()">
+            <option value="retiro">Retiro en local</option>
+            <option value="envio">Envío a domicilio</option>
+        </select>
+
+        <div id="deliveryForm">
+            <input id="envioNombre" placeholder="Nombre completo">
+            <input id="envioDireccion" placeholder="Dirección (Calle y Altura)">
+            <input id="envioLocalidad" placeholder="Localidad">
+        </div>
+
+        <h3 id="cartTotalText" style="margin: 15px 0 10px 0">Total: $0</h3>
         <button class="btn btn-primary" style="background:#25d366" onclick="enviarWhatsApp()">WHATSAPP</button>
     </div>
 </div>
@@ -267,67 +285,81 @@
         updateCartUI();
     }
 
-    // LÓGICA DE CÁLCULO CON PROMOS
     function updateCartUI() {
         let total = 0;
         document.getElementById("cartCount").innerText = carrito.reduce((a,b)=>a+b.qty, 0);
         const list = document.getElementById("cartItemsList");
-        
         list.innerHTML = carrito.map(c => {
             const p = productos.find(x => x.id === c.id);
-            let precioUnitario = esMayorista ? p.precio_may : p.precio;
-            
-            // LÓGICA DE DETECCIÓN DE PROMO (Busca "Llevando X $Y")
+            let pUnit = esMayorista ? p.precio_may : p.precio;
             if (p.promo) {
-                const match = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
-                if (match) {
-                    const cantNecesaria = parseInt(match[1]);
-                    const precioPromo = parseInt(match[2]);
-                    if (c.qty >= cantNecesaria) {
-                        precioUnitario = precioPromo;
-                    }
-                }
+                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (m && c.qty >= parseInt(m[1])) pUnit = parseInt(m[2]);
             }
-
-            const sub = precioUnitario * c.qty;
+            const sub = pUnit * c.qty;
             total += sub;
             return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px">
-                <span>${p.nombre} (x${c.qty}) ${c.qty >= (p.promo?.match(/\d+/)?.[0] || 999) ? '⭐' : ''}</span>
+                <span>${p.nombre} (x${c.qty})</span>
                 <b>$${sub}</b>
             </div>`;
         }).join("");
         document.getElementById("cartTotalText").innerText = "Total: $" + total;
     }
 
+    // LÓGICA DE FORMULARIO DE ENVÍO
+    function toggleDeliveryForm() {
+        const form = document.getElementById("deliveryForm");
+        form.style.display = document.getElementById("deliveryMethod").value === "envio" ? "block" : "none";
+    }
+
     async function enviarWhatsApp() {
         if(!carrito.length) return;
+        
+        const metodo = document.getElementById("deliveryMethod").value;
+        const nombre = document.getElementById("envioNombre").value;
+        const direccion = document.getElementById("envioDireccion").value;
+        const localidad = document.getElementById("envioLocalidad").value;
+
+        if (metodo === "envio" && (!nombre || !direccion || !localidad)) {
+            alert("Por favor, completa los datos de envío.");
+            return;
+        }
+
         const ahora = new Date();
         const hStr = ahora.toLocaleDateString() + " " + ahora.getHours() + ":" + ahora.getMinutes();
-        let msg = "*NUEVO PEDIDO NEO*\n\n";
+        
+        let msg = "*NUEVO PEDIDO NEO*\n";
+        msg += "--------------------------\n";
+        
         let totalTotal = 0;
-
         carrito.forEach(c => {
             const p = productos.find(x => x.id === c.id);
-            let precioFinal = esMayorista ? p.precio_may : p.precio;
-            
+            let pFinal = esMayorista ? p.precio_may : p.precio;
             if (p.promo) {
-                const match = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
-                if (match) {
-                    if (c.qty >= parseInt(match[1])) precioFinal = parseInt(match[2]);
-                }
+                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (m && c.qty >= parseInt(m[1])) pFinal = parseInt(m[2]);
             }
-            
-            const sub = precioFinal * c.qty;
+            const sub = pFinal * c.qty;
             totalTotal += sub;
-            msg += `- ${p.nombre} x${c.qty} (u: $${precioFinal}) = $${sub}\n`;
+            msg += `• ${p.nombre}\n  Cant: ${c.qty} x $${pFinal} = $${sub}\n`;
         });
 
-        msg += `\n*TOTAL FINAL: $${totalTotal}*`;
+        msg += "--------------------------\n";
+        msg += `*TOTAL: $${totalTotal}*\n\n`;
+        
+        msg += `📍 *ENTREGA:* ${metodo === 'retiro' ? 'Retira en Local' : 'Envío a domicilio'}\n`;
+        if (metodo === "envio") {
+            msg += `👤 *Cliente:* ${nombre}\n`;
+            msg += `🏠 *Dirección:* ${direccion}\n`;
+            msg += `🏙️ *Localidad:* ${localidad}\n`;
+        }
+
         await db.collection("ventas").add({ creado: ahora.getTime(), hora: hStr, total: totalTotal, detalle: msg });
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
         carrito = []; updateCartUI(); closeAll();
     }
 
+    // (RESTO DE FUNCIONES ADMIN, MODALES, ETC IGUALES AL ANTERIOR)
     async function guardarProducto() {
         const id = document.getElementById("editId").value;
         const d = {
@@ -366,7 +398,6 @@
     async function aprobarSoli(id) { alert("¡Aprobado!"); await db.collection("solicitudes_mayoristas").doc(id).delete(); }
     async function eliminarSoli(id) { await db.collection("solicitudes_mayoristas").doc(id).delete(); }
     async function vaciarVentas() { if(confirm("¿Borrar historial?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
-
     function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
     function closeAll() { document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); document.getElementById("cartDrawer").classList.remove("active"); document.getElementById("mainOverlay").classList.remove("active"); }
     function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
