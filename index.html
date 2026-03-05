@@ -4,24 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tienda PRO</title>
-
 <style>
 :root{
---bg:#f4f6f9;
---card:#ffffff;
---text:#111;
---accent:#2563eb;
---accent2:#9333ea;
---shadow:0 15px 40px rgba(0,0,0,.1);
+--bg:#f4f6f9;--card:#ffffff;--text:#111;--accent:#2563eb;--accent2:#9333ea;--shadow:0 15px 40px rgba(0,0,0,.1);
 }
-body.dark{
---bg:#0f172a;
---card:#1e293b;
---text:#f1f5f9;
---accent:#22d3ee;
---accent2:#f43f5e;
---shadow:0 20px 60px rgba(0,0,0,.6);
-}
+body.dark{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--accent:#22d3ee;--accent2:#f43f5e;--shadow:0 20px 60px rgba(0,0,0,.6);}
 body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);transition:.3s;}
 header{display:flex;justify-content:space-between;align-items:center;padding:15px 25px;background:var(--card);box-shadow:var(--shadow);position:sticky;top:0;z-index:1000;}
 .logo{font-weight:700;font-size:20px;background:linear-gradient(45deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent;}
@@ -40,7 +27,6 @@ button{background:linear-gradient(45deg,var(--accent),var(--accent2));border:non
 input{width:100%;padding:6px;margin-bottom:6px;border-radius:6px;border:1px solid #ccc;}
 .login-box{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:4000;}
 .login-content{background:var(--card);padding:25px;border-radius:15px;width:300px;}
-/* Panel admin */
 #adminPanel{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:5000;}
 .admin-content{background:var(--card);padding:25px;border-radius:15px;width:400px;max-height:90%;overflow:auto;}
 </style>
@@ -100,17 +86,23 @@ input{width:100%;padding:6px;margin-bottom:6px;border-radius:6px;border:1px soli
 </div>
 
 <script>
-const MONTO_MINIMO_MAYORISTA = 50000
-let products=JSON.parse(localStorage.getItem("products"))||[]
-let cart=[]
-let currentUser=JSON.parse(localStorage.getItem("currentUser"))||null
-let users=JSON.parse(localStorage.getItem("users"))||[]
+const MONTO_MINIMO_MAYORISTA = 50000;
+let products=JSON.parse(localStorage.getItem("products"))||[];
+let cart=[];
+let currentUser=JSON.parse(localStorage.getItem("currentUser"))||null;
+let users=JSON.parse(localStorage.getItem("users"))||[];
+
+// Inicializar con un producto demo si está vacío
+if(products.length===0){
+  products=[{name:"Producto demo",price:1000,stock:10,img:"https://via.placeholder.com/300"}];
+  localStorage.setItem("products",JSON.stringify(products));
+}
 
 function render(){
-let c=document.getElementById("products")
-c.innerHTML=""
+let c=document.getElementById("products");
+c.innerHTML="";
 products.forEach((p,i)=>{
-let precioBase=p.price
+let precioBase=p.price;
 if(currentUser && p.mayorista){precioBase=p.mayorista}
 c.innerHTML+=`
 <div class="card">
@@ -119,30 +111,29 @@ c.innerHTML+=`
 <p>$${precioBase}</p>
 <p>Stock: ${p.stock}</p>
 <button onclick="add(${i})">Agregar</button>
-</div>`
-})
+</div>`;
+});
 }
 
 function add(i){
-let p=products[i]
-let item=cart.find(x=>x.i==i)
-let qtyActual=item?item.qty:0
+let p=products[i];
+let item=cart.find(x=>x.i==i);
+let qtyActual=item?item.qty:0;
 if(qtyActual+1>p.stock){alert("No hay más stock");return}
-if(item)item.qty++
-else cart.push({i,qty:1})
-updateCart()
+if(item)item.qty++; else cart.push({i,qty:1});
+updateCart();
 }
 
 function updateCart(){
-let items=document.getElementById("cartItems")
-items.innerHTML=""
-let total=0
+let items=document.getElementById("cartItems");
+items.innerHTML="";
+let total=0;
 cart.forEach(c=>{
-let p=products[c.i]
-let precio=p.price
+let p=products[c.i];
+let precio=p.price;
 if(currentUser && p.mayorista){precio=p.mayorista}
-let subtotal=precio*c.qty
-total+=subtotal
+let subtotal=precio*c.qty;
+total+=subtotal;
 items.innerHTML+=`
 <div class="cart-item">
 ${p.name} x${c.qty}
@@ -150,43 +141,32 @@ ${p.name} x${c.qty}
 <button onclick="cambiar(${c.i},-1)">-</button>
 <button onclick="cambiar(${c.i},1)">+</button>
 </div>
-</div>`
-})
-document.getElementById("total").innerText=total
-document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0)
-if(currentUser){
-if(total<MONTO_MINIMO_MAYORISTA){
-document.getElementById("ahorro").innerText="Te faltan $" + (MONTO_MINIMO_MAYORISTA-total) + " para el mínimo mayorista"
-}else{document.getElementById("ahorro").innerText=""}
-}else{document.getElementById("ahorro").innerText=""}
+</div>`;
+});
+document.getElementById("total").innerText=total;
+document.getElementById("cartCount").innerText=cart.reduce((a,b)=>a+b.qty,0);
+if(currentUser && total<MONTO_MINIMO_MAYORISTA){
+document.getElementById("ahorro").innerText="Te faltan $" + (MONTO_MINIMO_MAYORISTA-total) + " para el mínimo mayorista";
+}else{document.getElementById("ahorro").innerText="";}
 }
 
 function cambiar(i,v){
-let item=cart.find(x=>x.i==i)
-let p=products[i]
+let item=cart.find(x=>x.i==i);
+let p=products[i];
 if(item.qty+v>p.stock){alert("Stock insuficiente");return}
-item.qty+=v
-if(item.qty<=0) cart=cart.filter(x=>x.i!=i)
-updateCart()
+item.qty+=v;
+if(item.qty<=0) cart=cart.filter(x=>x.i!=i);
+updateCart();
 }
 
 function hacerPedido(){
 if(cart.length===0){alert("Carrito vacío");return}
-let total=parseInt(document.getElementById("total").innerText)
+let total=parseInt(document.getElementById("total").innerText);
 if(currentUser && total<MONTO_MINIMO_MAYORISTA){alert("El pedido mínimo mayorista es de $"+MONTO_MINIMO_MAYORISTA);return}
-let detalle=""
+let detalle="";
 cart.forEach(c=>{
-let p=products[c.i]
-let precio=p.price
+let p=products[c.i];
+let precio=p.price;
 if(currentUser && p.mayorista){precio=p.mayorista}
-let subtotal=precio*c.qty
-detalle+=`${p.name} x${c.qty} - $${subtotal}\n`
-p.stock-=c.qty
-})
-let mensaje=`Pedido:\n${detalle}\nTotal: $${total}`
-window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(mensaje)}`)
-localStorage.setItem("products",JSON.stringify(products))
-cart=[];updateCart();render()
-}
-
-function abrirLogin(){document.get
+let subtotal=precio*c.qty;
+detalle+=`${p
