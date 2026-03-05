@@ -3,237 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repuestos PRO - Full Store</title>
+    <title>Repuestos PRO</title>
     <style>
+        /* Variables y Colores */
         :root {
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
-            --accent: #2563eb; --sidebar-bg: #1e40af;
-            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --accent: #2563eb; --sidebar: #1e40af;
         }
-        body.light-mode {
-            --bg: #f4f6f9; --card: #ffffff; --text: #111; --sidebar-bg: #2563eb;
+        body { 
+            margin: 0; font-family: sans-serif; 
+            background-color: var(--bg); color: var(--text); 
         }
-        body { margin: 0; font-family: system-ui; background: var(--bg); color: var(--text); transition: .3s; }
 
-        /* HEADER */
+        /* Header */
         header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 20px; background: var(--card); box-shadow: var(--shadow);
-            position: sticky; top: 0; z-index: 1000;
+            padding: 10px 20px; background: var(--card); position: sticky; top: 0; z-index: 100;
         }
-        .search-bar { flex-grow: 1; margin: 0 15px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 5px 15px; display: flex; }
-        .search-bar input { background: transparent; border: none; color: inherit; width: 100%; outline: none; }
+        .search-bar { flex-grow: 1; margin: 0 15px; }
+        .search-bar input { width: 100%; padding: 8px; border-radius: 5px; border: none; }
 
-        /* SIDEBAR */
-        .sidebar {
+        /* Sidebar (Menú Lateral) */
+        #sidebar {
             position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
-            background: var(--sidebar-bg); color: white; transition: 0.3s; z-index: 3000;
+            background: var(--sidebar); transition: 0.3s; z-index: 1000;
         }
-        .sidebar.active { left: 0; }
-        .sidebar a { display: block; padding: 15px 25px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        
-        /* GRID */
-        .container { padding: 20px; }
-        .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 12px; padding: 15px; text-align: center; box-shadow: var(--shadow); }
+        #sidebar.active { left: 0; }
+        #sidebar a, #sidebar button {
+            display: block; padding: 15px 20px; color: white; text-decoration: none;
+            background: none; border: none; width: 100%; text-align: left; font-size: 16px; cursor: pointer;
+        }
+        #sidebar a:hover { background: rgba(255,255,255,0.1); }
+
+        /* Contenedor de Productos */
+        .container { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .card { background: var(--card); padding: 15px; border-radius: 10px; text-align: center; }
         .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+        .price { color: #60a5fa; font-weight: bold; font-size: 18px; margin: 10px 0; }
+        .promo { color: #4ade80; font-size: 13px; margin-bottom: 10px; }
 
-        /* CARRITO (DRAWER) */
-        .drawer {
-            position: fixed; right: -350px; top: 0; width: 320px; height: 100%;
-            background: var(--card); box-shadow: var(--shadow); transition: 0.3s; z-index: 4000; padding: 20px;
+        /* Carrito Lateral */
+        #cartDrawer {
+            position: fixed; right: -320px; top: 0; width: 300px; height: 100%;
+            background: var(--card); transition: 0.3s; z-index: 1000; padding: 15px; box-shadow: -5px 0 15px rgba(0,0,0,0.5);
         }
-        .drawer.open { right: 0; }
-        .cart-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        #cartDrawer.active { right: 0; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
 
-        /* ADMIN */
-        #adminPanel { display: none; background: var(--card); padding: 20px; margin: 20px; border-radius: 10px; border: 2px solid var(--accent); }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        input { width: 100%; padding: 8px; margin-bottom: 5px; border-radius: 5px; border: 1px solid #444; background: #000; color: #fff; }
+        /* Panel Admin */
+        #adminPanel { 
+            display: none; background: #000; color: white; padding: 20px; 
+            position: fixed; top: 10%; left: 5%; width: 90%; max-height: 80%; overflow-y: auto; z-index: 2000; border: 2px solid var(--accent);
+        }
+        .admin-grid input { width: 90%; padding: 8px; margin: 5px; }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 2500; }
+        /* Botones Generales */
+        .btn-add { background: var(--accent); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 500; }
         .overlay.active { display: block; }
-        .icon { cursor: pointer; font-size: 20px; margin: 0 10px; }
-        .badge { background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; position: absolute; }
     </style>
 </head>
 <body>
 
 <header>
-    <span class="icon" onclick="toggleSidebar()">☰</span>
-    <div class="search-bar"><input type="text" id="busqueda" placeholder="Buscar..." onkeyup="filtrar()"></div>
-    <div style="position: relative;">
-        <span class="icon" onclick="toggleLightMode()">🌗</span>
-        <span class="icon" onclick="toggleCart()">🛒<span id="cartCount" class="badge">0</span></span>
-    </div>
+    <button onclick="toggleMenu()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">☰</button>
+    <div class="search-bar"><input type="text" placeholder="Buscar producto..." onkeyup="buscar(this.value)"></div>
+    <button onclick="toggleCart()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">🛒</button>
 </header>
 
-<div class="overlay" id="overlay" onclick="closeAll()"></div>
-
-<nav class="sidebar" id="sidebar">
-    <div style="padding: 20px; font-weight: bold; background: rgba(0,0,0,0.2);">MENU</div>
-    <a href="#" onclick="closeAll()">🏠 Inicio</a>
-    <a href="#" onclick="openAdmin()">🔑 Administrador</a>
+<div id="sidebar">
+    <div style="padding:20px; font-weight:bold; background:rgba(0,0,0,0.2)">MENU</div>
+    <a href="#" onclick="toggleMenu()">🏠 Inicio</a>
+    <button onclick="accesoAdmin()">🔑 Administrador</button>
     <a href="https://instagram.com" target="_blank">📸 Instagram</a>
-</nav>
-
-<div class="drawer" id="cartDrawer">
-    <h3>Tu Pedido</h3>
-    <div id="cartItems"></div>
-    <hr>
-    <p>Total: <b id="cartTotal">$0</b></p>
-    <button onclick="enviarWhatsApp()" style="background: #25d366; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer;">Enviar a WhatsApp</button>
-    <button onclick="toggleCart()" style="margin-top: 10px; width: 100%; background: #666; border: none; color: white; padding: 5px; cursor: pointer;">Cerrar</button>
 </div>
 
-<main class="container">
-    <div id="adminPanel">
-        <h3>Panel Administrador</h3>
-        <input type="hidden" id="editIndex">
-        <div class="admin-grid">
-            <input id="n" placeholder="Nombre">
-            <input id="p_ind" type="number" placeholder="Precio Individual">
-            <input id="p_x2" type="number" placeholder="Precio Promo x2">
-            <input id="p_may" type="number" placeholder="Precio Mayorista">
-            <input id="stock" type="number" placeholder="Stock">
-            <input id="img" placeholder="URL Imagen">
-        </div>
-        <button onclick="guardar()" style="width: 100%; padding: 10px; background: var(--accent); color: white; border: none; cursor: pointer;">Guardar Producto</button>
-        <div id="listaAdmin" style="margin-top:15px; max-height: 150px; overflow-y: auto;"></div>
-    </div>
+<div id="cartDrawer">
+    <h3>Tu Pedido</h3>
+    <div id="cartList"></div>
+    <hr>
+    <p>Total: <span id="cartTotal">$0</span></p>
+    <button class="btn-add" onclick="enviarWhatsApp()" style="background:#25d366">Pedir por WhatsApp</button>
+    <button onclick="toggleCart()" style="width:100%; margin-top:10px">Cerrar</button>
+</div>
 
-    <div class="products" id="products"></div>
-</main>
+<div id="adminPanel">
+    <h3>Panel de Control</h3>
+    <div class="admin-grid">
+        <input id="in-name" placeholder="Nombre">
+        <input id="in-price" type="number" placeholder="Precio Individual">
+        <input id="in-x2" type="number" placeholder="Precio Promo x2">
+        <input id="in-stock" type="number" placeholder="Stock">
+        <input id="in-img" placeholder="Link de Imagen">
+    </div>
+    <button class="btn-add" onclick="guardarProducto()">Guardar</button>
+    <button onclick="cerrarAdmin()" style="width:100%; margin-top:10px">Cerrar</button>
+    <hr>
+    <div id="adminList"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="cerrarTodo()"></div>
+
+<div class="container" id="productGrid"></div>
 
 <script>
-    let products = JSON.parse(localStorage.getItem("products")) || [];
-    let cart = [];
+    let productos = JSON.parse(localStorage.getItem("prods")) || [];
+    let carrito = [];
 
-    // --- RENDER PRINCIPAL ---
-    function render(data = products) {
-        const container = document.getElementById("products");
-        container.innerHTML = "";
-        data.forEach((p, i) => {
-            container.innerHTML += `
+    function render(lista = productos) {
+        const grid = document.getElementById("productGrid");
+        grid.innerHTML = "";
+        lista.forEach((p, i) => {
+            grid.innerHTML += `
                 <div class="card">
                     <img src="${p.img || 'https://via.placeholder.com/150'}">
                     <h4>${p.name}</h4>
-                    <div style="color: var(--accent); font-weight: bold;">$${p.p_ind}</div>
-                    ${p.p_x2 > 0 ? `<div style="color: #10b981; font-size: 12px;">Promo x2: $${p.p_x2}</div>` : ''}
-                    <button onclick="addToCart(${i})" style="background: var(--accent); color: white; border: none; padding: 8px; border-radius: 5px; width: 100%; margin-top: 10px; cursor: pointer;">Agregar</button>
+                    <div class="price">$${p.p1}</div>
+                    ${p.p2 > 0 ? `<div class="promo">2 unidades por $${p.p2}</div>` : ''}
+                    <button class="btn-add" onclick="agregar(${i})">Agregar</button>
                 </div>`;
         });
     }
 
-    // --- LÓGICA DEL CARRITO CON PROMOS ---
-    function addToCart(index) {
-        const prod = products[index];
-        if (prod.stock <= 0) return alert("Sin stock");
-        
-        const itemInCart = cart.find(item => item.id === index);
-        if (itemInCart) {
-            if (itemInCart.qty + 1 > prod.stock) return alert("No hay más stock");
-            itemInCart.qty++;
-        } else {
-            cart.push({ id: index, qty: 1 });
-        }
-        updateCart();
+    // --- FUNCIONES CARRITO ---
+    function agregar(idx) {
+        const p = productos[idx];
+        const existente = carrito.find(item => item.id === idx);
+        if (existente) existente.qty++;
+        else carrito.push({ id: idx, qty: 1 });
+        actualizarCarrito();
     }
 
-    function updateCart() {
-        const container = document.getElementById("cartItems");
-        const totalEl = document.getElementById("cartTotal");
-        const countEl = document.getElementById("cartCount");
-        container.innerHTML = "";
+    function actualizarCarrito() {
+        const list = document.getElementById("cartList");
         let total = 0;
-        let totalQty = 0;
-
-        cart.forEach((item, cartIdx) => {
-            const p = products[item.id];
+        list.innerHTML = "";
+        
+        carrito.forEach((item, i) => {
+            const p = productos[item.id];
             let subtotal = 0;
-
-            // Lógica de cálculo: Si hay promo x2 y lleva cantidad par
-            if (p.p_x2 > 0 && item.qty >= 2) {
+            // Cálculo de promo x2
+            if(p.p2 > 0 && item.qty >= 2) {
                 let pares = Math.floor(item.qty / 2);
                 let sueltos = item.qty % 2;
-                subtotal = (pares * p.p_x2) + (sueltos * p.p_ind);
+                subtotal = (pares * p.p2) + (sueltos * p.p1);
             } else {
-                subtotal = item.qty * p.p_ind;
+                subtotal = item.qty * p.p1;
             }
-
             total += subtotal;
-            totalQty += item.qty;
-
-            container.innerHTML += `
-                <div class="cart-item">
-                    <span>${p.name} (x${item.qty})</span>
-                    <span>$${subtotal} <button onclick="removeItem(${cartIdx})" style="background:none; border:none; color:red; cursor:pointer;">x</button></span>
-                </div>`;
+            list.innerHTML += `<div class="cart-item">${p.name} x${item.qty} <span>$${subtotal}</span></div>`;
         });
-
-        totalEl.innerText = "$" + total;
-        countEl.innerText = totalQty;
+        document.getElementById("cartTotal").innerText = "$" + total;
     }
 
-    function removeItem(idx) {
-        cart.splice(idx, 1);
-        updateCart();
+    // --- FUNCIONES ADMIN ---
+    function accesoAdmin() {
+        if(prompt("Contraseña:") === "admin") {
+            document.getElementById("adminPanel").style.display = "block";
+            actualizarListaAdmin();
+        }
     }
 
-    // --- ADMINISTRADOR ---
-    function guardar() {
+    function guardarProducto() {
         const p = {
-            name: document.getElementById("n").value,
-            p_ind: parseInt(document.getElementById("p_ind").value) || 0,
-            p_x2: parseInt(document.getElementById("p_x2").value) || 0,
-            p_may: parseInt(document.getElementById("p_may").value) || 0,
-            stock: parseInt(document.getElementById("stock").value) || 0,
-            img: document.getElementById("img").value
+            name: document.getElementById("in-name").value,
+            p1: parseInt(document.getElementById("in-price").value),
+            p2: parseInt(document.getElementById("in-x2").value) || 0,
+            stock: parseInt(document.getElementById("in-stock").value),
+            img: document.getElementById("in-img").value
         };
-        products.push(p);
-        localStorage.setItem("products", JSON.stringify(products));
-        document.getElementById("adminPanel").style.display = "none";
+        productos.push(p);
+        localStorage.setItem("prods", JSON.stringify(productos));
         render();
-        cargarAdminList();
+        actualizarListaAdmin();
     }
 
-    function cargarAdminList() {
-        const list = document.getElementById("listaAdmin");
-        list.innerHTML = products.map((p, i) => `
-            <div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:5px;">
-                ${p.name} <button onclick="eliminarProd(${i})" style="color:red; background:none; border:none;">Eliminar</button>
+    function actualizarListaAdmin() {
+        const list = document.getElementById("adminList");
+        list.innerHTML = productos.map((p, i) => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px">
+                ${p.name} <button onclick="eliminar(${i})" style="color:red">Eliminar</button>
             </div>`).join("");
     }
 
-    function eliminarProd(i) {
-        products.splice(i, 1);
-        localStorage.setItem("products", JSON.stringify(products));
-        render(); cargarAdminList();
+    function eliminar(i) {
+        productos.splice(i, 1);
+        localStorage.setItem("prods", JSON.stringify(productos));
+        render(); actualizarListaAdmin();
     }
 
-    // --- INTERFAZ ---
-    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
-    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("open"); document.getElementById("overlay").classList.toggle("active"); }
-    function closeAll() { 
+    // --- UI ---
+    function toggleMenu() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
+    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
+    function cerrarTodo() { 
         document.getElementById("sidebar").classList.remove("active"); 
-        document.getElementById("cartDrawer").classList.remove("open"); 
+        document.getElementById("cartDrawer").classList.remove("active"); 
         document.getElementById("overlay").classList.remove("active"); 
     }
-    function openAdmin() { if(prompt("Contraseña:") === "admin") document.getElementById("adminPanel").style.display = "block"; closeAll(); cargarAdminList(); }
-    function toggleLightMode() { document.body.classList.toggle("light-mode"); }
-    function filtrar() {
-        const t = document.getElementById("busqueda").value.toLowerCase();
-        render(products.filter(p => p.name.toLowerCase().includes(t)));
-    }
+    function cerrarAdmin() { document.getElementById("adminPanel").style.display = "none"; }
+    function buscar(t) { render(productos.filter(p => p.name.toLowerCase().includes(t.toLowerCase()))); }
 
     function enviarWhatsApp() {
-        let msg = "Hola, quiero realizar un pedido:\n";
-        cart.forEach(item => {
-            const p = products[item.id];
-            msg += `- ${p.name} x${item.qty}\n`;
+        let texto = "Hola, mi pedido es:\n";
+        carrito.forEach(item => {
+            texto += `- ${productos[item.id].name} x${item.qty}\n`;
         });
-        msg += "Total: " + document.getElementById("cartTotal").innerText;
-        window.open(`https://wa.me/549123456789?text=${encodeURIComponent(msg)}`);
+        texto += "Total: " + document.getElementById("cartTotal").innerText;
+        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(texto)}`);
     }
 
     render();
