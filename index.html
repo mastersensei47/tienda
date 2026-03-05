@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEO REPUESTOS - SISTEMA TOTAL</title>
+    <title>NEO REPUESTOS - SISTEMA INTEGRAL</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
@@ -11,7 +11,7 @@
     <style>
         :root {
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #2563eb;
-            --sidebar-bg: #1e40af; --success: #10b981; --promo: #f59e0b;
+            --sidebar-bg: #1e40af; --success: #10b981; --promo: #f59e0b; --danger: #ef4444;
         }
         body.light {
             --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --sidebar-bg: #2563eb;
@@ -22,7 +22,7 @@
             display:flex; justify-content:space-between; align-items:center; 
             padding:10px 20px; background:var(--card); position:sticky; top:0; z-index:1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .search-bar input { padding:8px 15px; border-radius:20px; border:1px solid #444; background:rgba(0,0,0,0.1); color:inherit; width:200px; outline: none; }
+        .search-bar input { padding:8px 15px; border-radius:20px; border:1px solid #444; background:rgba(0,0,0,0.1); color:inherit; width:180px; outline: none; }
 
         .sidebar { 
             position: fixed; left: -280px; top: 0; width: 260px; height: 100%; 
@@ -34,22 +34,13 @@
         .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; padding:20px; }
         .card { background:var(--card); padding:15px; border-radius:15px; text-align:center; position:relative; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         .card img { width: 100%; height: 140px; object-fit: contain; }
-        .stock-tag { font-size: 11px; margin-top: 5px; color: var(--success); font-weight: bold; }
-        .stock-low { color: #f87171; }
-
-        .cart-drawer {
-            position: fixed; right: -380px; top: 0; width: 350px; height: 100%;
-            background: var(--card); transition: 0.3s; z-index: 3000; padding: 20px; 
-            display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.5); box-sizing: border-box;
-        }
-        .cart-drawer.active { right: 0; }
-        .cart-items { flex-grow: 1; overflow-y: auto; margin: 15px 0; }
+        .promo-tag { position:absolute; top:10px; left:10px; background:var(--promo); color:black; font-size:10px; font-weight:bold; padding:3px 7px; border-radius:5px; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 95%; max-width: 700px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 95%; max-width: 850px; position: relative; max-height: 90vh; overflow-y: auto; }
         
-        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; background: rgba(0,0,0,0.1); color: inherit; border: 1px solid #444; border-radius: 8px; box-sizing: border-box; }
-        .btn-main { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; background: rgba(0,0,0,0.1); color: inherit; border: 1px solid #444; border-radius: 8px; box-sizing: border-box; }
+        .btn-main { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top:5px; }
         
         table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
         th, td { border-bottom: 1px solid #444; padding: 8px; text-align: left; }
@@ -87,50 +78,29 @@
 
 <div class="products" id="productsCont"></div>
 
-<div class="cart-drawer" id="cartDrawer">
-    <h3>Tu Carrito</h3>
-    <div class="cart-items" id="cartList"></div>
-    <div style="border-top:1px solid #444; padding-top:10px">
-        <div id="totalDisplay" style="font-size:18px; font-weight:bold">Total: $0</div>
-        <select id="metodoEntrega" onchange="checkLogistica()">
-            <option value="retiro">Retiro por Local</option>
-            <option value="envio">Envío a Domicilio</option>
-        </select>
-        <div id="formLogistica" style="display:none; background:rgba(0,0,0,0.1); padding:10px; border-radius:10px; margin-top:5px">
-            <input id="envNombre" placeholder="Nombre">
-            <input id="envDireccion" placeholder="Dirección">
-            <input id="envTel" placeholder="Teléfono">
-        </div>
-        <button class="btn-main" style="background:#25d366; margin-top:10px" onclick="enviarWhatsApp()">Confirmar WhatsApp</button>
-    </div>
+<div id="cartDrawer" style="position:fixed; right:-380px; top:0; width:350px; height:100%; background:var(--card); transition:0.3s; z-index:3000; padding:20px; display:flex; flex-direction:column; box-shadow:-5px 0 20px rgba(0,0,0,0.5); box-sizing:border-box;">
+    <h3>Carrito</h3>
+    <div id="cartList" style="flex-grow:1; overflow-y:auto"></div>
+    <div id="totalDisplay" style="font-size:18px; font-weight:bold; margin:10px 0">Total: $0</div>
+    <button class="btn-main" style="background:#25d366" onclick="enviarWhatsApp()">Pedir por WhatsApp</button>
 </div>
 
 <div class="modal" id="loginModal">
     <div class="modal-content" style="max-width:350px">
-        <div style="display:flex; gap:5px; margin-bottom:15px">
-            <button class="btn-main" onclick="toggleAuth('L')">Entrar</button>
-            <button class="btn-main" style="background:#444" onclick="toggleAuth('R')">Registrarse</button>
-        </div>
         <div id="secLogin">
             <h3>Login Mayorista</h3>
-            <div id="logFields">
-                <input id="u" placeholder="Usuario">
-                <input id="p_log" type="password" placeholder="Contraseña">
-                <button class="btn-main" onclick="validarLogin()">Ingresar</button>
-            </div>
-            <div id="logDone" style="display:none">
-                <p>✅ Sesión Activa</p>
-                <button onclick="logout()" class="btn-main" style="background:red">Cerrar Sesión</button>
-            </div>
+            <input id="u" placeholder="Usuario">
+            <input id="p_log" type="password" placeholder="Contraseña">
+            <button class="btn-main" onclick="validarLogin()">Entrar</button>
+            <p style="font-size:12px; text-align:center">¿Sin cuenta? <a href="#" onclick="toggleAuth('R')">Registrate</a></p>
         </div>
         <div id="secReg" style="display:none">
-            <h3>Solicitud de Alta</h3>
+            <h3>Solicitud Alta</h3>
             <input id="rn" placeholder="Nombre/Empresa">
-            <input id="rc" placeholder="CUIT">
-            <input id="rt" placeholder="WhatsApp">
             <input id="re" placeholder="Email">
-            <input id="rp" type="password" placeholder="Contraseña">
-            <button class="btn-main" style="background:var(--success)" onclick="registrarMay()">Enviar Datos</button>
+            <input id="rp" type="password" placeholder="Pass">
+            <button class="btn-main" style="background:var(--success)" onclick="registrarMay()">Enviar</button>
+            <button class="btn-main" style="background:none; border:1px solid #444" onclick="toggleAuth('L')">← Volver</button>
         </div>
     </div>
 </div>
@@ -138,44 +108,48 @@
 <div class="modal" id="adminModal">
     <div class="modal-content">
         <span onclick="cerrarModales()" style="float:right; cursor:pointer">✕</span>
-        <h2>Panel de Control</h2>
-        <div style="display:flex; gap:5px; margin-bottom:20px; overflow-x: auto;">
-            <button class="btn-main" onclick="tabAdmin('prods')">📦 Productos</button>
-            <button class="btn-main" style="background:#6366f1" onclick="tabAdmin('solis')">📩 Solis.</button>
-            <button class="btn-main" style="background:#10b981" onclick="tabAdmin('ventas')">💰 Ventas</button>
+        <h2>Panel Admin</h2>
+        <div style="display:flex; gap:5px; margin-bottom:15px">
+            <button class="btn-main" onclick="tabAdmin('prods')">Stock</button>
+            <button class="btn-main" style="background:#6366f1" onclick="tabAdmin('solis')">Solicitudes</button>
+            <button class="btn-main" style="background:#10b981" onclick="tabAdmin('ventas')">Ventas</button>
         </div>
 
         <div id="tabProds">
-            <div style="background:rgba(0,0,0,0.1); padding:15px; border-radius:10px">
+            <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:10px">
                 <input type="hidden" id="eid">
-                <input id="an" placeholder="Nombre">
+                <input id="an" placeholder="Nombre Repuesto">
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px">
-                    <input id="ap" type="number" placeholder="P. Min.">
-                    <input id="apm" type="number" placeholder="P. May.">
+                    <input id="ap" type="number" placeholder="Precio">
+                    <input id="apm" type="number" placeholder="Mayorista">
                     <input id="as" type="number" placeholder="Stock">
                 </div>
+                <select id="apromo">
+                    <option value="">Sin Promo</option>
+                    <option value="2x1">2x1</option>
+                    <option value="3x2">3x2</option>
+                    <option value="pack">Pack Especial</option>
+                </select>
                 <input id="ai" placeholder="URL Imagen">
                 <button class="btn-main" onclick="guardarFirebase()">Guardar</button>
             </div>
-            <table id="tablaAdminProds">
-                <thead><tr><th>Nombre</th><th>Stock</th><th>Acción</th></tr></thead>
+            <table>
+                <thead><tr><th>Nombre</th><th>Stock</th><th>Acciones</th></tr></thead>
                 <tbody id="bodyProds"></tbody>
             </table>
         </div>
 
         <div id="tabSolis" style="display:none">
-            <h4>Nuevos Mayoristas</h4>
-            <tbody id="bodySolis"></tbody>
-            <table id="tablaSolis">
-                <thead><tr><th>Nombre</th><th>Email</th><th>WA</th><th>Acción</th></tr></thead>
+            <table>
+                <thead><tr><th>Nombre</th><th>Email</th><th>Acción</th></tr></thead>
                 <tbody id="bodySolis"></tbody>
             </table>
         </div>
 
         <div id="tabVentas" style="display:none">
-            <h4>Historial de Pedidos</h4>
-            <table id="tablaVentas">
-                <thead><tr><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Total</th></tr></thead>
+            <button onclick="borrarTodasVentas()" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; margin-bottom:10px; cursor:pointer">⚠️ Vaciar Todo el Historial</button>
+            <table>
+                <thead><tr><th>Fecha/Hora</th><th>Productos</th><th>Total</th><th>Acción</th></tr></thead>
                 <tbody id="bodyVentas"></tbody>
             </table>
         </div>
@@ -183,6 +157,7 @@
 </div>
 
 <script>
+    // CONFIGURACIÓN FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -198,11 +173,16 @@
     let carrito = [];
     let esMayorista = sessionStorage.getItem("esMayorista") === "true";
 
-    // SYNC REALTIME
+    // CARGA DE DATOS
     db.collection("productos").onSnapshot(snap => {
         repuestos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         render();
         cargarTablaProds();
+    });
+
+    db.collection("ventas").orderBy("timestamp", "desc").onSnapshot(snap => {
+        const vts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        cargarTablaVentas(vts);
     });
 
     db.collection("solicitudes_mayoristas").onSnapshot(snap => {
@@ -210,119 +190,80 @@
         cargarTablaSolis(solis);
     });
 
-    db.collection("ventas").orderBy("fecha", "desc").onSnapshot(snap => {
-        const vts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        cargarTablaVentas(vts);
-    });
-
-    function obtenerPrecio(r) { return (esMayorista && r.precio_may > 0) ? r.precio_may : r.precio; }
-
     function render() {
         const b = document.getElementById("busq").value.toLowerCase();
         const cont = document.getElementById("productsCont");
         cont.innerHTML = repuestos.filter(x => x.nombre.toLowerCase().includes(b)).map(r => `
             <div class="card">
+                ${r.promo ? `<div class="promo-tag">${r.promo}</div>` : ''}
                 <img src="${r.imagen || 'https://via.placeholder.com/150'}">
                 <h4>${r.nombre}</h4>
-                <div style="font-weight:bold; color:var(--accent)">$${obtenerPrecio(r)}</div>
-                <div class="stock-tag ${r.stock < 5 ? 'stock-low' : ''}">Stock: ${r.stock} u.</div>
-                <button class="btn-main" style="margin-top:10px" onclick="addCar('${r.id}')" ${r.stock <= 0 ? 'disabled style="background:gray"' : ''}>
-                    ${r.stock > 0 ? 'Agregar' : 'Sin Stock'}
-                </button>
+                <div style="font-weight:bold">$${esMayorista ? r.precio_may : r.precio}</div>
+                <div style="font-size:10px">Stock: ${r.stock}</div>
+                <button class="btn-main" onclick="addCar('${r.id}')" ${r.stock <= 0 ? 'disabled' : ''}>${r.stock > 0 ? 'Agregar' : 'Sin Stock'}</button>
             </div>`).join("");
-        document.getElementById("logFields").style.display = esMayorista ? "none" : "block";
-        document.getElementById("logDone").style.display = esMayorista ? "block" : "none";
-    }
-
-    function addCar(id) {
-        const r = repuestos.find(x => x.id === id);
-        const item = carrito.find(c => c.id === id);
-        if(item) {
-            if(item.qty < r.stock) item.qty++;
-            else alert("No hay más stock disponible");
-        } else {
-            carrito.push({id, qty: 1});
-        }
-        upCart();
-    }
-
-    function upCart() {
-        const list = document.getElementById("cartList");
-        let t = 0;
-        list.innerHTML = carrito.map((c, i) => {
-            const r = repuestos.find(x => x.id === c.id);
-            const sub = obtenerPrecio(r) * c.qty;
-            t += sub;
-            return `<div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid #444">
-                <span style="font-size:12px">${r.nombre} (x${c.qty})</span>
-                <span style="font-weight:bold">$${sub}</span>
-            </div>`;
-        }).join("");
-        document.getElementById("totalDisplay").innerText = "Total: $" + t;
-        document.getElementById("cartBadge").innerText = carrito.reduce((a,b)=>a+b.qty, 0);
     }
 
     async function enviarWhatsApp() {
         if(carrito.length === 0) return;
-        const entrega = document.getElementById("metodoEntrega").value;
-        const nombreCli = document.getElementById("envNombre").value || "Cliente Web";
+        const ahora = new Date();
+        const timestamp = ahora.getTime();
+        const horaLegible = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString();
         let total = 0;
-        let detalleText = "";
-        let detalleDB = [];
+        let detalle = carrito.map(c => {
+            const r = repuestos.find(x => x.id === c.id);
+            total += (esMayorista ? r.precio_may : r.precio) * c.qty;
+            return `${r.nombre} x${c.qty}`;
+        }).join(", ");
 
+        await db.collection("ventas").add({ timestamp, hora: horaLegible, productos: detalle, total });
+        
         for(let c of carrito) {
             const r = repuestos.find(x => x.id === c.id);
-            const sub = obtenerPrecio(r) * c.qty;
-            total += sub;
-            detalleText += `- ${r.nombre} x${c.qty} ($${sub})\n`;
-            detalleDB.push(`${r.nombre} x${c.qty}`);
-            // Descontar Stock
             await db.collection("productos").doc(r.id).update({ stock: r.stock - c.qty });
         }
 
-        // REGISTRAR VENTA EN FIREBASE
-        await db.collection("ventas").add({
-            fecha: new Date().toISOString(),
-            cliente: nombreCli,
-            productos: detalleDB.join(", "),
-            total: total,
-            tipo: entrega
-        });
-
-        let msg = `*NUEVO PEDIDO NEO*\nCliente: ${nombreCli}\n\n${detalleText}\n*TOTAL: $${total}*\nEntrega: ${entrega}`;
-        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
-        
+        window.open(`https://wa.me/5493434508948?text=Pedido: ${detalle} | Total: $${total}`);
         carrito = []; upCart(); closeAll();
     }
 
-    // PANEL ADMIN TABLES
+    // FUNCIONES ADMIN
     function cargarTablaProds() {
         document.getElementById("bodyProds").innerHTML = repuestos.map(r => `
             <tr>
                 <td>${r.nombre}</td>
                 <td>${r.stock}</td>
-                <td><button onclick="editarProd('${r.id}')">✏️</button></td>
-            </tr>`).join("");
-    }
-
-    function cargarTablaSolis(solis) {
-        document.getElementById("bodySolis").innerHTML = solis.map(s => `
-            <tr>
-                <td>${s.nombre}</td>
-                <td>${s.email}</td>
-                <td>${s.tel}</td>
-                <td><button onclick="borrarSoli('${s.id}')">❌</button></td>
+                <td>
+                    <button onclick="editarProd('${r.id}')">✏️</button>
+                    <button onclick="eliminarProd('${r.id}')">🗑️</button>
+                </td>
             </tr>`).join("");
     }
 
     function cargarTablaVentas(ventas) {
         document.getElementById("bodyVentas").innerHTML = ventas.map(v => `
             <tr>
-                <td>${v.fecha.split('T')[0]}</td>
-                <td>${v.cliente}</td>
+                <td>${v.hora}</td>
                 <td>${v.productos}</td>
-                <td style="color:var(--success); font-weight:bold">$${v.total}</td>
+                <td>$${v.total}</td>
+                <td><button onclick="borrarVenta('${v.id}')">🗑️</button></td>
             </tr>`).join("");
+    }
+
+    function cargarTablaSolis(solis) {
+        document.getElementById("bodySolis").innerHTML = solis.map(s => `
+            <tr><td>${s.nombre}</td><td>${s.email}</td><td><button onclick="borrarSoli('${s.id}')">🗑️</button></td></tr>`).join("");
+    }
+
+    async function eliminarProd(id) { if(confirm("¿Eliminar producto?")) await db.collection("productos").doc(id).delete(); }
+    async function borrarVenta(id) { await db.collection("ventas").doc(id).delete(); }
+    async function borrarTodasVentas() {
+        if(confirm("¿BORRAR TODO EL HISTORIAL?")) {
+            const batch = db.batch();
+            const snap = await db.collection("ventas").get();
+            snap.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        }
     }
 
     async function guardarFirebase() {
@@ -332,25 +273,29 @@
             precio: Number(document.getElementById("ap").value), 
             precio_may: Number(document.getElementById("apm").value), 
             stock: Number(document.getElementById("as").value), 
+            promo: document.getElementById("apromo").value,
             imagen: document.getElementById("ai").value
         };
         id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
-        limpiarAdmin(); alert("Guardado OK");
+        limpiarAdmin();
     }
 
-    // HELPERS
-    async function registrarMay() {
-        const d = { nombre: document.getElementById("rn").value, cuit: document.getElementById("rc").value, tel: document.getElementById("rt").value, email: document.getElementById("re").value, pass: document.getElementById("rp").value };
-        await db.collection("solicitudes_mayoristas").add(d);
-        alert("Solicitud recibida"); toggleAuth('L');
+    // UTILIDADES UI
+    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
+    function toggleCart() { document.getElementById("cartDrawer").style.right = document.getElementById("cartDrawer").style.right === "0px" ? "-380px" : "0px"; document.getElementById("overlay").classList.toggle("active"); }
+    function toggleMode() { document.body.classList.toggle("light"); }
+    function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
+    function cerrarModales() { document.querySelectorAll(".modal").forEach(m => m.style.display="none"); }
+    function closeAll() { document.querySelectorAll(".active").forEach(el => el.classList.remove("active")); cerrarModales(); document.getElementById("cartDrawer").style.right = "-380px"; }
+    function toggleAuth(t) { document.getElementById("secLogin").style.display = t==='L'?'block':'none'; document.getElementById("secReg").style.display = t==='R'?'block':'none'; }
+    function tabAdmin(t) { 
+        document.getElementById("tabProds").style.display = t==='prods'?'block':'none'; 
+        document.getElementById("tabSolis").style.display = t==='solis'?'block':'none'; 
+        document.getElementById("tabVentas").style.display = t==='ventas'?'block':'none'; 
     }
-
-    function validarLogin() {
-        if(document.getElementById("u").value === "mayorista" && document.getElementById("p_log").value === "vip") {
-            esMayorista = true; sessionStorage.setItem("esMayorista", "true"); cerrarModales(); render();
-        } else { alert("Error"); }
-    }
-    function logout() { esMayorista = false; sessionStorage.setItem("esMayorista", "false"); render(); }
+    function abrirAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
+    function addCar(id) { carrito.push({id, qty:1}); upCart(); }
+    function upCart() { document.getElementById("cartBadge").innerText = carrito.length; }
     function editarProd(id) {
         const r = repuestos.find(x => x.id === id);
         document.getElementById("eid").value = r.id;
@@ -358,24 +303,8 @@
         document.getElementById("ap").value = r.precio;
         document.getElementById("apm").value = r.precio_may;
         document.getElementById("as").value = r.stock;
-        document.getElementById("ai").value = r.imagen;
     }
-    async function borrarSoli(id) { await db.collection("solicitudes_mayoristas").doc(id).delete(); }
-    function tabAdmin(t) { 
-        document.getElementById("tabProds").style.display = t==='prods'?'block':'none'; 
-        document.getElementById("tabSolis").style.display = t==='solis'?'block':'none'; 
-        document.getElementById("tabVentas").style.display = t==='ventas'?'block':'none'; 
-    }
-    function toggleAuth(t) { document.getElementById("secLogin").style.display = t==='L'?'block':'none'; document.getElementById("secReg").style.display = t==='R'?'block':'none'; }
-    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
-    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
-    function toggleMode() { document.body.classList.toggle("light"); }
-    function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
-    function cerrarModales() { document.querySelectorAll(".modal").forEach(m => m.style.display="none"); }
-    function closeAll() { document.querySelectorAll(".active").forEach(el => el.classList.remove("active")); cerrarModales(); }
-    function checkLogistica() { document.getElementById("formLogistica").style.display = document.getElementById("metodoEntrega").value === "envio" ? "block" : "none"; }
-    function abrirAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
-    function limpiarAdmin() { document.getElementById("eid").value=""; document.getElementById("an").value=""; document.getElementById("ap").value=""; document.getElementById("apm").value=""; document.getElementById("as").value=""; }
+    function limpiarAdmin() { document.getElementById("eid").value=""; document.getElementById("an").value=""; }
 </script>
 </body>
 </html>
