@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEO REPUESTOS - SISTEMA INTEGRAL</title>
-    
+    <title>NEO REPUESTOS - CONTROL TOTAL</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
@@ -13,38 +12,29 @@
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #2563eb;
             --sidebar-bg: #1e40af; --success: #10b981; --promo: #f59e0b; --danger: #ef4444;
         }
-        body.light {
-            --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --sidebar-bg: #2563eb;
-        }
-        body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition:0.3s; }
+        body.light { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --sidebar-bg: #2563eb; }
+        body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition:0.3s; overflow-x: hidden; }
         
-        header { 
-            display:flex; justify-content:space-between; align-items:center; 
-            padding:10px 20px; background:var(--card); position:sticky; top:0; z-index:1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .search-bar input { padding:8px 15px; border-radius:20px; border:1px solid #444; background:rgba(0,0,0,0.1); color:inherit; width:180px; outline: none; }
+        header { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:var(--card); position:sticky; top:0; z-index:1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .search-bar input { padding:8px 15px; border-radius:20px; border:1px solid #444; background:rgba(0,0,0,0.1); color:inherit; width:150px; outline: none; }
 
-        .sidebar { 
-            position: fixed; left: -280px; top: 0; width: 260px; height: 100%; 
-            background: var(--sidebar-bg); color: white; transition: 0.3s; z-index: 2000; padding: 20px; box-sizing: border-box;
-        }
-        .sidebar.active { left: 0; }
-        .sidebar a { display: block; padding: 15px 0; color: white; text-decoration: none; border-bottom: 1px solid #ffffff22; }
+        /* PRODUCTOS */
+        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:15px; padding:20px; }
+        .card { background:var(--card); padding:15px; border-radius:15px; text-align:center; position:relative; transition: 0.3s; }
+        .card img { width: 100%; height: 120px; object-fit: contain; }
+        .promo-badge { position:absolute; top:8px; left:8px; background:var(--promo); color:black; font-size:10px; font-weight:bold; padding:3px 6px; border-radius:5px; }
 
-        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; padding:20px; }
-        .card { background:var(--card); padding:15px; border-radius:15px; text-align:center; position:relative; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .card img { width: 100%; height: 140px; object-fit: contain; }
-        .promo-tag { position:absolute; top:10px; left:10px; background:var(--promo); color:black; font-size:10px; font-weight:bold; padding:3px 7px; border-radius:5px; }
-
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 95%; max-width: 850px; position: relative; max-height: 90vh; overflow-y: auto; }
+        /* MODALES Y TABLAS */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 10px; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 800px; position: relative; max-height: 90vh; overflow-y: auto; }
         
-        input, select { width: 100%; padding: 10px; margin: 5px 0; background: rgba(0,0,0,0.1); color: inherit; border: 1px solid #444; border-radius: 8px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; background: rgba(0,0,0,0.05); color: inherit; border: 1px solid #444; border-radius: 8px; }
         .btn-main { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top:5px; }
         
         table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #444; padding: 8px; text-align: left; }
-        
+        th, td { border-bottom: 1px solid #334155; padding: 10px; text-align: left; }
+        .btn-del { background: var(--danger); color: white; border: none; padding: 5px; border-radius: 5px; cursor: pointer; }
+
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1500; }
         .overlay.active { display: block; }
     </style>
@@ -52,54 +42,47 @@
 <body>
 
 <header>
-    <div style="display:flex; align-items:center; gap:15px">
-        <span onclick="toggleSidebar()" style="cursor:pointer; font-size: 25px;">☰</span>
-        <b onclick="location.reload()" style="cursor:pointer">NEO REPUESTOS</b>
+    <div style="display:flex; align-items:center; gap:10px">
+        <b onclick="location.reload()" style="cursor:pointer; color:var(--accent)">NEO REPUESTOS</b>
     </div>
     <div class="search-bar"><input type="text" id="busq" placeholder="Buscar..." onkeyup="render()"></div>
-    <div style="display:flex; gap:15px; align-items:center">
-        <span onclick="toggleMode()" style="cursor:pointer">🌗</span>
-        <span onclick="abrirModal('loginModal')" id="userIcon">👤</span>
+    <div style="display:flex; gap:15px">
+        <span onclick="abrirModal('loginModal')" style="cursor:pointer">👤</span>
         <span onclick="abrirAdmin()" style="cursor:pointer">🔑</span>
         <div onclick="toggleCart()" style="cursor:pointer; position:relative">
-            🛒 <b id="cartBadge" style="position:absolute; top:-8px; right:-8px; background:red; color:white; font-size:10px; padding:2px 6px; border-radius:50%">0</b>
+            🛒 <b id="cartBadge" style="position:absolute; top:-8px; right:-8px; background:red; color:white; font-size:10px; padding:2px 5px; border-radius:50%">0</b>
         </div>
     </div>
 </header>
 
 <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
-<nav class="sidebar" id="sidebar">
-    <h2>Menú</h2>
-    <a href="#" onclick="closeAll()">🏠 Inicio</a>
-    <a href="#" onclick="abrirModal('loginModal')">👤 Acceso Mayorista</a>
-    <a href="https://wa.me/5493434508948">📞 Contacto</a>
-</nav>
-
 <div class="products" id="productsCont"></div>
 
-<div id="cartDrawer" style="position:fixed; right:-380px; top:0; width:350px; height:100%; background:var(--card); transition:0.3s; z-index:3000; padding:20px; display:flex; flex-direction:column; box-shadow:-5px 0 20px rgba(0,0,0,0.5); box-sizing:border-box;">
+<div id="cartDrawer" style="position:fixed; right:-380px; top:0; width:320px; height:100%; background:var(--card); transition:0.3s; z-index:3000; padding:20px; display:flex; flex-direction:column; box-shadow:-5px 0 20px rgba(0,0,0,0.5);">
     <h3>Carrito</h3>
     <div id="cartList" style="flex-grow:1; overflow-y:auto"></div>
-    <div id="totalDisplay" style="font-size:18px; font-weight:bold; margin:10px 0">Total: $0</div>
-    <button class="btn-main" style="background:#25d366" onclick="enviarWhatsApp()">Pedir por WhatsApp</button>
+    <div id="totalDisplay" style="font-size:18px; font-weight:bold; padding:10px 0">Total: $0</div>
+    <button class="btn-main" style="background:#25d366" onclick="enviarWhatsApp()">Confirmar por WhatsApp</button>
+    <button class="btn-main" style="background:transparent; border:1px solid #444" onclick="closeAll()">Cerrar</button>
 </div>
 
 <div class="modal" id="loginModal">
     <div class="modal-content" style="max-width:350px">
         <div id="secLogin">
-            <h3>Login Mayorista</h3>
+            <h3>Acceso Mayorista</h3>
             <input id="u" placeholder="Usuario">
             <input id="p_log" type="password" placeholder="Contraseña">
-            <button class="btn-main" onclick="validarLogin()">Entrar</button>
-            <p style="font-size:12px; text-align:center">¿Sin cuenta? <a href="#" onclick="toggleAuth('R')">Registrate</a></p>
+            <button class="btn-main" onclick="validarLogin()">Ingresar</button>
+            <button class="btn-main" style="background:#444" onclick="toggleAuth('R')">Solicitar Alta</button>
         </div>
         <div id="secReg" style="display:none">
-            <h3>Solicitud Alta</h3>
-            <input id="rn" placeholder="Nombre/Empresa">
+            <h3>Registro de Cliente</h3>
+            <input id="rn" placeholder="Nombre / Razón Social">
+            <input id="rc" placeholder="CUIT">
             <input id="re" placeholder="Email">
-            <input id="rp" type="password" placeholder="Pass">
-            <button class="btn-main" style="background:var(--success)" onclick="registrarMay()">Enviar</button>
+            <input id="rp" type="password" placeholder="Contraseña deseada">
+            <button class="btn-main" style="background:var(--success)" onclick="registrarMay()">Enviar Datos</button>
             <button class="btn-main" style="background:none; border:1px solid #444" onclick="toggleAuth('L')">← Volver</button>
         </div>
     </div>
@@ -107,49 +90,49 @@
 
 <div class="modal" id="adminModal">
     <div class="modal-content">
-        <span onclick="cerrarModales()" style="float:right; cursor:pointer">✕</span>
-        <h2>Panel Admin</h2>
-        <div style="display:flex; gap:5px; margin-bottom:15px">
+        <span onclick="cerrarModales()" style="float:right; cursor:pointer; font-size:20px">✕</span>
+        <h2>Panel de Control</h2>
+        <div style="display:flex; gap:8px; margin-bottom:15px; overflow-x:auto">
             <button class="btn-main" onclick="tabAdmin('prods')">Stock</button>
             <button class="btn-main" style="background:#6366f1" onclick="tabAdmin('solis')">Solicitudes</button>
-            <button class="btn-main" style="background:#10b981" onclick="tabAdmin('ventas')">Ventas</button>
+            <button class="btn-main" style="background:#10b981" onclick="tabAdmin('ventas')">Historial Ventas</button>
         </div>
 
         <div id="tabProds">
-            <div style="background:rgba(0,0,0,0.1); padding:10px; border-radius:10px">
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:15px">
                 <input type="hidden" id="eid">
-                <input id="an" placeholder="Nombre Repuesto">
+                <input id="an" placeholder="Nombre del Producto">
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px">
-                    <input id="ap" type="number" placeholder="Precio">
-                    <input id="apm" type="number" placeholder="Mayorista">
+                    <input id="ap" type="number" placeholder="Precio Púb.">
+                    <input id="apm" type="number" placeholder="Precio May.">
                     <input id="as" type="number" placeholder="Stock">
                 </div>
                 <select id="apromo">
                     <option value="">Sin Promo</option>
                     <option value="2x1">2x1</option>
                     <option value="3x2">3x2</option>
-                    <option value="pack">Pack Especial</option>
+                    <option value="Oferta">Oferta Especial</option>
                 </select>
                 <input id="ai" placeholder="URL Imagen">
-                <button class="btn-main" onclick="guardarFirebase()">Guardar</button>
+                <button class="btn-main" onclick="guardarFirebase()">Guardar / Actualizar</button>
             </div>
             <table>
-                <thead><tr><th>Nombre</th><th>Stock</th><th>Acciones</th></tr></thead>
+                <thead><tr><th>Producto</th><th>Stock</th><th>Acciones</th></tr></thead>
                 <tbody id="bodyProds"></tbody>
             </table>
         </div>
 
         <div id="tabSolis" style="display:none">
-            <table>
-                <thead><tr><th>Nombre</th><th>Email</th><th>Acción</th></tr></thead>
+            <table id="tablaSolis">
+                <thead><tr><th>Nombre</th><th>Email</th><th>CUIT</th><th>Acción</th></tr></thead>
                 <tbody id="bodySolis"></tbody>
             </table>
         </div>
 
         <div id="tabVentas" style="display:none">
-            <button onclick="borrarTodasVentas()" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; margin-bottom:10px; cursor:pointer">⚠️ Vaciar Todo el Historial</button>
+            <button onclick="vaciarVentas()" style="background:var(--danger); color:white; border:none; padding:8px; border-radius:5px; margin-bottom:10px; cursor:pointer">🗑️ Vaciar Historial Completo</button>
             <table>
-                <thead><tr><th>Fecha/Hora</th><th>Productos</th><th>Total</th><th>Acción</th></tr></thead>
+                <thead><tr><th>Fecha y Hora</th><th>Detalle</th><th>Total</th><th>Acción</th></tr></thead>
                 <tbody id="bodyVentas"></tbody>
             </table>
         </div>
@@ -157,7 +140,6 @@
 </div>
 
 <script>
-    // CONFIGURACIÓN FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -173,61 +155,83 @@
     let carrito = [];
     let esMayorista = sessionStorage.getItem("esMayorista") === "true";
 
-    // CARGA DE DATOS
+    // SINCRONIZACIÓN REALTIME
     db.collection("productos").onSnapshot(snap => {
         repuestos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         render();
         cargarTablaProds();
     });
 
-    db.collection("ventas").orderBy("timestamp", "desc").onSnapshot(snap => {
-        const vts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        cargarTablaVentas(vts);
+    db.collection("ventas").orderBy("creado", "desc").onSnapshot(snap => {
+        cargarTablaVentas(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
     db.collection("solicitudes_mayoristas").onSnapshot(snap => {
-        const solis = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        cargarTablaSolis(solis);
+        cargarTablaSolis(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
+    // RENDER PRINCIPAL
     function render() {
         const b = document.getElementById("busq").value.toLowerCase();
         const cont = document.getElementById("productsCont");
         cont.innerHTML = repuestos.filter(x => x.nombre.toLowerCase().includes(b)).map(r => `
             <div class="card">
-                ${r.promo ? `<div class="promo-tag">${r.promo}</div>` : ''}
+                ${r.promo ? `<div class="promo-badge">${r.promo}</div>` : ''}
                 <img src="${r.imagen || 'https://via.placeholder.com/150'}">
-                <h4>${r.nombre}</h4>
-                <div style="font-weight:bold">$${esMayorista ? r.precio_may : r.precio}</div>
-                <div style="font-size:10px">Stock: ${r.stock}</div>
-                <button class="btn-main" onclick="addCar('${r.id}')" ${r.stock <= 0 ? 'disabled' : ''}>${r.stock > 0 ? 'Agregar' : 'Sin Stock'}</button>
+                <h4 style="margin:10px 0; font-size:14px">${r.nombre}</h4>
+                <div style="color:var(--accent); font-weight:bold">$${esMayorista ? r.precio_may : r.precio}</div>
+                <div style="font-size:10px; opacity:0.7">Stock: ${r.stock}</div>
+                <button class="btn-main" onclick="addCar('${r.id}')" ${r.stock <= 0 ? 'disabled style="background:gray"' : ''}>
+                    ${r.stock > 0 ? 'Añadir' : 'Agotado'}
+                </button>
             </div>`).join("");
     }
 
-    async function enviarWhatsApp() {
-        if(carrito.length === 0) return;
-        const ahora = new Date();
-        const timestamp = ahora.getTime();
-        const horaLegible = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString();
-        let total = 0;
-        let detalle = carrito.map(c => {
-            const r = repuestos.find(x => x.id === c.id);
-            total += (esMayorista ? r.precio_may : r.precio) * c.qty;
-            return `${r.nombre} x${c.qty}`;
-        }).join(", ");
+    // CARRITO LÓGICA
+    function addCar(id) {
+        const item = carrito.find(c => c.id === id);
+        if(item) item.qty++; else carrito.push({id, qty:1});
+        upCart();
+    }
 
-        await db.collection("ventas").add({ timestamp, hora: horaLegible, productos: detalle, total });
-        
+    function upCart() {
+        const list = document.getElementById("cartList");
+        let total = 0;
+        list.innerHTML = carrito.map(c => {
+            const r = repuestos.find(x => x.id === c.id);
+            const sub = (esMayorista ? r.precio_may : r.precio) * c.qty;
+            total += sub;
+            return `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:10px">
+                <span>${r.nombre} (x${c.qty})</span>
+                <b>$${sub}</b>
+            </div>`;
+        }).join("");
+        document.getElementById("totalDisplay").innerText = "Total: $" + total;
+        document.getElementById("cartBadge").innerText = carrito.reduce((a,b) => a + b.qty, 0);
+    }
+
+    async function enviarWhatsApp() {
+        if(!carrito.length) return;
+        const ahora = new Date();
+        const fechaHora = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString();
+        let msg = `*NUEVO PEDIDO NEO*\n`;
+        let total = 0;
+        let detalleText = "";
+
         for(let c of carrito) {
             const r = repuestos.find(x => x.id === c.id);
+            const p = esMayorista ? r.precio_may : r.precio;
+            total += p * c.qty;
+            detalleText += `- ${r.nombre} x${c.qty}\n`;
             await db.collection("productos").doc(r.id).update({ stock: r.stock - c.qty });
         }
 
-        window.open(`https://wa.me/5493434508948?text=Pedido: ${detalle} | Total: $${total}`);
+        await db.collection("ventas").add({ creado: ahora.getTime(), fechaHora, detalle: detalleText, total });
+        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg + detalleText + "\nTOTAL: $" + total)}`);
         carrito = []; upCart(); closeAll();
     }
 
-    // FUNCIONES ADMIN
+    // ADMIN: PRODUCTOS
     function cargarTablaProds() {
         document.getElementById("bodyProds").innerHTML = repuestos.map(r => `
             <tr>
@@ -235,67 +239,27 @@
                 <td>${r.stock}</td>
                 <td>
                     <button onclick="editarProd('${r.id}')">✏️</button>
-                    <button onclick="eliminarProd('${r.id}')">🗑️</button>
+                    <button class="btn-del" onclick="eliminarProd('${r.id}')">🗑️</button>
                 </td>
             </tr>`).join("");
     }
 
-    function cargarTablaVentas(ventas) {
-        document.getElementById("bodyVentas").innerHTML = ventas.map(v => `
-            <tr>
-                <td>${v.hora}</td>
-                <td>${v.productos}</td>
-                <td>$${v.total}</td>
-                <td><button onclick="borrarVenta('${v.id}')">🗑️</button></td>
-            </tr>`).join("");
-    }
-
-    function cargarTablaSolis(solis) {
-        document.getElementById("bodySolis").innerHTML = solis.map(s => `
-            <tr><td>${s.nombre}</td><td>${s.email}</td><td><button onclick="borrarSoli('${s.id}')">🗑️</button></td></tr>`).join("");
-    }
-
-    async function eliminarProd(id) { if(confirm("¿Eliminar producto?")) await db.collection("productos").doc(id).delete(); }
-    async function borrarVenta(id) { await db.collection("ventas").doc(id).delete(); }
-    async function borrarTodasVentas() {
-        if(confirm("¿BORRAR TODO EL HISTORIAL?")) {
-            const batch = db.batch();
-            const snap = await db.collection("ventas").get();
-            snap.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-        }
-    }
-
     async function guardarFirebase() {
         const id = document.getElementById("eid").value;
-        const d = { 
-            nombre: document.getElementById("an").value, 
-            precio: Number(document.getElementById("ap").value), 
-            precio_may: Number(document.getElementById("apm").value), 
-            stock: Number(document.getElementById("as").value), 
+        const data = {
+            nombre: document.getElementById("an").value,
+            precio: Number(document.getElementById("ap").value),
+            precio_may: Number(document.getElementById("apm").value),
+            stock: Number(document.getElementById("as").value),
             promo: document.getElementById("apromo").value,
             imagen: document.getElementById("ai").value
         };
-        id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
+        id ? await db.collection("productos").doc(id).update(data) : await db.collection("productos").add(data);
         limpiarAdmin();
     }
 
-    // UTILIDADES UI
-    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
-    function toggleCart() { document.getElementById("cartDrawer").style.right = document.getElementById("cartDrawer").style.right === "0px" ? "-380px" : "0px"; document.getElementById("overlay").classList.toggle("active"); }
-    function toggleMode() { document.body.classList.toggle("light"); }
-    function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
-    function cerrarModales() { document.querySelectorAll(".modal").forEach(m => m.style.display="none"); }
-    function closeAll() { document.querySelectorAll(".active").forEach(el => el.classList.remove("active")); cerrarModales(); document.getElementById("cartDrawer").style.right = "-380px"; }
-    function toggleAuth(t) { document.getElementById("secLogin").style.display = t==='L'?'block':'none'; document.getElementById("secReg").style.display = t==='R'?'block':'none'; }
-    function tabAdmin(t) { 
-        document.getElementById("tabProds").style.display = t==='prods'?'block':'none'; 
-        document.getElementById("tabSolis").style.display = t==='solis'?'block':'none'; 
-        document.getElementById("tabVentas").style.display = t==='ventas'?'block':'none'; 
-    }
-    function abrirAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
-    function addCar(id) { carrito.push({id, qty:1}); upCart(); }
-    function upCart() { document.getElementById("cartBadge").innerText = carrito.length; }
+    async function eliminarProd(id) { if(confirm("¿Eliminar producto definitivamente?")) await db.collection("productos").doc(id).delete(); }
+
     function editarProd(id) {
         const r = repuestos.find(x => x.id === id);
         document.getElementById("eid").value = r.id;
@@ -303,8 +267,67 @@
         document.getElementById("ap").value = r.precio;
         document.getElementById("apm").value = r.precio_may;
         document.getElementById("as").value = r.stock;
+        document.getElementById("apromo").value = r.promo || "";
+        document.getElementById("ai").value = r.imagen || "";
     }
-    function limpiarAdmin() { document.getElementById("eid").value=""; document.getElementById("an").value=""; }
+
+    // ADMIN: VENTAS
+    function cargarTablaVentas(ventas) {
+        document.getElementById("bodyVentas").innerHTML = ventas.map(v => `
+            <tr>
+                <td>${v.fechaHora}</td>
+                <td>${v.detalle.substring(0,30)}...</td>
+                <td>$${v.total}</td>
+                <td><button class="btn-del" onclick="borrarVenta('${v.id}')">🗑️</button></td>
+            </tr>`).join("");
+    }
+
+    async function borrarVenta(id) { await db.collection("ventas").doc(id).delete(); }
+
+    async function vaciarVentas() {
+        if(confirm("¿Seguro que querés borrar TODO el historial?")) {
+            const batch = db.batch();
+            const snap = await db.collection("ventas").get();
+            snap.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        }
+    }
+
+    // ADMIN: SOLICITUDES
+    function cargarTablaSolis(solis) {
+        document.getElementById("bodySolis").innerHTML = solis.map(s => `
+            <tr>
+                <td>${s.nombre}</td>
+                <td>${s.email}</td>
+                <td>${s.cuit}</td>
+                <td><button class="btn-del" onclick="borrarSoli('${s.id}')">🗑️</button></td>
+            </tr>`).join("");
+    }
+    async function borrarSoli(id) { await db.collection("solicitudes_mayoristas").doc(id).delete(); }
+
+    // UI HELPERS
+    function toggleCart() { const d = document.getElementById("cartDrawer"); d.style.right = d.style.right === "0px" ? "-380px" : "0px"; document.getElementById("overlay").classList.toggle("active"); }
+    function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
+    function cerrarModales() { document.querySelectorAll(".modal").forEach(m => m.style.display="none"); }
+    function closeAll() { cerrarModales(); document.getElementById("overlay").classList.remove("active"); document.getElementById("cartDrawer").style.right = "-380px"; }
+    function toggleAuth(t) { document.getElementById("secLogin").style.display = t==='L'?'block':'none'; document.getElementById("secReg").style.display = t==='R'?'block':'none'; }
+    function tabAdmin(t) { 
+        document.getElementById("tabProds").style.display = t==='prods'?'block':'none'; 
+        document.getElementById("tabSolis").style.display = t==='solis'?'block':'none'; 
+        document.getElementById("tabVentas").style.display = t==='ventas'?'block':'none'; 
+    }
+    function abrirAdmin() { if(prompt("Clave de acceso:") === "admin") abrirModal("adminModal"); }
+    function validarLogin() {
+        if(document.getElementById("u").value === "mayorista" && document.getElementById("p_log").value === "vip") {
+            esMayorista = true; sessionStorage.setItem("esMayorista", "true"); cerrarModales(); render();
+        } else alert("Datos incorrectos");
+    }
+    async function registrarMay() {
+        const d = { nombre: document.getElementById("rn").value, cuit: document.getElementById("rc").value, email: document.getElementById("re").value };
+        await db.collection("solicitudes_mayoristas").add(d);
+        alert("Solicitud enviada"); toggleAuth('L');
+    }
+    function limpiarAdmin() { document.getElementById("eid").value=""; document.querySelectorAll("#tabProds input, #tabProds select").forEach(i => i.value=""); }
 </script>
 </body>
 </html>
