@@ -9,8 +9,7 @@
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
             --accent: #2563eb; --sidebar-bg: #1e40af;
             --shadow: 0 10px 30px rgba(0,0,0,0.5);
-            --success: #10b981;
-            --coral: #ff8a80;
+            --success: #10b981; --coral: #ff8a80;
         }
         body.light { --bg: #f4f6f9; --card: #ffffff; --text: #111; --sidebar-bg: #2563eb; }
         body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition:.3s; overflow-x: hidden; }
@@ -63,12 +62,14 @@
         .price-main { font-size: 1.1em; font-weight: bold; color: var(--accent); }
 
         .admin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
-        .admin-content { background: var(--card); width: 90%; max-width: 550px; max-height: 85vh; border-radius: 15px; padding: 20px; overflow-y: auto; position: relative; }
+        .admin-content { background: var(--card); width: 90%; max-width: 600px; max-height: 85vh; border-radius: 15px; padding: 20px; overflow-y: auto; position: relative; }
         
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1500; }
         .overlay.show { display: block; }
         button { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
         .btn-wa { background: #25d366; margin-top: 10px; font-size: 15px; }
+        input { background: rgba(0,0,0,0.3); color: white; border: 1px solid #444; padding: 8px; border-radius: 5px; width: 100%; box-sizing: border-box; }
+        .tab-content { padding-top: 10px; }
     </style>
 </head>
 <body>
@@ -95,7 +96,7 @@
     <div class="sidebar-header">MENU</div>
     <div class="sidebar-nav">
         <a href="#" onclick="closeAll()">🏠 Inicio</a>
-        <a href="#" onclick="alert('Informacion de la tienda')">ℹ️ Información</a>
+        <a href="#" onclick="alert('Información de la tienda')">ℹ️ Información</a>
         <a href="#" onclick="alert('Ubicación: Calle Falsa 123')">📍 Ubicación</a>
         <a href="https://instagram.com" target="_blank">📸 Instagram</a>
     </div>
@@ -117,7 +118,6 @@
         <div id="form-envio">
             <input id="f_nombre" class="cart-input" placeholder="Nombre completo">
             <input id="f_direccion" class="cart-input" placeholder="Dirección">
-            <input id="f_telefono" class="cart-input" placeholder="Teléfono">
         </div>
     </div>
     <div style="border-top: 2px solid #444; padding-top: 10px;">
@@ -131,346 +131,237 @@
 
 <div class="products" id="products"></div>
 
+<div class="admin-modal" id="loginModal">
+    <div class="admin-content" style="max-width: 350px;">
+        <span style="float:right; cursor:pointer;" onclick="cerrarModales()">✕</span>
+        <h3 id="loginTitle">Acceso Mayorista</h3>
+        <input id="loginEmail" placeholder="Email" style="margin-bottom:10px">
+        <input id="loginPass" type="password" placeholder="Contraseña" style="margin-bottom:10px">
+        <div id="loginBtns">
+            <button onclick="loginMayorista()">Ingresar</button>
+            <button onclick="registrarMayorista()" style="background:#444; margin-top:5px">Registrarse</button>
+        </div>
+        <div id="logoutBtn" style="display:none">
+            <p>Sesión iniciada correctamente.</p>
+            <button onclick="cerrarSesion()" style="background:#ef4444">Cerrar Sesión</button>
+        </div>
+    </div>
+</div>
+
 <div class="admin-modal" id="adminModal">
-    <div class="admin-content" style="max-width: 800px; width: 95%;">
+    <div class="admin-content">
         <span style="float:right; cursor:pointer; font-size:24px;" onclick="cerrarModales()">✕</span>
-        
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px;">
-            <button onclick="showTab('tab-prods')" style="background:#444; flex:1">📦 Productos</button>
-            <button onclick="showTab('tab-users')" style="background:#444; flex:1">👥 Mayoristas</button>
-            <button onclick="showTab('tab-hist')" style="background:#444; flex:1">📜 Historial</button>
+        <div style="display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px;">
+            <button onclick="showTab('tab-prods')" style="background:#444; font-size:12px">📦 Productos</button>
+            <button onclick="showTab('tab-users')" style="background:#444; font-size:12px">👥 Mayoristas</button>
+            <button onclick="showTab('tab-hist')" style="background:#444; font-size:12px">📜 Historial</button>
         </div>
 
         <div id="tab-prods" class="tab-content">
-            <h3 id="formTitle">Nuevo / Editar Producto</h3>
+            <h4 id="formTitle">Nuevo / Editar Producto</h4>
             <input type="hidden" id="editIdx" value="-1">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <input id="n" placeholder="Nombre del repuesto">
-                <input id="img" placeholder="URL de imagen">
-                <input id="p1" type="number" placeholder="Precio Minorista">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom:10px">
+                <input id="n" placeholder="Nombre">
+                <input id="img" placeholder="URL Imagen">
+                <input id="p1" type="number" placeholder="Precio Normal">
                 <input id="pm" type="number" placeholder="Precio Mayorista">
             </div>
-            <button onclick="guardarProducto()" id="btnGuardar" style="background:var(--success)">Guardar Producto</button>
-            
-            <div id="listaAdmin" style="margin-top:20px; max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                </div>
+            <button onclick="guardarProducto()" id="btnGuardar" style="background:var(--success)">Guardar</button>
+            <div id="listaAdmin" style="margin-top:15px; max-height: 200px; overflow-y: auto;"></div>
         </div>
 
         <div id="tab-users" class="tab-content" style="display:none">
-            <h3>Mayoristas Registrados</h3>
-            <div id="listaMayoristas" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                </div>
+            <h4>Lista de Mayoristas</h4>
+            <div id="listaMayoristas"></div>
         </div>
 
         <div id="tab-hist" class="tab-content" style="display:none">
             <div style="display:flex; justify-content:space-between; align-items:center">
-                <h3>Historial de Pedidos</h3>
-                <button onclick="borrarHistorialTotal()" style="width:auto; background:#ef4444; font-size:12px">Borrar Todo</button>
+                <h4>Historial</h4>
+                <button onclick="borrarHistorialTotal()" style="width:auto; background:#ef4444; font-size:10px">Limpiar</button>
             </div>
-            <div id="listaHistorial" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; max-height: 300px; overflow-y: auto;">
-                </div>
+            <div id="listaHistorial"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- GESTIÓN DE PESTAÑAS ---
-function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-    document.getElementById(tabId).style.display = 'block';
-    if(tabId === 'tab-prods') cargarListaAdmin();
-    if(tabId === 'tab-users') cargarListaMayoristas();
-    if(tabId === 'tab-hist') cargarHistorial();
-}
-
-// --- PRODUCTOS: EDITAR Y ELIMINAR ---
-function cargarListaAdmin() {
-    const cont = document.getElementById("listaAdmin");
-    cont.innerHTML = productos.map((p, i) => `
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #444; padding:5px 0;">
-            <span>${p.name} ($${p.p_ind})</span>
-            <div>
-                <button onclick="prepararEdicion(${i})" style="width:auto; padding:5px 10px; background:#f59e0b">✏️</button>
-                <button onclick="eliminarProd(${i})" style="width:auto; padding:5px 10px; background:#ef4444">✕</button>
-            </div>
-        </div>
-    `).join("");
-}
-
-function prepararEdicion(i) {
-    const p = productos[i];
-    document.getElementById("n").value = p.name;
-    document.getElementById("p1").value = p.p_ind;
-    document.getElementById("pm").value = p.p_may;
-    document.getElementById("img").value = p.img;
-    document.getElementById("editIdx").value = i;
-    document.getElementById("formTitle").innerText = "Editando: " + p.name;
-    document.getElementById("btnGuardar").style.background = "#f59e0b";
-}
-
-function guardarProducto() {
-    const idx = parseInt(document.getElementById("editIdx").value);
-    const p = {
-        name: document.getElementById("n").value,
-        p_ind: parseInt(document.getElementById("p1").value),
-        p_may: parseInt(document.getElementById("pm").value),
-        img: document.getElementById("img").value
-    };
-
-    if(idx === -1) productos.push(p); // Nuevo
-    else productos[idx] = p; // Editar
-
-    localStorage.setItem("products", JSON.stringify(productos));
-    alert("Datos guardados");
-    location.reload();
-}
-
-// --- MAYORISTAS: CONTROL DE REGISTROS ---
-function cargarListaMayoristas() {
-    const cont = document.getElementById("listaMayoristas");
-    if(mayoristas.length === 0) return cont.innerHTML = "No hay mayoristas registrados";
-    cont.innerHTML = mayoristas.map((u, i) => `
-        <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #444">
-            <span>📧 ${u.email}</span>
-            <button onclick="eliminarMayorista(${i})" style="width:auto; background:none; color:red">Eliminar</button>
-        </div>
-    `).join("");
-}
-
-function eliminarMayorista(i) {
-    if(confirm("¿Quitar acceso mayorista a este usuario?")) {
-        mayoristas.splice(i, 1);
-        localStorage.setItem("mayoristas", JSON.stringify(mayoristas));
-        cargarListaMayoristas();
-    }
-}
-
-// --- HISTORIAL DE PEDIDOS ---
-let historial = JSON.parse(localStorage.getItem("historial")) || [];
-
-// Modifica tu función enviarPedido() actual para que guarde en el historial:
-function registrarEnHistorial(pedido) {
-    const entrada = {
-        fecha: new Date().toLocaleString(),
-        detalles: pedido,
-        id: Date.now()
-    };
-    historial.push(entrada);
-    localStorage.setItem("historial", JSON.stringify(historial));
-}
-
-function cargarHistorial() {
-    const cont = document.getElementById("listaHistorial");
-    if(historial.length === 0) return cont.innerHTML = "Historial vacío";
-    cont.innerHTML = historial.map((h, i) => `
-        <div style="font-size:12px; border-bottom:1px solid #444; padding:10px 0;">
-            <div style="display:flex; justify-content:space-between">
-                <b>📅 ${h.fecha}</b>
-                <button onclick="borrarUnoHistorial(${i})" style="width:auto; background:none; color:red; padding:0">Borrar</button>
-            </div>
-            <div style="color:#cbd5e1">${h.detalles.replace(/\n/g, '<br>')}</div>
-        </div>
-    `).reverse().join("");
-}
-
-function borrarUnoHistorial(i) {
-    historial.splice(i, 1);
-    localStorage.setItem("historial", JSON.stringify(historial));
-    cargarHistorial();
-}
-
-function borrarHistorialTotal() {
-    if(confirm("¿Borrar todos los registros de ventas?")) {
-        historial = [];
-        localStorage.setItem("historial", JSON.stringify(historial));
-        cargarHistorial();
-    }
-}
-    // VARIABLES GLOBALES (Una sola vez)
-    let products = JSON.parse(localStorage.getItem("products")) || [];
-    let cart = [];
+    // 1. VARIABLES
+    let productos = JSON.parse(localStorage.getItem("products")) || [];
     let mayoristas = JSON.parse(localStorage.getItem("mayoristas")) || [];
+    let historial = JSON.parse(localStorage.getItem("historial")) || [];
     let currentUser = JSON.parse(sessionStorage.getItem("currentUser")) || null;
+    let carrito = [];
 
-    // RENDERIZADO DE PRODUCTOS
+    // 2. RENDER PRINCIPAL
     function render(filtro = "") {
-        const container = document.getElementById("products");
-        const filtrados = products.filter(p => p.name.toLowerCase().includes(filtro.toLowerCase()));
+        const cont = document.getElementById("products");
+        const filtrados = productos.filter(p => p.name.toLowerCase().includes(filtro.toLowerCase()));
         
-        container.innerHTML = filtrados.map((p, i) => {
-            const realIdx = products.indexOf(p);
-            
-            // Lógica de precio según usuario
-            let precioMostrado = p.p_ind;
-            const esMayorista = currentUser && p.p_may > 0;
-            if(esMayorista) precioMostrado = p.p_may;
-
+        cont.innerHTML = filtrados.map((p, i) => {
+            const realIdx = productos.indexOf(p);
+            let precio = (currentUser && p.p_may > 0) ? p.p_may : p.p_ind;
             return `
                 <div class="card">
                     <img src="${p.img || 'https://via.placeholder.com/150'}">
-                    <h4 style="font-size:14px; margin:5px 0;">${p.name}</h4>
-                    <div class="price-main">$${precioMostrado} ${esMayorista ? '<small>(MAY)</small>' : ''}</div>
-                    ${p.p_x2 > 0 && !esMayorista ? `<div style="color:#10b981; font-size:11px;">Promo x2: $${p.p_x2}</div>` : ''}
-                    <button onclick="addToCart(${realIdx})" style="margin-top:8px;">🛒 Agregar</button>
+                    <h4>${p.name}</h4>
+                    <div class="price-main">$${precio} ${currentUser ? '<small>(MAY)</small>' : ''}</div>
+                    <button onclick="addCart(${realIdx})" style="margin-top:8px;">🛒 Agregar</button>
                 </div>`;
         }).join("");
     }
 
-    // CARRITO Y LOGICA DE PRECIOS
-    function addToCart(index) {
-        const item = cart.find(c => c.id === index);
-        if (item) item.qty++; else cart.push({ id: index, qty: 1 });
+    // 3. CARRITO
+    function addCart(idx) {
+        const item = carrito.find(c => c.id === idx);
+        if(item) item.qty++; else carrito.push({id: idx, qty: 1});
         updateCart();
     }
 
     function updateCart() {
         const list = document.getElementById("cartList");
-        let total = 0; let count = 0; let ahorro = 0;
-
-        list.innerHTML = cart.map((item, idx) => {
-            const p = products[item.id];
-            let subtotal = 0;
-            
-            if (currentUser && p.p_may > 0) {
-                subtotal = item.qty * p.p_may;
-                ahorro += (item.qty * p.p_ind) - subtotal;
-            } else if (p.p_x2 > 0 && item.qty >= 2) {
-                let pares = Math.floor(item.qty / 2);
-                let sueltos = item.qty % 2;
-                subtotal = (pares * p.p_x2) + (sueltos * p.p_ind);
-                ahorro += (item.qty * p.p_ind) - subtotal;
-            } else {
-                subtotal = item.qty * p.p_ind;
-            }
-
-            total += subtotal; count += item.qty;
-            return `
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px; border-bottom: 1px solid #334155; padding-bottom:3px;">
-                    <span>${p.name} (x${item.qty})</span>
-                    <span>$${subtotal} <b onclick="removeFromCart(${idx})" style="color:red; cursor:pointer; margin-left:5px;">✕</b></span>
-                </div>`;
+        let total = 0; let count = 0;
+        list.innerHTML = carrito.map((item, i) => {
+            const p = productos[item.id];
+            let precio = (currentUser && p.p_may > 0) ? p.p_may : p.p_ind;
+            let sub = precio * item.qty;
+            total += sub; count += item.qty;
+            return `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px">
+                <span>${p.name} x${item.qty}</span>
+                <span>$${sub} <b onclick="removeCart(${i})" style="color:red; cursor:pointer">✕</b></span>
+            </div>`;
         }).join("");
-
         document.getElementById("cartTotal").innerText = "$" + total;
         document.getElementById("cartCount").innerText = count;
-        document.getElementById("savingsBox").innerText = ahorro > 0 ? `¡Ahorraste $${ahorro}! ⚡` : "";
     }
 
-    function removeFromCart(idx) { cart.splice(idx, 1); updateCart(); }
+    function removeCart(i) { carrito.splice(i, 1); updateCart(); }
 
-    // FUNCIONES DE USUARIO / LOGIN
-    function abrirLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-
-    function registrarMayorista() {
-        const email = document.getElementById("loginEmail").value;
-        const pass = document.getElementById("loginPass").value;
-        if(!email || !pass) return alert("Completa todos los campos");
-        if(mayoristas.find(u => u.email === email)) return alert("El email ya existe");
-        
-        mayoristas.push({email, pass});
-        localStorage.setItem("mayoristas", JSON.stringify(mayoristas));
-        alert("Cuenta creada, ya puedes iniciar sesión");
-    }
-
-    function loginMayorista() {
-        const email = document.getElementById("loginEmail").value;
-        const pass = document.getElementById("loginPass").value;
-        const user = mayoristas.find(u => u.email === email && u.pass === pass);
-        
-        if(user) {
-            currentUser = user;
-            sessionStorage.setItem("currentUser", JSON.stringify(user));
-            alert("¡Bienvenido mayorista!");
-            document.getElementById('loginModal').style.display = 'none';
-            render();
-            updateCart();
-        } else {
-            alert("Credenciales incorrectas.");
-        }
-    }
-
-    function cerrarSesion() {
-        currentUser = null;
-        sessionStorage.removeItem("currentUser");
-        alert("Sesión cerrada");
-        document.getElementById('loginModal').style.display = 'none';
-        render();
-        updateCart();
-    }
-
-    // INTERFAZ Y ENVIO
-    function toggleEnvio(show) { document.getElementById('form-envio').style.display = show ? 'block' : 'none'; }
-    
     function enviarPedido() {
-        if(cart.length === 0) return alert("El carrito está vacío");
+        if(carrito.length === 0) return alert("Carrito vacío");
         const entrega = document.querySelector('input[name="delivery"]:checked').value;
-        let msg = `NUEVO PEDIDO ${currentUser ? '(MAYORISTA)' : ''}\n--------------------------\n`;
-        
-        cart.forEach(c => {
-            const p = products[c.id];
-            msg += `- ${p.name} (x${c.qty})\n`;
-        });
-
-        msg += `--------------------------\nTOTAL: ${document.getElementById("cartTotal").innerText}`;
+        let msg = `NUEVO PEDIDO ${currentUser ? '(MAYORISTA)' : ''}\n`;
+        carrito.forEach(c => msg += `- ${productos[c.id].name} (x${c.qty})\n`);
+        msg += `TOTAL: ${document.getElementById("cartTotal").innerText}\n`;
         
         if(entrega === "Envio") {
-            const nom = document.getElementById("f_nombre").value;
-            const dir = document.getElementById("f_direccion").value;
-            if(!nom || !dir) return alert("Faltan datos de envío");
-            msg += `\n\nENTREGA: ENVIO\nCliente: ${nom}\nDir: ${dir}`;
-        } else {
-            msg += `\n\nENTREGA: RETIRO LOCAL`;
-        }
+            const n = document.getElementById("f_nombre").value;
+            const d = document.getElementById("f_direccion").value;
+            if(!n || !d) return alert("Completa datos de envío");
+            msg += `ENTREGA: Envio a ${n} en ${d}`;
+        } else { msg += `ENTREGA: Retiro Local`; }
 
+        // Guardar en historial
+        historial.push({fecha: new Date().toLocaleString(), detalles: msg});
+        localStorage.setItem("historial", JSON.stringify(historial));
+        
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
     }
 
-    // ADMIN
-    function abrirAdmin() {
-        if(prompt("Clave:") === "admin") {
-            document.getElementById("adminModal").style.display = "flex";
-            cargarAdminList();
-        }
+    // 4. ADMIN Y PESTAÑAS
+    function showTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.getElementById(tab).style.display = 'block';
+        if(tab === 'tab-prods') cargarAdminList();
+        if(tab === 'tab-users') cargarUserList();
+        if(tab === 'tab-hist') cargarHistList();
     }
 
-    function guardar() {
+    function guardarProducto() {
+        const idx = parseInt(document.getElementById("editIdx").value);
         const p = {
             name: document.getElementById("n").value,
-            p_ind: parseInt(document.getElementById("p_ind").value) || 0,
-            p_x2: parseInt(document.getElementById("p_x2").value) || 0,
-            p_may: parseInt(document.getElementById("p_may").value) || 0,
-            stock: parseInt(document.getElementById("stock").value) || 0,
+            p_ind: parseInt(document.getElementById("p1").value),
+            p_may: parseInt(document.getElementById("pm").value),
             img: document.getElementById("img").value
         };
-        products.push(p);
-        localStorage.setItem("products", JSON.stringify(products));
+        if(idx === -1) productos.push(p); else productos[idx] = p;
+        localStorage.setItem("products", JSON.stringify(productos));
         location.reload();
     }
 
     function cargarAdminList() {
-        document.getElementById("listaAdmin").innerHTML = products.map((p, i) => `
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px;">
+        document.getElementById("listaAdmin").innerHTML = productos.map((p, i) => `
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #444; padding:5px; font-size:12px">
                 <span>${p.name}</span>
-                <span onclick="eliminar(${i})" style="color:red; cursor:pointer">Eliminar ✕</span>
+                <span>
+                    <button onclick="prepararEdit(${i})" style="width:auto; background:orange; padding:2px 5px">✏️</button>
+                    <button onclick="eliminarProd(${i})" style="width:auto; background:red; padding:2px 5px">✕</button>
+                </span>
             </div>`).join("");
     }
 
-    function eliminar(i) {
-        if(confirm("¿Eliminar?")) {
-            products.splice(i, 1);
-            localStorage.setItem("products", JSON.stringify(products));
-            location.reload();
+    function prepararEdit(i) {
+        const p = productos[i];
+        document.getElementById("n").value = p.name;
+        document.getElementById("p1").value = p.p_ind;
+        document.getElementById("pm").value = p.p_may;
+        document.getElementById("img").value = p.img;
+        document.getElementById("editIdx").value = i;
+        document.getElementById("formTitle").innerText = "Editando...";
+    }
+
+    function eliminarProd(i) { if(confirm("¿Borrar?")) { productos.splice(i,1); localStorage.setItem("products", JSON.stringify(productos)); cargarAdminList(); render(); }}
+
+    function cargarUserList() {
+        document.getElementById("listaMayoristas").innerHTML = mayoristas.map((u, i) => `
+            <div style="display:flex; justify-content:space-between; padding:5px; font-size:12px; border-bottom:1px solid #444">
+                <span>${u.email}</span>
+                <button onclick="eliminarUser(${i})" style="width:auto; color:red; background:none">Borrar</button>
+            </div>`).join("");
+    }
+    function eliminarUser(i) { mayoristas.splice(i,1); localStorage.setItem("mayoristas", JSON.stringify(mayoristas)); cargarUserList(); }
+
+    function cargarHistList() {
+        document.getElementById("listaHistorial").innerHTML = historial.map((h, i) => `
+            <div style="font-size:10px; border-bottom:1px solid #444; padding:5px">
+                <b>${h.fecha}</b> <button onclick="borrarUnoH(${i})" style="width:auto; background:none; color:red; float:right">✕</button>
+                <br>${h.detalles.replace(/\n/g, '<br>')}
+            </div>`).reverse().join("");
+    }
+    function borrarUnoH(i) { historial.splice(i,1); localStorage.setItem("historial", JSON.stringify(historial)); cargarHistList(); }
+    function borrarHistorialTotal() { if(confirm("¿Limpiar todo?")) { historial = []; localStorage.setItem("historial", "[]"); cargarHistList(); }}
+
+    // 5. LOGIN Y OTROS
+    function loginMayorista() {
+        const e = document.getElementById("loginEmail").value;
+        const p = document.getElementById("loginPass").value;
+        const u = mayoristas.find(x => x.email === e && x.pass === p);
+        if(u) {
+            currentUser = u; sessionStorage.setItem("currentUser", JSON.stringify(u));
+            alert("Bienvenido"); checkLoginState(); render();
+        } else alert("Error");
+    }
+
+    function registrarMayorista() {
+        const e = document.getElementById("loginEmail").value;
+        const p = document.getElementById("loginPass").value;
+        if(e && p) { mayoristas.push({email:e, pass:p}); localStorage.setItem("mayoristas", JSON.stringify(mayoristas)); alert("Registrado!"); }
+    }
+
+    function checkLoginState() {
+        if(currentUser) {
+            document.getElementById("loginBtns").style.display = "none";
+            document.getElementById("logoutBtn").style.display = "block";
+            document.getElementById("loginTitle").innerText = "Hola, " + currentUser.email.split('@')[0];
+        } else {
+            document.getElementById("loginBtns").style.display = "block";
+            document.getElementById("logoutBtn").style.display = "none";
+            document.getElementById("loginTitle").innerText = "Acceso Mayorista";
         }
     }
 
-    // CONTROLES GENERALES
-    function filtrarProductos() { render(document.getElementById("searchInput").value); }
+    function cerrarSesion() { currentUser = null; sessionStorage.removeItem("currentUser"); checkLoginState(); render(); }
+    function abrirLogin() { document.getElementById("loginModal").style.display = "flex"; checkLoginState(); }
+    function abrirAdmin() { if(prompt("Clave:")==="admin") { document.getElementById("adminModal").style.display = "flex"; showTab('tab-prods'); }}
+    function cerrarModales() { document.querySelectorAll(".admin-modal").forEach(m => m.style.display="none"); }
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
     function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
     function closeAll() { document.querySelectorAll(".active, .show").forEach(el => el.classList.remove("active", "show")); }
     function toggleLightMode() { document.body.classList.toggle("light"); }
+    function filtrarProductos() { render(document.getElementById("searchInput").value); }
+    function toggleEnvio(s) { document.getElementById("form-envio").style.display = s ? "block" : "none"; }
 
-    // INICIO
     render();
 </script>
 
