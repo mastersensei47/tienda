@@ -39,7 +39,6 @@
             .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 25px; }
         }
 
-        /* CARD MEJORADA CON PROMO Y STOCK DETALLADO */
         .product-card { 
             background: var(--card); border-radius: 20px; overflow: hidden; 
             border: 1px solid rgba(128,128,128,0.1); position: relative; transition: 0.3s;
@@ -51,7 +50,6 @@
         }
         .img-box img { max-width: 75%; max-height: 75%; object-fit: contain; }
         
-        /* BANNER DE PROMO RESALTADO */
         .promo-banner {
             background: var(--promo);
             color: #000;
@@ -60,21 +58,12 @@
             padding: 8px;
             text-align: center;
             border-bottom: 2px solid rgba(0,0,0,0.1);
-            letter-spacing: -0.2px;
         }
 
         .stock-indicator {
-            font-size: 10px;
-            color: var(--success);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 5px;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            width: fit-content;
+            font-size: 10px; color: var(--success); font-weight: 700;
+            display: flex; align-items: center; gap: 4px; margin-bottom: 5px;
+            background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 6px; width: fit-content;
         }
 
         .info-box { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
@@ -251,7 +240,6 @@
         }).join("");
     });
 
-    // RENDER MEJORADO CON CANTIDAD DE STOCK Y PROMO CON PRECIO
     function render() {
         const query = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
@@ -262,19 +250,13 @@
                     <img src="${p.imagen || 'https://via.placeholder.com/150'}">
                 </div>
                 <div class="info-box">
-                    <div class="stock-indicator">
-                        <span>📦</span> ${p.stock || 0} disponibles
-                    </div>
+                    <div class="stock-indicator">📦 ${p.stock || 0} disponibles</div>
                     <h4 class="product-title">${p.nombre}</h4>
-                    
                     <div class="price-container">
                         <div class="price-label">Precio x Unidad:</div>
                         <div class="price-val">$${esMayorista ? p.precio_may : p.precio}</div>
                     </div>
-                    
-                    <button class="btn btn-primary" onclick="addToCart('${p.id}')" style="margin-top:10px">
-                        AGREGAR
-                    </button>
+                    <button class="btn btn-primary" onclick="addToCart('${p.id}')" style="margin-top:10px">AGREGAR</button>
                 </div>
             </div>`).join("");
     }
@@ -285,16 +267,32 @@
         updateCartUI();
     }
 
+    // LÓGICA DE CÁLCULO CON PROMOS
     function updateCartUI() {
         let total = 0;
         document.getElementById("cartCount").innerText = carrito.reduce((a,b)=>a+b.qty, 0);
         const list = document.getElementById("cartItemsList");
+        
         list.innerHTML = carrito.map(c => {
             const p = productos.find(x => x.id === c.id);
-            const sub = (esMayorista ? p.precio_may : p.precio) * c.qty;
+            let precioUnitario = esMayorista ? p.precio_may : p.precio;
+            
+            // LÓGICA DE DETECCIÓN DE PROMO (Busca "Llevando X $Y")
+            if (p.promo) {
+                const match = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (match) {
+                    const cantNecesaria = parseInt(match[1]);
+                    const precioPromo = parseInt(match[2]);
+                    if (c.qty >= cantNecesaria) {
+                        precioUnitario = precioPromo;
+                    }
+                }
+            }
+
+            const sub = precioUnitario * c.qty;
             total += sub;
             return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px">
-                <span>${p.nombre} (x${c.qty})</span>
+                <span>${p.nombre} (x${c.qty}) ${c.qty >= (p.promo?.match(/\d+/)?.[0] || 999) ? '⭐' : ''}</span>
                 <b>$${sub}</b>
             </div>`;
         }).join("");
@@ -306,15 +304,26 @@
         const ahora = new Date();
         const hStr = ahora.toLocaleDateString() + " " + ahora.getHours() + ":" + ahora.getMinutes();
         let msg = "*NUEVO PEDIDO NEO*\n\n";
-        let total = 0;
+        let totalTotal = 0;
+
         carrito.forEach(c => {
             const p = productos.find(x => x.id === c.id);
-            const sub = (esMayorista ? p.precio_may : p.precio) * c.qty;
-            total += sub;
-            msg += `- ${p.nombre} x${c.qty} ($${sub})\n`;
+            let precioFinal = esMayorista ? p.precio_may : p.precio;
+            
+            if (p.promo) {
+                const match = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (match) {
+                    if (c.qty >= parseInt(match[1])) precioFinal = parseInt(match[2]);
+                }
+            }
+            
+            const sub = precioFinal * c.qty;
+            totalTotal += sub;
+            msg += `- ${p.nombre} x${c.qty} (u: $${precioFinal}) = $${sub}\n`;
         });
-        msg += `\n*TOTAL: $${total}*`;
-        await db.collection("ventas").add({ creado: ahora.getTime(), hora: hStr, total, detalle: msg });
+
+        msg += `\n*TOTAL FINAL: $${totalTotal}*`;
+        await db.collection("ventas").add({ creado: ahora.getTime(), hora: hStr, total: totalTotal, detalle: msg });
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
         carrito = []; updateCartUI(); closeAll();
     }
