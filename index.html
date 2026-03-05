@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neo Repuestos - Store</title>
+    <title>Neo Repuestos - Oficial</title>
     <style>
         :root {
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
@@ -11,259 +11,274 @@
             --shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         body.light { --bg: #f4f6f9; --card: #ffffff; --text: #111; --sidebar-bg: #2563eb; }
-        body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition:.3s; overflow-x: hidden; }
+        body { margin:0; font-family: sans-serif; background:var(--bg); color:var(--text); transition:.3s; }
         
-        /* HEADER - Proporción Slim */
+        /* HEADER SLIM */
         header { 
             display:flex; justify-content:space-between; align-items:center; 
-            padding: 8px 20px; background:var(--card); box-shadow:var(--shadow); 
-            position:sticky; top:0; z-index:1000; height: 50px;
+            padding: 5px 15px; background:var(--card); box-shadow:var(--shadow); 
+            position:sticky; top:0; z-index:1000; height: 45px;
         }
-        .search-container { flex-grow: 1; max-width: 500px; margin: 0 20px; position: relative; }
-        .search-container input { width: 100%; padding: 8px 15px; border-radius: 20px; border: none; background: rgba(0,0,0,0.2); color: white; }
+        .search-container { flex-grow: 1; max-width: 400px; margin: 0 15px; }
+        .search-container input { width: 100%; padding: 6px 12px; border-radius: 15px; border: none; background: rgba(0,0,0,0.2); color: white; font-size: 13px; }
 
         /* ICONOS */
-        .icon-group { display: flex; gap: 12px; align-items: center; }
+        .icon-group { display: flex; gap: 12px; }
         .icon { cursor:pointer; font-size:18px; position: relative; }
-        .badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; }
+        .badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; font-size: 9px; padding: 1px 4px; border-radius: 10px; }
 
-        /* SIDEBAR - Más delgado */
+        /* SIDEBAR SLIM */
         .sidebar {
-            position: fixed; left: -250px; top: 0; width: 240px; height: 100%;
+            position: fixed; left: -240px; top: 0; width: 230px; height: 100%;
             background: var(--sidebar-bg); color: white; transition: 0.3s; z-index: 2000;
         }
         .sidebar.active { left: 0; }
-        .sidebar a { display: block; padding: 12px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .sidebar a, .sidebar button { 
+            display: block; width: 100%; padding: 12px 20px; color: white; text-decoration: none; 
+            background: none; border: none; text-align: left; font-size: 14px; cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
         .sidebar-footer { position: absolute; bottom: 0; width: 100%; background: #ff5e5e; padding: 10px; text-align: center; font-size: 11px; font-weight: bold; }
 
-        /* CARRITO - Slim */
+        /* CARRITO SLIM */
         .cart-drawer {
             position: fixed; right: -300px; top: 0; width: 280px; height: 100%;
             background: var(--card); transition: 0.3s; z-index: 3000; padding: 15px; box-shadow: -4px 0 10px rgba(0,0,0,0.3);
             display: flex; flex-direction: column;
         }
         .cart-drawer.active { right: 0; }
-        .cart-items { flex-grow: 1; overflow-y: auto; font-size: 13px; }
+        .cart-items { flex-grow: 1; overflow-y: auto; font-size: 13px; margin: 10px 0; }
 
-        /* PRODUCTOS - Grid Ajustado */
-        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px, 1fr)); gap:15px; padding:20px; }
-        .card { background:var(--card); padding:12px; border-radius:12px; text-align:center; box-shadow: var(--shadow); }
-        .card img { width: 100%; height: 110px; object-fit: contain; }
-        .price-main { font-size: 1.1em; font-weight: bold; color: var(--accent); margin-top: 5px; }
+        /* GRID PRODUCTOS */
+        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px, 1fr)); gap:15px; padding:15px; }
+        .card { background:var(--card); padding:10px; border-radius:10px; text-align:center; box-shadow: var(--shadow); position: relative; }
+        .card img { width: 100%; height: 100px; object-fit: contain; }
+        .price-main { font-size: 1em; font-weight: bold; color: var(--accent); margin: 5px 0; }
+        .tag-may { background: #fef3c7; color: #92400e; font-size: 10px; padding: 2px 5px; border-radius: 4px; display: inline-block; }
 
-        /* ADMIN MODAL */
-        .admin-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
-            display: none; justify-content: center; align-items: center; z-index: 4000;
-        }
-        .admin-content { 
-            background: var(--card); width: 95%; max-width: 500px; max-height: 85vh; 
-            border-radius: 15px; padding: 20px; position: relative; overflow-y: auto;
-        }
-        input { width: 100%; padding: 8px; margin: 4px 0; border-radius: 6px; border: 1px solid #444; background: #000; color: white; font-size: 13px; }
+        /* MODALES */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 15px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 12px; padding: 20px; position: relative; overflow-y: auto; max-height: 90vh; }
+        
+        input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 6px; border: 1px solid #444; background: #000; color: white; box-sizing: border-box; }
+        button { background: var(--accent); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; }
         
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1500; }
         .overlay.show { display: block; }
-        button { background: var(--accent); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 13px; }
-        .btn-wa { background: #25d366; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="cursor:pointer; font-size: 20px;" onclick="toggleSidebar()">☰</span>
-        <div style="font-weight:bold; font-size: 14px;">NEO REPUESTOS</div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="cursor:pointer; font-size: 18px;" onclick="toggleSidebar()">☰</span>
+        <div style="font-weight:bold; font-size: 13px;">NEO REPUESTOS</div>
     </div>
-    
-    <div class="search-container">
-        <input type="text" id="buscador" placeholder="Buscar producto..." onkeyup="filtrar()">
-    </div>
-
+    <div class="search-container"><input type="text" id="bus" placeholder="Buscar..." onkeyup="filtrar()"></div>
     <div class="icon-group">
         <span class="icon" onclick="toggleLightMode()">🌗</span>
-        <span class="icon" onclick="abrirAdmin()">🔑</span>
         <span class="icon" onclick="toggleCart()">🛒<span id="cartCount" class="badge">0</span></span>
+        <span class="icon" onclick="abrirLogin()">👤</span>
     </div>
 </header>
 
 <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
 <nav class="sidebar" id="sidebar">
-    <div style="padding: 15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid #ffffff11;">MENU</div>
-    <a href="#" onclick="closeAll()">Inicio</a>
-    <a href="#" onclick="alert('Info...')">Información</a>
-    <a href="#" onclick="window.open('https://instagram.com')">Instagram</a>
+    <div style="padding: 15px; font-weight: bold; font-size: 13px; background: rgba(0,0,0,0.1);">MENU</div>
+    <a href="#" onclick="closeAll()">🏠 Inicio</a>
+    <button onclick="abrirAdmin()">🔑 Administrador</button>
+    <a href="https://instagram.com" target="_blank">📸 Instagram</a>
     <div class="sidebar-footer">¡Quiero una tienda así!</div>
 </nav>
 
 <div class="cart-drawer" id="cartDrawer">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="font-size: 16px;">Mi Carrito</h3>
+        <h3 style="font-size: 15px; margin:0;">Mi Carrito</h3>
         <span onclick="toggleCart()" style="cursor:pointer;">✕</span>
     </div>
     <div class="cart-items" id="cartList"></div>
-    <div id="savings" style="color:#10b981; font-size:12px; text-align:center; margin: 5px 0;"></div>
+    <div id="ahorro" style="color:#10b981; font-size:11px; text-align:center; margin: 5px 0; font-weight:bold;"></div>
     <div style="border-top: 1px solid #444; padding-top: 10px;">
-        <div style="display:flex; justify-content:space-between; font-weight: bold; margin-bottom: 10px;">
+        <div style="display:flex; justify-content:space-between; font-weight: bold; margin-bottom: 8px;">
             <span>Total:</span> <span id="cartTotal">$0</span>
         </div>
-        <button class="btn-wa" onclick="enviarPedido()">Confirmar Pedido</button>
+        <button onclick="enviarWA()" style="background:#25d366">Confirmar por WhatsApp</button>
     </div>
 </div>
 
-<div class="admin-modal" id="adminModal">
-    <div class="admin-content">
-        <span style="float:right; cursor:pointer;" onclick="document.getElementById('adminModal').style.display='none'">✕</span>
-        <h3 style="margin-top:0">Administración</h3>
-        
-        <input type="hidden" id="editIndex">
+<div class="modal" id="adminModal">
+    <div class="modal-content">
+        <span style="float:right; cursor:pointer;" onclick="cerrarModales()">✕</span>
+        <h3>Panel Admin</h3>
+        <input type="hidden" id="editIdx">
         <input id="n" placeholder="Nombre">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-            <input id="p_ind" type="number" placeholder="Precio Un.">
-            <input id="p_x2" type="number" placeholder="Precio x2">
-            <input id="p_may" type="number" placeholder="Mayorista">
-            <input id="stock" type="number" placeholder="Stock">
+            <input id="p1" type="number" placeholder="Precio Un.">
+            <input id="p2" type="number" placeholder="Precio x2">
+            <input id="pm" type="number" placeholder="Mayorista">
+            <input id="stk" type="number" placeholder="Stock">
         </div>
-        <input id="img" placeholder="URL Imagen">
-        <button onclick="guardar()" id="btnGuardar" style="margin-top:10px">Guardar Producto</button>
-
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="verTab('p')" style="background:#444">Productos</button>
-            <button onclick="verTab('h')" style="background:#444">Historial</button>
+        <input id="img" placeholder="Link Imagen">
+        <button onclick="guardarProd()" id="btnG">Guardar Producto</button>
+        
+        <div style="display:flex; gap:5px; margin-top:15px;">
+            <button onclick="tab('p')" style="background:#444; font-size:11px">Productos</button>
+            <button onclick="tab('h')" style="background:#444; font-size:11px">Ventas</button>
         </div>
+        <div id="tab-p" style="margin-top:10px; max-height:180px; overflow-y:auto;"></div>
+        <div id="tab-h" style="margin-top:10px; display:none; max-height:180px; overflow-y:auto;"></div>
+    </div>
+</div>
 
-        <div id="tab-p" style="margin-top:10px; max-height: 200px; overflow-y:auto;"></div>
-        <div id="tab-h" style="margin-top:10px; display:none; max-height: 200px; overflow-y:auto;"></div>
+<div class="modal" id="loginModal">
+    <div class="modal-content" id="loginContent">
+        <span style="float:right; cursor:pointer;" onclick="cerrarModales()">✕</span>
+        <h3 id="authTitle">Ingreso Mayorista</h3>
+        <input id="user" placeholder="Usuario">
+        <input id="pass" type="password" placeholder="Contraseña">
+        
+        <div id="areaLogin">
+            <button onclick="login()">Entrar</button>
+            <p style="font-size:11px; text-align:center; cursor:pointer" onclick="modoAuth(true)">¿No tienes cuenta? Regístrate</p>
+        </div>
+        <div id="areaReg" style="display:none">
+            <button onclick="registrar()" style="background:#9333ea">Crear Cuenta</button>
+            <p style="font-size:11px; text-align:center; cursor:pointer" onclick="modoAuth(false)">Ya tengo cuenta</p>
+        </div>
+        <div id="areaSesion" style="display:none">
+            <p id="txtBienvenida"></p>
+            <button onclick="logout()" style="background:#ef4444">Cerrar Sesión</button>
+        </div>
     </div>
 </div>
 
 <div class="products" id="products"></div>
 
 <script>
-    let products = JSON.parse(localStorage.getItem("products")) || [];
+    let prods = JSON.parse(localStorage.getItem("prods")) || [];
     let sales = JSON.parse(localStorage.getItem("sales")) || [];
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    let user = JSON.parse(localStorage.getItem("user")) || null;
     let cart = [];
 
-    function render(lista = products) {
+    function render(lista = prods) {
         const grid = document.getElementById("products");
         grid.innerHTML = lista.map((p, i) => `
             <div class="card">
                 <img src="${p.img || 'https://via.placeholder.com/150'}">
-                <h4 style="font-size:14px; margin:8px 0">${p.name}</h4>
-                <div class="price-main">$${p.p_ind}</div>
-                <div style="font-size:10px; color:#10b981">${p.p_x2 > 0 ? 'Promo x2: $'+p.p_x2 : ''}</div>
-                <button onclick="addToCart(${i})" style="margin-top:10px; padding:5px;">Agregar</button>
+                <div style="font-size:13px; font-weight:bold; margin:5px 0">${p.name}</div>
+                <div class="price-main">$${p.p1}</div>
+                ${p.p2 > 0 ? `<div style="font-size:10px; color:#10b981">Promo x2: $${p.p2}</div>` : ''}
+                ${user ? `<div class="tag-may">Mayorista: $${p.pm}</div>` : ''}
+                <button onclick="add(${i})" style="font-size:11px; margin-top:8px">Añadir</button>
             </div>
         `).join("");
     }
 
-    function addToCart(i) {
+    // --- CARRITO ---
+    function add(i) {
         const item = cart.find(c => c.id === i);
         if (item) item.qty++; else cart.push({id: i, qty: 1});
-        updateCartUI();
+        updCart();
     }
-
-    function updateCartUI() {
+    function updCart() {
         const list = document.getElementById("cartList");
-        let total = 0; let ahorro = 0; let count = 0;
-        list.innerHTML = cart.map((item, idx) => {
-            const p = products[item.id];
-            let sub = item.qty * p.p_ind;
-            let realSub = sub;
-            if(p.p_x2 > 0 && item.qty >= 2) {
-                realSub = (Math.floor(item.qty/2)*p.p_x2) + ((item.qty%2)*p.p_ind);
-                ahorro += (sub - realSub);
+        let tot = 0, save = 0, n = 0;
+        list.innerHTML = cart.map((c, idx) => {
+            const p = prods[c.id];
+            let sub = c.qty * (user ? p.pm : p.p1);
+            if(!user && p.p2 > 0 && c.qty >= 2) {
+                let p2Sub = (Math.floor(c.qty/2)*p.p2) + ((c.qty%2)*p.p1);
+                save += (sub - p2Sub); sub = p2Sub;
             }
-            total += realSub; count += item.qty;
+            tot += sub; n += c.qty;
             return `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <span>${p.name} x${item.qty}</span>
-                <span>$${realSub} <b onclick="removeFromCart(${idx})" style="color:red; cursor:pointer">✕</b></span>
+                <span>${p.name} x${c.qty}</span>
+                <span>$${sub} <b onclick="rem(${idx})" style="color:red; cursor:pointer">✕</b></span>
             </div>`;
         }).join("");
-        document.getElementById("cartTotal").innerText = "$" + total;
-        document.getElementById("cartCount").innerText = count;
-        document.getElementById("savings").innerText = ahorro > 0 ? "¡Ahorraste $" + ahorro + "!" : "";
+        document.getElementById("cartTotal").innerText = "$" + tot;
+        document.getElementById("cartCount").innerText = n;
+        document.getElementById("ahorro").innerText = save > 0 ? "¡Ahorraste $" + save + "!" : "";
     }
-
-    function removeFromCart(i) { cart.splice(i, 1); updateCartUI(); }
-
-    function abrirAdmin() {
-        if(prompt("Pass:") === "admin") {
-            document.getElementById("adminModal").style.display = "flex";
-            refrescarAdmin();
-        }
-    }
-
-    function guardar() {
-        const idx = document.getElementById("editIndex").value;
-        const p = {
-            name: document.getElementById("n").value,
-            p_ind: parseInt(document.getElementById("p_ind").value),
-            p_x2: parseInt(document.getElementById("p_x2").value) || 0,
-            p_may: parseInt(document.getElementById("p_may").value) || 0,
-            stock: parseInt(document.getElementById("stock").value) || 0,
-            img: document.getElementById("img").value
-        };
-        if(idx === "") products.push(p); else products[idx] = p;
-        localStorage.setItem("products", JSON.stringify(products));
-        resetAdmin(); render(); refrescarAdmin();
-    }
-
-    function editar(i) {
-        const p = products[i];
-        document.getElementById("n").value = p.name;
-        document.getElementById("p_ind").value = p.p_ind;
-        document.getElementById("p_x2").value = p.p_x2;
-        document.getElementById("p_may").value = p.p_may;
-        document.getElementById("stock").value = p.stock;
-        document.getElementById("img").value = p.img;
-        document.getElementById("editIndex").value = i;
-        document.getElementById("btnGuardar").innerText = "Actualizar";
-    }
-
-    function refrescarAdmin() {
-        document.getElementById("tab-p").innerHTML = products.map((p, i) => `
-            <div style="font-size:12px; padding:5px; border-bottom:1px solid #444; display:flex; justify-content:space-between;">
-                ${p.name} <div><span onclick="editar(${i})" style="color:orange; cursor:pointer; margin-right:10px">Edit</span>
-                <span onclick="borrar(${i})" style="color:red; cursor:pointer">X</span></div>
-            </div>
-        `).join("");
-        document.getElementById("tab-h").innerHTML = sales.map(s => `<div style="font-size:10px; margin-bottom:5px; background:#000; padding:5px;">${s}</div>`).reverse().join("");
-    }
-
-    function borrar(i) { products.splice(i,1); localStorage.setItem("products", JSON.stringify(products)); refrescarAdmin(); render(); }
-    
-    function enviarPedido() {
-        if(cart.length === 0) return;
-        let msg = "Pedido Neo Repuestos:\n";
-        cart.forEach(c => msg += `- ${products[c.id].name} x${c.qty}\n`);
-        msg += "Total: " + document.getElementById("cartTotal").innerText;
+    function rem(i) { cart.splice(i,1); updCart(); }
+    function enviarWA() {
+        if(!cart.length) return;
+        let m = "Pedido Neo Repuestos:\n";
+        cart.forEach(c => m += `- ${prods[c.id].name} x${c.qty}\n`);
+        m += "Total: " + document.getElementById("cartTotal").innerText;
         sales.push(new Date().toLocaleString() + ": " + document.getElementById("cartTotal").innerText);
         localStorage.setItem("sales", JSON.stringify(sales));
-        window.open("https://wa.me/5493434508948?text=" + encodeURIComponent(msg));
+        window.open("https://wa.me/5493434508948?text=" + encodeURIComponent(m));
     }
 
-    function filtrar() {
-        const bus = document.getElementById("buscador").value.toLowerCase();
-        render(products.filter(p => p.name.toLowerCase().includes(bus)));
+    // --- AUTH ---
+    function abrirLogin() {
+        document.getElementById("loginModal").style.display = "flex";
+        if(user) {
+            document.getElementById("areaLogin").style.display = "none";
+            document.getElementById("areaReg").style.display = "none";
+            document.getElementById("areaSesion").style.display = "block";
+            document.getElementById("txtBienvenida").innerText = "Hola, " + user.u;
+        }
+    }
+    function modoAuth(reg) {
+        document.getElementById("authTitle").innerText = reg ? "Registro Mayorista" : "Ingreso Mayorista";
+        document.getElementById("areaLogin").style.display = reg ? "none" : "block";
+        document.getElementById("areaReg").style.display = reg ? "block" : "none";
+    }
+    function registrar() {
+        let u = document.getElementById("user").value, p = document.getElementById("pass").value;
+        if(u && p) { users.push({u, p}); localStorage.setItem("users", JSON.stringify(users)); alert("Cuenta creada!"); modoAuth(false); }
+    }
+    function login() {
+        let u = document.getElementById("user").value, p = document.getElementById("pass").value;
+        let f = users.find(x => x.u === u && x.p === p);
+        if(f) { user = f; localStorage.setItem("user", JSON.stringify(f)); location.reload(); } else alert("Error");
+    }
+    function logout() { localStorage.removeItem("user"); location.reload(); }
+
+    // --- ADMIN ---
+    function abrirAdmin() { if(prompt("Pass:") === "admin") { document.getElementById("adminModal").style.display = "flex"; refreshAdmin(); } }
+    function guardarProd() {
+        let idx = document.getElementById("editIdx").value;
+        let p = {
+            name: document.getElementById("n").value,
+            p1: parseInt(document.getElementById("p1").value),
+            p2: parseInt(document.getElementById("p2").value) || 0,
+            pm: parseInt(document.getElementById("pm").value) || 0,
+            stk: parseInt(document.getElementById("stk").value) || 0,
+            img: document.getElementById("img").value
+        };
+        if(idx === "") prods.push(p); else prods[idx] = p;
+        localStorage.setItem("prods", JSON.stringify(prods));
+        location.reload();
+    }
+    function editar(i) {
+        let p = prods[i];
+        document.getElementById("n").value = p.name; document.getElementById("p1").value = p.p1;
+        document.getElementById("p2").value = p.p2; document.getElementById("pm").value = p.pm;
+        document.getElementById("stk").value = p.stk; document.getElementById("img").value = p.img;
+        document.getElementById("editIdx").value = i; document.getElementById("btnG").innerText = "Actualizar";
+    }
+    function refreshAdmin() {
+        document.getElementById("tab-p").innerHTML = prods.map((p, i) => `
+            <div style="font-size:11px; padding:5px; border-bottom:1px solid #444; display:flex; justify-content:space-between;">
+                ${p.name} <div><span onclick="editar(${i})" style="color:orange; cursor:pointer">Edit</span> | 
+                <span onclick="prods.splice(${i},1); localStorage.setItem('prods', JSON.stringify(prods)); refreshAdmin();" style="color:red; cursor:pointer">X</span></div>
+            </div>`).join("");
+        document.getElementById("tab-h").innerHTML = sales.map(s => `<div style="font-size:10px; margin-bottom:4px; background:#000; padding:4px;">${s}</div>`).reverse().join("");
     }
 
-    function resetAdmin() {
-        document.getElementById("editIndex").value = "";
-        document.getElementById("btnGuardar").innerText = "Guardar Producto";
-        ["n","p_ind","p_x2","p_may","stock","img"].forEach(id => document.getElementById(id).value = "");
-    }
-
-    function verTab(t) {
-        document.getElementById("tab-p").style.display = t === 'p' ? 'block' : 'none';
-        document.getElementById("tab-h").style.display = t === 'h' ? 'block' : 'none';
-    }
-
+    // --- UI ---
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
     function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
-    function closeAll() { document.getElementById("sidebar").classList.remove("active"); document.getElementById("cartDrawer").classList.remove("active"); document.getElementById("overlay").classList.remove("show"); }
+    function cerrarModales() { document.querySelectorAll(".modal").forEach(m => m.style.display="none"); }
+    function closeAll() { document.getElementById("sidebar").classList.remove("active"); document.getElementById("cartDrawer").classList.remove("active"); document.getElementById("overlay").classList.remove("show"); cerrarModales(); }
+    function tab(t) { document.getElementById("tab-p").style.display = t === 'p' ? 'block' : 'none'; document.getElementById("tab-h").style.display = t === 'h' ? 'block' : 'none'; }
     function toggleLightMode() { document.body.classList.toggle("light"); }
+    function filtrar() { let b = document.getElementById("bus").value.toLowerCase(); render(prods.filter(p => p.name.toLowerCase().includes(b))); }
 
     render();
 </script>
