@@ -132,37 +132,160 @@
 <div class="products" id="products"></div>
 
 <div class="admin-modal" id="adminModal">
-    <div class="admin-content">
-        <span style="float:right; cursor:pointer; font-size:20px;" onclick="document.getElementById('adminModal').style.display='none'">✕</span>
-        <h3>Panel Admin</h3>
-        <input type="hidden" id="editIndex">
-        <input id="n" class="cart-input" placeholder="Nombre">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-            <input id="p_ind" type="number" class="cart-input" placeholder="Precio Un.">
-            <input id="p_x2" type="number" class="cart-input" placeholder="Precio x2">
-            <input id="p_may" type="number" class="cart-input" placeholder="Precio Mayorista">
-            <input id="stock" type="number" class="cart-input" placeholder="Stock">
+    <div class="admin-content" style="max-width: 800px; width: 95%;">
+        <span style="float:right; cursor:pointer; font-size:24px;" onclick="cerrarModales()">✕</span>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px;">
+            <button onclick="showTab('tab-prods')" style="background:#444; flex:1">📦 Productos</button>
+            <button onclick="showTab('tab-users')" style="background:#444; flex:1">👥 Mayoristas</button>
+            <button onclick="showTab('tab-hist')" style="background:#444; flex:1">📜 Historial</button>
         </div>
-        <input id="img" class="cart-input" placeholder="URL Imagen">
-        <button onclick="guardar()" id="btnGuardar">Guardar Producto</button>
-        <div id="listaAdmin" style="margin-top:20px; border-top:1px solid #444; padding-top:10px;"></div>
-    </div>
-</div>
 
-<div class="admin-modal" id="loginModal">
-    <div class="admin-content">
-        <span style="float:right; cursor:pointer; font-size:20px;" onclick="document.getElementById('loginModal').style.display='none'">✕</span>
-        <h3>Login Mayorista</h3>
-        <input id="loginEmail" class="cart-input" placeholder="Email">
-        <input id="loginPass" class="cart-input" type="password" placeholder="Contraseña">
-        <button onclick="loginMayorista()">Ingresar</button>
-        <p style="font-size:12px; margin-top:10px;">Si no tienes cuenta, usa <b>registrarse</b>.</p>
-        <button onclick="registrarMayorista()" style="background:#2563eb; margin-top:5px;">Registrarse</button>
-        <button onclick="cerrarSesion()" style="background:#64748b; margin-top:10px;">Cerrar Sesión</button>
+        <div id="tab-prods" class="tab-content">
+            <h3 id="formTitle">Nuevo / Editar Producto</h3>
+            <input type="hidden" id="editIdx" value="-1">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <input id="n" placeholder="Nombre del repuesto">
+                <input id="img" placeholder="URL de imagen">
+                <input id="p1" type="number" placeholder="Precio Minorista">
+                <input id="pm" type="number" placeholder="Precio Mayorista">
+            </div>
+            <button onclick="guardarProducto()" id="btnGuardar" style="background:var(--success)">Guardar Producto</button>
+            
+            <div id="listaAdmin" style="margin-top:20px; max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                </div>
+        </div>
+
+        <div id="tab-users" class="tab-content" style="display:none">
+            <h3>Mayoristas Registrados</h3>
+            <div id="listaMayoristas" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                </div>
+        </div>
+
+        <div id="tab-hist" class="tab-content" style="display:none">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <h3>Historial de Pedidos</h3>
+                <button onclick="borrarHistorialTotal()" style="width:auto; background:#ef4444; font-size:12px">Borrar Todo</button>
+            </div>
+            <div id="listaHistorial" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; max-height: 300px; overflow-y: auto;">
+                </div>
+        </div>
     </div>
 </div>
 
 <script>
+    // --- GESTIÓN DE PESTAÑAS ---
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+    if(tabId === 'tab-prods') cargarListaAdmin();
+    if(tabId === 'tab-users') cargarListaMayoristas();
+    if(tabId === 'tab-hist') cargarHistorial();
+}
+
+// --- PRODUCTOS: EDITAR Y ELIMINAR ---
+function cargarListaAdmin() {
+    const cont = document.getElementById("listaAdmin");
+    cont.innerHTML = productos.map((p, i) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #444; padding:5px 0;">
+            <span>${p.name} ($${p.p_ind})</span>
+            <div>
+                <button onclick="prepararEdicion(${i})" style="width:auto; padding:5px 10px; background:#f59e0b">✏️</button>
+                <button onclick="eliminarProd(${i})" style="width:auto; padding:5px 10px; background:#ef4444">✕</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function prepararEdicion(i) {
+    const p = productos[i];
+    document.getElementById("n").value = p.name;
+    document.getElementById("p1").value = p.p_ind;
+    document.getElementById("pm").value = p.p_may;
+    document.getElementById("img").value = p.img;
+    document.getElementById("editIdx").value = i;
+    document.getElementById("formTitle").innerText = "Editando: " + p.name;
+    document.getElementById("btnGuardar").style.background = "#f59e0b";
+}
+
+function guardarProducto() {
+    const idx = parseInt(document.getElementById("editIdx").value);
+    const p = {
+        name: document.getElementById("n").value,
+        p_ind: parseInt(document.getElementById("p1").value),
+        p_may: parseInt(document.getElementById("pm").value),
+        img: document.getElementById("img").value
+    };
+
+    if(idx === -1) productos.push(p); // Nuevo
+    else productos[idx] = p; // Editar
+
+    localStorage.setItem("products", JSON.stringify(productos));
+    alert("Datos guardados");
+    location.reload();
+}
+
+// --- MAYORISTAS: CONTROL DE REGISTROS ---
+function cargarListaMayoristas() {
+    const cont = document.getElementById("listaMayoristas");
+    if(mayoristas.length === 0) return cont.innerHTML = "No hay mayoristas registrados";
+    cont.innerHTML = mayoristas.map((u, i) => `
+        <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #444">
+            <span>📧 ${u.email}</span>
+            <button onclick="eliminarMayorista(${i})" style="width:auto; background:none; color:red">Eliminar</button>
+        </div>
+    `).join("");
+}
+
+function eliminarMayorista(i) {
+    if(confirm("¿Quitar acceso mayorista a este usuario?")) {
+        mayoristas.splice(i, 1);
+        localStorage.setItem("mayoristas", JSON.stringify(mayoristas));
+        cargarListaMayoristas();
+    }
+}
+
+// --- HISTORIAL DE PEDIDOS ---
+let historial = JSON.parse(localStorage.getItem("historial")) || [];
+
+// Modifica tu función enviarPedido() actual para que guarde en el historial:
+function registrarEnHistorial(pedido) {
+    const entrada = {
+        fecha: new Date().toLocaleString(),
+        detalles: pedido,
+        id: Date.now()
+    };
+    historial.push(entrada);
+    localStorage.setItem("historial", JSON.stringify(historial));
+}
+
+function cargarHistorial() {
+    const cont = document.getElementById("listaHistorial");
+    if(historial.length === 0) return cont.innerHTML = "Historial vacío";
+    cont.innerHTML = historial.map((h, i) => `
+        <div style="font-size:12px; border-bottom:1px solid #444; padding:10px 0;">
+            <div style="display:flex; justify-content:space-between">
+                <b>📅 ${h.fecha}</b>
+                <button onclick="borrarUnoHistorial(${i})" style="width:auto; background:none; color:red; padding:0">Borrar</button>
+            </div>
+            <div style="color:#cbd5e1">${h.detalles.replace(/\n/g, '<br>')}</div>
+        </div>
+    `).reverse().join("");
+}
+
+function borrarUnoHistorial(i) {
+    historial.splice(i, 1);
+    localStorage.setItem("historial", JSON.stringify(historial));
+    cargarHistorial();
+}
+
+function borrarHistorialTotal() {
+    if(confirm("¿Borrar todos los registros de ventas?")) {
+        historial = [];
+        localStorage.setItem("historial", JSON.stringify(historial));
+        cargarHistorial();
+    }
+}
     // VARIABLES GLOBALES (Una sola vez)
     let products = JSON.parse(localStorage.getItem("products")) || [];
     let cart = [];
