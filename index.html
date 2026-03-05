@@ -1,48 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEO REPUESTOS - Oficial</title>
+
+<style>
+
+:root{
+--bg:#0f172a;
+--card:#1e293b;
+--text:#f1f5f9;
+--accent:#2563eb;
+--sidebar-bg:#1e40af;
+--coral:#ff8a80;
+--danger:#ef4444;
+}
+
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:var(--bg);
+color:var(--text);
+overflow-x:hidden;
+}
+
+/* HEADER */
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:5px 20px;
+background:var(--card);
+position:sticky;
+top:0;
+z-index:1000;
+height:50px;
+}
+
+.search-bar input{
+padding:6px 15px;
+border-radius:20px;
+border:1px solid #444;
+background:rgba(0,0,0,0.2);
+color:white;
+width:200px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+left:-280px;
+top:0;
+width:260px;
+height:100%;
+background:var(--sidebar-bg);
+transition:0.3s;
+z-index:2000;
+display:flex;
+flex-direction:column;
+}
+
+.sidebar.active{left:0;}
+
+.sidebar a{
+display:block;
+padding:15px 20px;
+color:white;
+text-decoration:none;
+}
+
+.sidebar-promo{
+background:var(--coral);
+padding:20px;
+font-weight:bold;
+text-align:center;
+cursor:pointer;
+margin-top:auto;
+}
+
+/* CARRITO */
+
+.cart-drawer{
+position:fixed;
+right:-350px;
+top:0;
+width:320px;
+height:100%;
+background:var(--card);
+transition:0.3s;
+z-index:3000;
+padding:15px;
+display:flex;
+flex-direction:column;
+}
+
+.cart-drawer.active{right:0;}
+
+.cart-items{
+flex-grow:1;
+overflow-y:auto;
+font-size:13px;
+margin:10px 0;
+}
+
+/* ADMIN */
+
+.admin-modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:4000;
+}
+
+.admin-content{
+background:var(--card);
+width:95%;
+max-width:600px;
+height:80vh;
+border-radius:15px;
+padding:20px;
+display:flex;
+flex-direction:column;
+}
+
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:15px;
+border-bottom:1px solid #444;
+padding-bottom:10px;
+}
+
+.tab-btn{
+background:#334155;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:5px;
+cursor:pointer;
+}
+
+.tab-btn.active{background:var(--accent);}
+
+.tab-content{
+display:none;
+flex-grow:1;
+overflow-y:auto;
+}
+
+.tab-content.active{display:block;}
+
+/* FORM */
+
+.grid-inputs{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+border-radius:5px;
+border:1px solid #444;
+background:#000;
+color:white;
+box-sizing:border-box;
+}
+
+button{
+background:var(--accent);
+color:white;
+border:none;
+padding:12px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+width:100%;
+}
+
+.btn-danger{background:var(--danger);margin-top:10px;}
+
+.product-list-item,
+.sale-item{
+background:rgba(0,0,0,0.3);
+padding:10px;
+border-radius:8px;
+margin-bottom:8px;
+font-size:12px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.5);
+display:none;
+z-index:1500;
+}
+
+.overlay.show{display:block;}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+gap:15px;
+padding:15px;
+}
+
+.card{
+background:var(--card);
+padding:10px;
+border-radius:12px;
+text-align:center;
+}
+
+.card img{
+width:100%;
+height:100px;
+object-fit:contain;
+}
+
+.qty{
+display:flex;
+gap:6px;
+align-items:center;
+}
+
+.qty button{
+width:25px;
+height:25px;
+padding:0;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<span style="cursor:pointer;font-size:24px" onclick="toggleSidebar()">☰</span>
+
+<div class="search-bar">
+<input type="text" id="searchInput" placeholder="Buscar..." onkeyup="filtrar()">
+</div>
+
+<div style="display:flex;gap:15px">
+<span onclick="loginMayorista()" style="cursor:pointer">🏷</span>
+<span onclick="abrirAdmin()" style="cursor:pointer">🔑</span>
+<span onclick="toggleCart()" style="cursor:pointer">🛒<span id="cartCount">0</span></span>
+</div>
+
+</header>
+
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<nav class="sidebar" id="sidebar">
+
+<div style="padding:20px;font-weight:bold">MENU</div>
+
+<a href="#" onclick="closeAll()">🏠 Inicio</a>
+<a href="#">ℹ️ Información</a>
+<a href="#">📍 Ubicación</a>
+
+<a href="https://instagram.com" target="_blank">📸 Instagram</a>
+
+<div class="sidebar-promo"
+onclick="window.open('https://wa.me/5493434508948?text=Quiero una tienda!')">
+
+¡Quiero una tienda así!
+
+</div>
+
+</nav>
+
+<div class="cart-drawer" id="cartDrawer">
+
+<h3>Mi Carrito</h3>
+
+<div class="cart-items" id="cartList"></div>
+
+<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-bottom:10px">
+
+<label>
+<input type="radio" name="delivery" value="Local" checked> Local
+</label>
+
+<label>
+<input type="radio" name="delivery" value="Envio"> Envío
+</label>
+
+<input id="f_nom" placeholder="Nombre">
+
+</div>
+
+<div style="font-weight:bold;font-size:18px;display:flex;justify-content:space-between">
+
+<span>Total:</span>
+<span id="cartTotal">$0</span>
+
+</div>
+
+<button onclick="enviarPedido()" style="background:#25d366;margin-top:10px">
+
+Confirmar WhatsApp
+
+</button>
+
+</div>
+
+<div class="products" id="products"></div>
+
 <script>
 
-let products = JSON.parse(localStorage.getItem("prods")) || [];
-let sales = JSON.parse(localStorage.getItem("sales")) || [];
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let userType = localStorage.getItem("userType") || "cliente";
+let products=JSON.parse(localStorage.getItem("prods"))||[];
+let cart=JSON.parse(localStorage.getItem("cart"))||[];
+let userType=localStorage.getItem("userType")||"cliente";
 
-function render() {
+function render(){
 
-const search = document.getElementById("searchInput").value.toLowerCase();
+let search=document.getElementById("searchInput").value.toLowerCase();
 
-const container = document.getElementById("products");
+let container=document.getElementById("products");
 
-container.innerHTML = products
-.filter(p => p.name.toLowerCase().includes(search))
+container.innerHTML=products
+.filter(p=>p.name.toLowerCase().includes(search))
 .map((p,i)=>{
 
-let precio = (userType === "mayorista" && p.pm) ? p.pm : p.p1;
+let price=(userType==="mayorista"&&p.pm)?p.pm:p.p1;
 
-return `
+return`
+
 <div class="card">
-<img src="${p.img || 'https://via.placeholder.com/150'}">
+
+<img src="${p.img||'https://via.placeholder.com/150'}">
+
 <h4>${p.name}</h4>
-<div style="color:var(--accent); font-weight:bold;">$${precio}</div>
-<button onclick="add(${i})" style="margin-top:5px; font-size:12px;">+ Agregar</button>
+
+<div style="color:var(--accent);font-weight:bold">$${price}</div>
+
+<button onclick="add(${i})" style="margin-top:5px;font-size:12px">+ Agregar</button>
+
 </div>
+
 `;
 
 }).join("");
 
 }
 
-function filtrar(){
-render();
-}
+function filtrar(){render();}
 
 function add(i){
 
-const item = cart.find(c => c.id === i);
+let item=cart.find(c=>c.id===i);
 
-if(item){
-item.qty++;
-}else{
-cart.push({id:i, qty:1});
-}
+if(item)item.qty++;
+else cart.push({id:i,qty:1});
 
 updateCart();
 
@@ -50,114 +374,83 @@ updateCart();
 
 function updateCart(){
 
-let total = 0;
-let count = 0;
+let total=0;
+let count=0;
 
-document.getElementById("cartList").innerHTML = cart.map((c,idx)=>{
+document.getElementById("cartList").innerHTML=cart.map((c,i)=>{
 
-const p = products[c.id];
+let p=products[c.id];
 
-let precioBase;
+let price=(userType==="mayorista"&&p.pm)?p.pm:p.p1;
 
-if(userType === "mayorista" && p.pm){
-precioBase = p.pm;
-}else{
+let sub=price*c.qty;
 
-if(p.p2 > 0 && c.qty >= 2){
-precioBase = null;
-}else{
-precioBase = p.p1;
-}
+total+=sub;
+count+=c.qty;
 
-}
+return`
 
-let sub;
-
-if(precioBase === null){
-sub = (Math.floor(c.qty/2) * p.p2) + ((c.qty%2) * p.p1);
-}else{
-sub = precioBase * c.qty;
-}
-
-total += sub;
-count += c.qty;
-
-return `
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+<div style="display:flex;justify-content:space-between">
 
 <div>
+
 <b>${p.name}</b><br>
 $${sub}
+
 </div>
 
-<div style="display:flex; gap:5px; align-items:center;">
+<div class="qty">
 
-<button onclick="cart[${idx}].qty--; if(cart[${idx}].qty<=0) cart.splice(${idx},1); updateCart()">-</button>
+<button onclick="cart[${i}].qty--;if(cart[${i}].qty<=0)cart.splice(${i},1);updateCart()">-</button>
 
 <span>${c.qty}</span>
 
-<button onclick="cart[${idx}].qty++; updateCart()">+</button>
+<button onclick="cart[${i}].qty++;updateCart()">+</button>
 
 </div>
 
 </div>
+
 `;
 
 }).join("");
 
-document.getElementById("cartTotal").innerText = "$"+total;
-document.getElementById("cartCount").innerText = count;
+document.getElementById("cartTotal").innerText="$"+total;
+document.getElementById("cartCount").innerText=count;
 
-localStorage.setItem("cart", JSON.stringify(cart));
+localStorage.setItem("cart",JSON.stringify(cart));
 
 }
 
 function enviarPedido(){
 
-if(cart.length === 0) return;
+if(cart.length===0)return;
 
-const entrega = document.querySelector('input[name="delivery"]:checked').value;
-const nom = document.getElementById("f_nom").value;
+let nom=document.getElementById("f_nom").value;
 
-let det = cart.map(c => `- ${products[c.id].name} (x${c.qty})`).join("\n");
+let det=cart.map(c=>`- ${products[c.id].name} (x${c.qty})`).join("\n");
 
-let totalStr = document.getElementById("cartTotal").innerText;
+let total=document.getElementById("cartTotal").innerText;
 
-let msg = `NUEVO PEDIDO
-----------
+let msg=`NUEVO PEDIDO
 ${det}
-----------
-TOTAL: ${totalStr}
-ENTREGA: ${entrega}
-CLIENTE: ${nom}`;
-
-sales.push({
-id: Date.now(),
-fecha: new Date().toLocaleString(),
-detalle: det,
-total: totalStr,
-cliente: nom
-});
-
-localStorage.setItem("sales", JSON.stringify(sales));
+TOTAL ${total}
+CLIENTE ${nom}`;
 
 window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
 
-cart = [];
+cart=[];
 updateCart();
-closeAll();
 
 }
 
-/* LOGIN MAYORISTA */
-
 function loginMayorista(){
 
-let clave = prompt("Clave mayorista");
+let clave=prompt("Clave mayorista");
 
-if(clave === "mayo123"){
+if(clave==="mayo123"){
 
-userType = "mayorista";
+userType="mayorista";
 
 localStorage.setItem("userType","mayorista");
 
@@ -167,149 +460,6 @@ render();
 updateCart();
 
 }
-
-}
-
-/* ADMIN */
-
-function showTab(id, btn){
-
-document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-
-document.getElementById(id).classList.add('active');
-btn.classList.add('active');
-
-if(id === 'tab-ventas') renderSales();
-if(id === 'tab-productos') renderAdminProds();
-
-}
-
-function abrirAdmin(){
-
-if(prompt("Clave:") === "admin"){
-
-document.getElementById("adminModal").style.display="flex";
-renderAdminProds();
-
-}
-
-}
-
-function guardar(){
-
-const id = document.getElementById("editIdx").value;
-
-const p = {
-
-name: document.getElementById("n").value,
-p1: parseInt(document.getElementById("p1").value),
-p2: parseInt(document.getElementById("p2").value) || 0,
-pm: parseInt(document.getElementById("pm").value) || 0,
-st: parseInt(document.getElementById("st").value) || 0,
-img: document.getElementById("im").value
-
-};
-
-if(id === ""){
-products.push(p);
-}else{
-products[id] = p;
-}
-
-localStorage.setItem("prods", JSON.stringify(products));
-
-renderAdminProds();
-render();
-
-}
-
-function renderAdminProds(){
-
-document.getElementById("adminProdList").innerHTML = products.map((p,i)=>`
-
-<div class="product-list-item">
-
-<span onclick="editar(${i})" style="cursor:pointer; color:cyan;">
-${p.name} ($${p.p1})
-</span>
-
-<span onclick="eliminar(${i})" style="color:red; cursor:pointer;">
-Borrar
-</span>
-
-</div>
-
-`).join("");
-
-}
-
-function editar(i){
-
-const p = products[i];
-
-document.getElementById("n").value = p.name;
-document.getElementById("p1").value = p.p1;
-document.getElementById("p2").value = p.p2;
-document.getElementById("pm").value = p.pm;
-document.getElementById("st").value = p.st;
-document.getElementById("im").value = p.img;
-
-document.getElementById("editIdx").value = i;
-
-}
-
-function renderSales(){
-
-document.getElementById("adminSalesList").innerHTML = sales.map((s,i)=>`
-
-<div class="sale-item">
-
-<div>
-<b>${s.fecha}</b><br>
-${s.cliente || 'Anonimo'}<br>
-<small>${s.detalle}</small><br>
-<b>${s.total}</b>
-</div>
-
-<button onclick="borrarVenta(${i})" style="width:auto; padding:5px; background:red;">
-✕
-</button>
-
-</div>
-
-`).reverse().join("");
-
-}
-
-function borrarVenta(i){
-
-sales.splice(i,1);
-localStorage.setItem("sales", JSON.stringify(sales));
-renderSales();
-
-}
-
-function borrarTodoHistorial(){
-
-if(confirm("¿Borrar todo?")){
-
-sales = [];
-localStorage.setItem("sales", JSON.stringify(sales));
-renderSales();
-
-}
-
-}
-
-function eliminar(i){
-
-products.splice(i,1);
-
-localStorage.setItem("prods", JSON.stringify(products));
-
-renderAdminProds();
-render();
 
 }
 
@@ -329,9 +479,7 @@ document.getElementById("overlay").classList.toggle("show");
 
 function closeAll(){
 
-document.querySelectorAll(".active, .show").forEach(el =>
-el.classList.remove("active","show")
-);
+document.querySelectorAll(".active,.show").forEach(el=>el.classList.remove("active","show"));
 
 }
 
@@ -339,3 +487,6 @@ render();
 updateCart();
 
 </script>
+
+</body>
+</html>
