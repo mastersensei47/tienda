@@ -8,81 +8,58 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #3b82f6; --success: #10b981; --promo: #f59e0b; --danger: #ef4444; --input-bg: rgba(30, 41, 59, 0.7); }
-        body.light { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --accent: #2563eb; --input-bg: #f1f5f9; }
-        body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); transition: 0.3s; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--card); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .search-bar { flex: 1; max-width: 450px; margin: 0 15px; padding: 10px; border-radius: 12px; border: 1px solid rgba(128,128,128,0.3); background: var(--input-bg); color: inherit; }
+        body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--card); position: sticky; top: 0; z-index: 1000; }
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
-        .product-card { background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid rgba(128,128,128,0.1); display: flex; flex-direction: column; position: relative; }
-        .promo-banner { background: var(--promo); color: #000; font-size: 11px; font-weight: 900; padding: 8px; text-align: center; }
-        .img-box { background: #fff; height: 130px; display: flex; align-items: center; justify-content: center; }
-        .img-box img { max-width: 80%; max-height: 80%; object-fit: contain; }
-        .info-box { padding: 12px; flex-grow: 1; }
-        .stock-tag { font-size: 10px; color: var(--success); font-weight: bold; margin-bottom: 5px; display: block; }
-        .price-val { font-size: 20px; font-weight: 900; color: var(--accent); }
-        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-        .btn-primary { background: var(--accent); color: white; }
+        .product-card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; }
+        .promo-banner { background: var(--promo); color: #000; font-size: 11px; font-weight: 900; padding: 6px; text-align: center; }
+        .img-box { background: #fff; height: 120px; display: flex; align-items: center; justify-content: center; }
+        .img-box img { max-width: 80%; max-height: 80%; }
+        .info-box { padding: 10px; }
+        .price-val { font-size: 18px; font-weight: 900; color: var(--accent); }
+        
+        /* CARRITO */
         #cartDrawer { position: fixed; right: -100%; top: 0; width: 100%; max-width: 350px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; box-shadow: -5px 0 20px rgba(0,0,0,0.5); }
         #cartDrawer.active { right: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 2000; }
         .overlay.active { display: block; }
-        .delivery-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin: 10px 0; display: none; }
-        select, input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 90%; max-width: 500px; }
+        
+        /* FORMULARIO ENVIO */
+        .delivery-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: auto; }
+        #formDatosEnvio { display: none; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 10px; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid rgba(128,128,128,0.3); background: var(--input-bg); color: white; box-sizing: border-box; }
+        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
 <header>
-    <b>NEO<span style="color:var(--accent)">REPUESTOS</span></b>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar..." onkeyup="render()">
-    <div style="display:flex; gap:10px">
-        <span onclick="verificarAdmin()" style="cursor:pointer">⚙️</span>
-        <div onclick="toggleCart()" style="cursor:pointer; position:relative">🛒 <b id="cartCount" style="background:red; color:white; font-size:10px; padding:2px 5px; border-radius:50%">0</b></div>
-    </div>
+    <b>NEO REPUESTOS</b>
+    <div onclick="toggleCart()" style="cursor:pointer; position:relative">🛒 <b id="cartCount">0</b></div>
 </header>
 
-<div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
+<div class="overlay" id="mainOverlay" onclick="toggleCart()"></div>
 <div class="products-grid" id="productsCont"></div>
 
 <div id="cartDrawer">
-    <div style="display:flex; justify-content:space-between; align-items:center">
-        <h3>Mi Pedido</h3>
-        <span onclick="toggleCart()" style="cursor:pointer">✕</span>
-    </div>
-    
-    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto; margin: 15px 0;"></div>
+    <h3>Tu Pedido</h3>
+    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto"></div>
 
-    <div style="border-top: 1px solid rgba(128,128,128,0.3); padding-top: 10px;">
-        <label style="font-size:12px; font-weight:bold">MÉTODO DE ENTREGA:</label>
-        <select id="deliveryMethod" onchange="toggleDeliveryForm()">
-            <option value="retiro">Retiro en local</option>
-            <option value="envio">Envío a domicilio</option>
+    <div class="delivery-section">
+        <label>¿Cómo recibes?</label>
+        <select id="metodoEntrega" onchange="actualizarVistaCarrito()">
+            <option value="retiro">Retiro en Local</option>
+            <option value="envio">Envío a Domicilio</option>
         </select>
 
-        <div id="deliveryForm" class="delivery-box">
-            <input id="envNombre" placeholder="Nombre completo">
-            <input id="envDir" placeholder="Dirección">
-            <input id="envLoc" placeholder="Localidad">
+        <div id="formDatosEnvio">
+            <input type="text" id="envNombre" placeholder="Tu Nombre">
+            <input type="text" id="envDireccion" placeholder="Dirección">
+            <input type="text" id="envLocalidad" placeholder="Localidad">
         </div>
 
-        <h2 id="cartTotalText">Total: $0</h2>
-        <button class="btn btn-primary" style="background:#25d366" onclick="enviarWhatsApp()">PEDIR POR WHATSAPP</button>
-    </div>
-</div>
-
-<div class="modal" id="adminModal">
-    <div class="modal-content">
-        <h3>Panel Admin</h3>
-        <input id="fNom" placeholder="Nombre">
-        <input id="fPre" type="number" placeholder="Precio Unitario">
-        <input id="fPreM" type="number" placeholder="Precio Mayorista">
-        <input id="fPromo" placeholder="Ej: Llevando 2 $4000">
-        <input id="fStock" type="number" placeholder="Stock">
-        <input id="fImg" placeholder="Link Imagen">
-        <button class="btn btn-primary" onclick="guardarProducto()">GUARDAR</button>
-        <button class="btn" onclick="closeAll()">CERRAR</button>
+        <h2 id="totalDisplay">Total: $0</h2>
+        <button class="btn" style="background:#25d366; color:white" onclick="enviarWhatsApp()">FINALIZAR POR WHATSAPP</button>
     </div>
 </div>
 
@@ -100,136 +77,116 @@
 
     let productos = [];
     let carrito = [];
-    let esMayorista = localStorage.getItem("neo_may") === "true";
 
     db.collection("productos").onSnapshot(snap => {
         productos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        render();
+        renderProductos();
     });
 
-    function render() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
+    function renderProductos() {
         const cont = document.getElementById("productsCont");
-        cont.innerHTML = productos.filter(p => p.nombre.toLowerCase().includes(query)).map(p => `
+        cont.innerHTML = productos.map(p => `
             <div class="product-card">
                 ${p.promo ? `<div class="promo-banner">${p.promo}</div>` : ''}
                 <div class="img-box"><img src="${p.imagen || 'https://via.placeholder.com/150'}"></div>
                 <div class="info-box">
-                    <span class="stock-tag">📦 ${p.stock || 0} DISPONIBLES</span>
-                    <div style="font-size:13px; font-weight:bold; height:32px; overflow:hidden">${p.nombre}</div>
-                    <div class="price-val">$${esMayorista ? p.precio_may : p.precio}</div>
-                    <button class="btn btn-primary" onclick="addToCart('${p.id}')">AGREGAR</button>
+                    <div style="font-size:12px; opacity:0.7">📦 ${p.stock || 0} DISP.</div>
+                    <div style="font-weight:bold; margin:5px 0">${p.nombre}</div>
+                    <div class="price-val">$${p.precio}</div>
+                    <button class="btn" style="background:var(--accent); color:white; margin-top:10px" onclick="agregar('${p.id}')">Añadir</button>
                 </div>
             </div>`).join("");
     }
 
-    function addToCart(id) {
+    function agregar(id) {
         const item = carrito.find(c => c.id === id);
         if(item) item.qty++; else carrito.push({id, qty:1});
-        updateCartUI();
+        actualizarVistaCarrito();
     }
 
-    // LÓGICA DE CÁLCULO DE PROMOS CORREGIDA
-    function updateCartUI() {
-        let totalTotal = 0;
+    function actualizarVistaCarrito() {
         const list = document.getElementById("cartItemsList");
-        document.getElementById("cartCount").innerText = carrito.reduce((a,b)=>a+b.qty, 0);
+        const count = document.getElementById("cartCount");
+        const totalDisp = document.getElementById("totalDisplay");
+        const formEnvio = document.getElementById("formDatosEnvio");
+        const metodo = document.getElementById("metodoEntrega").value;
 
-        list.innerHTML = carrito.map(c => {
-            const p = productos.find(x => x.id === c.id);
-            let pUnitario = esMayorista ? p.precio_may : p.precio;
-            let aplicadoPromo = false;
+        // Mostrar/Ocultar formulario de envío
+        formEnvio.style.display = metodo === "envio" ? "block" : "none";
 
-            // Detectar "Llevando X $Y"
-            if(p.promo) {
-                const nums = p.promo.match(/\d+/g); // Extrae todos los números del texto
-                if(nums && nums.length >= 2) {
-                    const cantReq = parseInt(nums[0]);
-                    const precioOferta = parseInt(nums[1]);
-                    if(c.qty >= cantReq) {
-                        pUnitario = precioOferta;
-                        aplicadoPromo = true;
-                    }
-                }
-            }
-
-            const subtotal = pUnitario * c.qty;
-            totalTotal += subtotal;
-
-            return `<div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px">
-                <span>${p.nombre} (x${c.qty}) ${aplicadoPromo ? '🔥' : ''}</span>
-                <b>$${subtotal}</b>
-            </div>`;
-        }).join("");
-
-        document.getElementById("cartTotalText").innerText = "Total: $" + totalTotal;
-    }
-
-    function toggleDeliveryForm() {
-        const isEnvio = document.getElementById("deliveryMethod").value === "envio";
-        document.getElementById("deliveryForm").style.display = isEnvio ? "block" : "none";
-    }
-
-    async function enviarWhatsApp() {
-        if(!carrito.length) return;
-        const metodo = document.getElementById("deliveryMethod").value;
-        const nombre = document.getElementById("envNombre").value;
-        const dir = document.getElementById("envDir").value;
-        const loc = document.getElementById("envLoc").value;
-
-        if(metodo === "envio" && (!nombre || !dir || !loc)) {
-            alert("Completa los datos de envío");
-            return;
-        }
-
-        let totalFinal = 0;
-        let msg = "*PEDIDO NEO REPUESTOS*\n\n";
+        let totalGeneral = 0;
+        let cantTotal = 0;
+        let html = "";
 
         carrito.forEach(c => {
             const p = productos.find(x => x.id === c.id);
-            let pFinal = esMayorista ? p.precio_may : p.precio;
+            if(!p) return;
+
+            let precioAUsar = p.precio;
             
-            // Recalcular precio para el mensaje
+            // Lógica de Promo: Busca números en el texto de promo
             if(p.promo) {
-                const nums = p.promo.match(/\d+/g);
-                if(nums && nums.length >= 2 && c.qty >= parseInt(nums[0])) pFinal = parseInt(nums[1]);
+                const n = p.promo.match(/\d+/g);
+                if(n && n.length >= 2) {
+                    const cantMin = parseInt(n[0]);
+                    const precioPromo = parseInt(n[1]);
+                    if(c.qty >= cantMin) precioAUsar = precioPromo;
+                }
             }
-            const sub = pFinal * c.qty;
-            totalFinal += sub;
-            msg += `• ${p.nombre} x${c.qty} ($${pFinal} c/u) = *$${sub}*\n`;
+
+            const subtotal = precioAUsar * c.qty;
+            totalGeneral += subtotal;
+            cantTotal += c.qty;
+
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px">
+                <div>${p.nombre} <br> <small>${c.qty} x $${precioAUsar}</small></div>
+                <b>$${subtotal}</b>
+            </div>`;
         });
 
-        msg += `\n*TOTAL A PAGAR: $${totalFinal}*`;
-        msg += `\n\n🛵 *ENTREGA:* ${metodo === "envio" ? "Envío a Domicilio" : "Retiro en Local"}`;
+        list.innerHTML = html || "<p>El carrito está vacío</p>";
+        count.innerText = cantTotal;
+        totalDisp.innerText = "Total: $" + totalGeneral;
+    }
+
+    function toggleCart() {
+        document.getElementById("cartDrawer").classList.toggle("active");
+        document.getElementById("mainOverlay").classList.toggle("active");
+    }
+
+    function enviarWhatsApp() {
+        if(carrito.length === 0) return alert("Carrito vacío");
+
+        const metodo = document.getElementById("metodoEntrega").value;
+        const nombre = document.getElementById("envNombre").value;
+        const dir = document.getElementById("envDireccion").value;
+        const loc = document.getElementById("envLocalidad").value;
+
+        if(metodo === "envio" && (!nombre || !dir || !loc)) return alert("Completa los datos de envío");
+
+        let msg = "*NUEVO PEDIDO - NEO REPUESTOS*\n\n";
+        let total = 0;
+
+        carrito.forEach(c => {
+            const p = productos.find(x => x.id === c.id);
+            let pFinal = p.precio;
+            if(p.promo) {
+                const n = p.promo.match(/\d+/g);
+                if(n && n.length >= 2 && c.qty >= parseInt(n[0])) pFinal = parseInt(n[1]);
+            }
+            const sub = pFinal * c.qty;
+            total += sub;
+            msg += `• ${p.nombre} x${c.qty} ($${pFinal}) = $${sub}\n`;
+        });
+
+        msg += `\n*TOTAL A PAGAR: $${total}*`;
+        msg += `\n\n🛵 *ENTREGA:* ${metodo === 'envio' ? 'Envío a Domicilio' : 'Retiro en Local'}`;
         
         if(metodo === "envio") {
-            msg += `\n👤 *Cliente:* ${nombre}\n🏠 *Dir:* ${dir}\n🏙️ *Loc:* ${loc}`;
+            msg += `\n👤 *Cliente:* ${nombre}\n🏠 *Dirección:* ${dir}\n🏙️ *Localidad:* ${loc}`;
         }
 
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
-    }
-
-    function verificarAdmin() { if(prompt("Clave:") === "admin") document.getElementById("adminModal").style.display="flex"; }
-    function closeAll() { 
-        document.querySelectorAll(".modal").forEach(m => m.style.display="none"); 
-        document.getElementById("cartDrawer").classList.remove("active");
-        document.getElementById("mainOverlay").classList.remove("active");
-    }
-    function toggleCart() { 
-        document.getElementById("cartDrawer").classList.toggle("active"); 
-        document.getElementById("mainOverlay").classList.toggle("active"); 
-    }
-    async function guardarProducto() {
-        const d = {
-            nombre: document.getElementById("fNom").value,
-            precio: Number(document.getElementById("fPre").value),
-            precio_may: Number(document.getElementById("fPreM").value),
-            promo: document.getElementById("fPromo").value,
-            stock: Number(document.getElementById("fStock").value),
-            imagen: document.getElementById("fImg").value
-        };
-        await db.collection("productos").add(d);
-        closeAll();
     }
 </script>
 </body>
