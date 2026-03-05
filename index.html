@@ -1,345 +1,267 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEO REPUESTOS - Oficial</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEO REPUESTOS - Oficial</title>
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
+            --accent: #2563eb; --sidebar-bg: #1e40af;
+            --coral: #ff8a80; --danger: #ef4444;
+        }
+        body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); overflow-x: hidden; }
+        
+        /* HEADER */
+        header { 
+            display:flex; justify-content:space-between; align-items:center; 
+            padding:5px 20px; background:var(--card); position:sticky; top:0; z-index:1000; height: 50px;
+        }
+        .search-bar input {
+            padding: 6px 15px; border-radius: 20px; border: 1px solid #444;
+            background: rgba(0,0,0,0.2); color: white; width: 200px;
+        }
 
-<style>
-:root{
---bg:#0f172a;
---card:#1e293b;
---text:#f1f5f9;
---accent:#2563eb;
---sidebar-bg:#1e40af;
---coral:#ff8a80;
---danger:#ef4444;
-}
-body{
-margin:0;
-font-family:'Segoe UI',sans-serif;
-background:var(--bg);
-color:var(--text);
-overflow-x:hidden;
-}
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:5px 20px;
-background:var(--card);
-position:sticky;
-top:0;
-z-index:1000;
-height:50px;
-}
-.search-bar input{
-padding:6px 15px;
-border-radius:20px;
-border:1px solid #444;
-background:rgba(0,0,0,0.2);
-color:white;
-width:200px;
-}
-.sidebar{
-position:fixed;
-left:-280px;
-top:0;
-width:260px;
-height:100%;
-background:var(--sidebar-bg);
-transition:.3s;
-z-index:2000;
-display:flex;
-flex-direction:column;
-}
-.sidebar.active{left:0;}
-.sidebar a{
-display:block;
-padding:15px 20px;
-color:white;
-text-decoration:none;
-}
-.sidebar-promo{
-background:var(--coral);
-padding:20px;
-font-weight:bold;
-text-align:center;
-cursor:pointer;
-margin-top:auto;
-}
-.cart-drawer{
-position:fixed;
-right:-350px;
-top:0;
-width:320px;
-height:100%;
-background:var(--card);
-transition:.3s;
-z-index:3000;
-padding:15px;
-display:flex;
-flex-direction:column;
-}
-.cart-drawer.active{right:0;}
-.cart-items{
-flex-grow:1;
-overflow-y:auto;
-font-size:13px;
-margin:10px 0;
-}
-.products{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-gap:15px;
-padding:15px;
-}
-.card{
-background:var(--card);
-padding:10px;
-border-radius:12px;
-text-align:center;
-}
-.card img{
-width:100%;
-height:100px;
-object-fit:contain;
-}
-button{
-background:var(--accent);
-color:white;
-border:none;
-padding:10px;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-.overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.5);
-display:none;
-z-index:1500;
-}
-.overlay.show{display:block;}
+        /* SIDEBAR */
+        .sidebar { 
+            position: fixed; left: -280px; top: 0; width: 260px; height: 100%; 
+            background: var(--sidebar-bg); transition: 0.3s; z-index: 2000; display: flex; flex-direction: column;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar a { display: block; padding: 15px 20px; color: white; text-decoration: none; }
+        .sidebar-promo { background: var(--coral); padding: 20px; font-weight: bold; text-align: center; cursor: pointer; margin-top: auto; }
 
-.login-box{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.7);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:5000;
-}
-.login-content{
-background:var(--card);
-padding:20px;
-border-radius:12px;
-width:300px;
-}
-input{
-width:100%;
-padding:8px;
-margin:5px 0;
-border-radius:6px;
-border:1px solid #444;
-background:#000;
-color:white;
-}
-</style>
+        /* CARRITO */
+        .cart-drawer {
+            position: fixed; right: -350px; top: 0; width: 320px; height: 100%;
+            background: var(--card); transition: 0.3s; z-index: 3000; padding: 15px; display: flex; flex-direction: column;
+        }
+        .cart-drawer.active { right: 0; }
+        .cart-items { flex-grow: 1; overflow-y: auto; font-size: 13px; margin: 10px 0; }
+
+        /* ADMIN TABS */
+        .admin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 4000; }
+        .admin-content { background: var(--card); width: 95%; max-width: 600px; height: 80vh; border-radius: 15px; padding: 20px; display: flex; flex-direction: column; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .tab-btn { background: #334155; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .tab-btn.active { background: var(--accent); }
+        .tab-content { display: none; flex-grow: 1; overflow-y: auto; }
+        .tab-content.active { display: block; }
+
+        /* FORMULARIOS Y BOTONES */
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: white; box-sizing: border-box; }
+        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-danger { background: var(--danger); margin-top: 10px; }
+        
+        .product-list-item, .sale-item { 
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1500; }
+        .overlay.show { display: block; }
+        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:15px; padding:15px; }
+        .card { background:var(--card); padding:10px; border-radius:12px; text-align:center; }
+        .card img { width: 100%; height: 100px; object-fit: contain; }
+    </style>
 </head>
 <body>
 
 <header>
-<span style="cursor:pointer;font-size:24px;" onclick="toggleSidebar()">☰</span>
-<div class="search-bar">
-<input type="text" id="searchInput" placeholder="Buscar..." onkeyup="filtrar()">
-</div>
-<div style="display:flex;gap:15px;">
-<span onclick="abrirLogin()" style="cursor:pointer;">👤</span>
-<span onclick="toggleCart()" style="cursor:pointer;">🛒 <span id="cartCount">0</span></span>
-</div>
+    <span style="cursor:pointer; font-size: 24px;" onclick="toggleSidebar()">☰</span>
+    <div class="search-bar"><input type="text" id="searchInput" placeholder="Buscar..." onkeyup="filtrar()"></div>
+    <div style="display:flex; gap:15px;">
+        <span onclick="abrirAdmin()" style="cursor:pointer;">🔑</span>
+        <span onclick="toggleCart()" style="cursor:pointer;">🛒<span id="cartCount">0</span></span>
+    </div>
 </header>
 
 <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
 <nav class="sidebar" id="sidebar">
-<div style="padding:20px;font-weight:bold;">MENU</div>
-<a href="#" onclick="closeAll()">🏠 Inicio</a>
-<a href="#">ℹ️ Información</a>
-<a href="#">📍 Ubicación</a>
-<a href="https://instagram.com" target="_blank">📸 Instagram</a>
-<div class="sidebar-promo">¡Quiero una tienda así!</div>
+    <div style="padding:20px; font-weight:bold;">MENU</div>
+    <a href="#" onclick="closeAll()">🏠 Inicio</a>
+    <a href="#" onclick="alert('Info de tienda')">ℹ️ Información</a>
+    <a href="#" onclick="alert('Ubicación')">📍 Ubicación</a>
+    <a href="https://instagram.com" target="_blank">📸 Instagram</a>
+    <div class="sidebar-promo" onclick="window.open('https://wa.me/5493434508948?text=Quiero una tienda!')">¡Quiero una tienda así!</div>
 </nav>
 
 <div class="cart-drawer" id="cartDrawer">
-<h3>Mi Carrito</h3>
-<div class="cart-items" id="cartList"></div>
-
-<div style="font-weight:bold;font-size:18px;display:flex;justify-content:space-between;">
-<span>Total:</span>
-<span id="cartTotal">$0</span>
+    <h3>Mi Carrito</h3>
+    <div class="cart-items" id="cartList"></div>
+    <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; margin-bottom:10px;">
+        <label><input type="radio" name="delivery" value="Local" checked onclick="document.getElementById('f-envio').style.display='none'"> Local</label>
+        <label><input type="radio" name="delivery" value="Envio" onclick="document.getElementById('f-envio').style.display='block'"> Envío</label>
+        <div id="f-envio" style="display:none; margin-top:5px;">
+            <input id="f_nom" placeholder="Nombre">
+            <input id="f_dir" placeholder="Dirección">
+        </div>
+    </div>
+    <div style="font-weight:bold; font-size:18px; display:flex; justify-content:space-between;">
+        <span>Total:</span> <span id="cartTotal">$0</span>
+    </div>
+    <button onclick="enviarPedido()" style="background:#25d366; margin-top:10px;">Confirmar WhatsApp</button>
 </div>
 
-<div id="minimoAviso" style="color:orange;font-size:12px;margin-top:5px;"></div>
+<div class="admin-modal" id="adminModal">
+    <div class="admin-content">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('tab-productos', this)">📦 Productos</button>
+            <button class="tab-btn" onclick="showTab('tab-ventas', this)">📜 Ventas</button>
+            <button onclick="document.getElementById('adminModal').style.display='none'" style="width:auto; background:none;">✖</button>
+        </div>
 
-<button onclick="enviarPedido()" style="background:#25d366;margin-top:10px;">
-Confirmar WhatsApp
-</button>
-</div>
+        <div id="tab-productos" class="tab-content active">
+            <input type="hidden" id="editIdx">
+            <input id="n" placeholder="Nombre del producto">
+            <div class="grid-inputs">
+                <input id="p1" type="number" placeholder="Precio Un.">
+                <input id="p2" type="number" placeholder="Precio x2">
+                <input id="pm" type="number" placeholder="Precio Mayorista">
+                <input id="st" type="number" placeholder="Stock">
+            </div>
+            <input id="im" placeholder="URL Imagen">
+            <button onclick="guardar()">Guardar / Actualizar</button>
+            <div id="adminProdList" style="margin-top:15px;"></div>
+        </div>
 
-<div class="login-box" id="loginBox">
-<div class="login-content">
-<h3>Cuenta Mayorista</h3>
-<input id="user" placeholder="Usuario">
-<input id="pass" type="password" placeholder="Contraseña">
-<button onclick="registrar()">Registrarse</button>
-<button onclick="login()">Ingresar</button>
-<button onclick="logout()" style="background:red;margin-top:5px;">Cerrar sesión</button>
-<button onclick="cerrarLogin()" style="margin-top:5px;">Cerrar</button>
-</div>
+        <div id="tab-ventas" class="tab-content">
+            <button class="btn-danger" onclick="borrarTodoHistorial()">🗑 Borrar Todo el Historial</button>
+            <div id="adminSalesList" style="margin-top:15px;"></div>
+        </div>
+    </div>
 </div>
 
 <div class="products" id="products"></div>
 
 <script>
-const MONTO_MINIMO_MAYORISTA = 50000;
+    let products = JSON.parse(localStorage.getItem("prods")) || [];
+    let sales = JSON.parse(localStorage.getItem("sales")) || [];
+    let cart = [];
 
-let products = JSON.parse(localStorage.getItem("prods")) || [];
-let sales = JSON.parse(localStorage.getItem("sales")) || [];
-let cart = [];
-let users = JSON.parse(localStorage.getItem("users")) || [];
-let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
+    function render() {
+        const container = document.getElementById("products");
+        container.innerHTML = products.map((p, i) => `
+            <div class="card">
+                <img src="${p.img || 'https://via.placeholder.com/150'}">
+                <h4>${p.name}</h4>
+                <div style="color:var(--accent); font-weight:bold;">$${p.p1}</div>
+                <button onclick="add(${i})" style="margin-top:5px; font-size:12px;">+ Agregar</button>
+            </div>`).join("");
+    }
 
-function render(){
-const container=document.getElementById("products");
-container.innerHTML=products.map((p,i)=>{
-let precio=p.p1;
-if(currentUser && p.pm>0) precio=p.pm;
-return `
-<div class="card">
-<img src="${p.img||'https://via.placeholder.com/150'}">
-<h4>${p.name}</h4>
-<div style="color:var(--accent);font-weight:bold;">$${precio}</div>
-<button onclick="add(${i})" style="margin-top:5px;font-size:12px;">+ Agregar</button>
-</div>`;
-}).join("");
-}
+    function add(i) {
+        const item = cart.find(c => c.id === i);
+        if(item) item.qty++; else cart.push({id:i, qty:1});
+        updateCart();
+    }
 
-function add(i){
-const item=cart.find(c=>c.id===i);
-if(item) item.qty++;
-else cart.push({id:i,qty:1});
-updateCart();
-}
+    function updateCart() {
+        let total = 0, count = 0;
+        document.getElementById("cartList").innerHTML = cart.map((c, idx) => {
+            const p = products[c.id];
+            let sub = 0;
+            // Lógica de cuentas: si hay promo x2 y no es mayorista
+            if(p.p2 > 0 && c.qty >= 2) {
+                sub = (Math.floor(c.qty/2) * p.p2) + ((c.qty%2) * p.p1);
+            } else {
+                sub = c.qty * p.p1;
+            }
+            total += sub; count += c.qty;
+            return `<div>${p.name} x${c.qty} - $${sub} <span onclick="cart.splice(${idx},1);updateCart()" style="color:red; cursor:pointer;">✕</span></div>`;
+        }).join("");
+        document.getElementById("cartTotal").innerText = "$" + total;
+        document.getElementById("cartCount").innerText = count;
+    }
 
-function updateCart(){
-let total=0,count=0;
-document.getElementById("cartList").innerHTML=cart.map((c,idx)=>{
-const p=products[c.id];
-let precio=currentUser && p.pm>0 ? p.pm : p.p1;
-let sub=precio*c.qty;
-total+=sub;
-count+=c.qty;
-return `
-<div>${p.name} x${c.qty} - $${sub}
-<span onclick="cart.splice(${idx},1);updateCart()" style="color:red;cursor:pointer;">✕</span>
-</div>`;
-}).join("");
+    function enviarPedido() {
+        if(cart.length === 0) return;
+        const entrega = document.querySelector('input[name="delivery"]:checked').value;
+        const nom = document.getElementById("f_nom").value;
+        let det = cart.map(c => `- ${products[c.id].name} (x${c.qty})`).join("\n");
+        let totalStr = document.getElementById("cartTotal").innerText;
+        
+        let msg = `NUEVO PEDIDO\n----------\n${det}\n----------\nTOTAL: ${totalStr}\nENTREGA: ${entrega}\nCLIENTE: ${nom}`;
+        
+        // Guardar en historial
+        sales.push({ id: Date.now(), fecha: new Date().toLocaleString(), detalle: det, total: totalStr, cliente: nom });
+        localStorage.setItem("sales", JSON.stringify(sales));
+        
+        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
+        cart = []; updateCart(); closeAll();
+    }
 
-document.getElementById("cartTotal").innerText="$"+total;
-document.getElementById("cartCount").innerText=count;
+    // --- ADMIN LOGIC ---
+    function showTab(id, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        if(id === 'tab-ventas') renderSales();
+        if(id === 'tab-productos') renderAdminProds();
+    }
 
-if(currentUser){
-if(total<MONTO_MINIMO_MAYORISTA){
-document.getElementById("minimoAviso").innerText=
-"Te faltan $"+(MONTO_MINIMO_MAYORISTA-total)+" para el mínimo mayorista";
-}else{
-document.getElementById("minimoAviso").innerText="";
-}
-}else{
-document.getElementById("minimoAviso").innerText="";
-}
-}
+    function abrirAdmin() {
+        if(prompt("Clave:") === "admin") {
+            document.getElementById("adminModal").style.display = "flex";
+            renderAdminProds();
+        }
+    }
 
-function enviarPedido(){
-if(cart.length===0) return;
+    function guardar() {
+        const id = document.getElementById("editIdx").value;
+        const p = {
+            name: document.getElementById("n").value,
+            p1: parseInt(document.getElementById("p1").value),
+            p2: parseInt(document.getElementById("p2").value) || 0,
+            pm: parseInt(document.getElementById("pm").value) || 0,
+            img: document.getElementById("im").value
+        };
+        if(id === "") products.push(p); else products[id] = p;
+        localStorage.setItem("prods", JSON.stringify(products));
+        location.reload();
+    }
 
-let total=parseInt(document.getElementById("cartTotal").innerText.replace("$",""));
+    function renderAdminProds() {
+        document.getElementById("adminProdList").innerHTML = products.map((p, i) => `
+            <div class="product-list-item">
+                <span onclick="editar(${i})" style="cursor:pointer; color:cyan;">${p.name} ($${p.p1})</span>
+                <span onclick="eliminar(${i})" style="color:red; cursor:pointer;">Borrar</span>
+            </div>`).join("");
+    }
 
-if(currentUser && total<MONTO_MINIMO_MAYORISTA){
-alert("Pedido mínimo mayorista: $"+MONTO_MINIMO_MAYORISTA);
-return;
-}
+    function editar(i) {
+        const p = products[i];
+        document.getElementById("n").value = p.name;
+        document.getElementById("p1").value = p.p1;
+        document.getElementById("p2").value = p.p2;
+        document.getElementById("pm").value = p.pm;
+        document.getElementById("im").value = p.img;
+        document.getElementById("editIdx").value = i;
+    }
 
-let detalle=cart.map(c=>{
-let p=products[c.id];
-let precio=currentUser && p.pm>0 ? p.pm : p.p1;
-return `- ${p.name} (x${c.qty})`;
-}).join("\n");
+    function renderSales() {
+        document.getElementById("adminSalesList").innerHTML = sales.map((s, i) => `
+            <div class="sale-item">
+                <div>
+                    <b>${s.fecha}</b><br>${s.cliente || 'Anonimo'}<br>
+                    <small>${s.detalle}</small><br>
+                    <b>${s.total}</b>
+                </div>
+                <button onclick="borrarVenta(${i})" style="width:auto; padding:5px; background:red;">✕</button>
+            </div>`).reverse().join("");
+    }
 
-let msg=`NUEVO PEDIDO
-----------
-${detalle}
-----------
-TOTAL: $${total}`;
-
-window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
-
-cart=[];
-updateCart();
-closeAll();
-}
-
-function registrar(){
-let u=user.value;
-let p=pass.value;
-if(!u||!p) return alert("Completar datos");
-users.push({user:u,pass:p});
-localStorage.setItem("users",JSON.stringify(users));
-alert("Cuenta creada");
-}
-
-function login(){
-let u=user.value;
-let p=pass.value;
-let found=users.find(x=>x.user===u && x.pass===p);
-if(found){
-currentUser=found;
-localStorage.setItem("currentUser",JSON.stringify(found));
-alert("Sesión iniciada como mayorista");
-cerrarLogin();
-render();
-updateCart();
-}else alert("Datos incorrectos");
-}
-
-function logout(){
-currentUser=null;
-localStorage.removeItem("currentUser");
-alert("Sesión cerrada");
-render();
-updateCart();
-}
-
-function abrirLogin(){document.getElementById("loginBox").style.display="flex";}
-function cerrarLogin(){document.getElementById("loginBox").style.display="none";}
-function toggleSidebar(){
-document.getElementById("sidebar").classList.toggle("active");
-document.getElementById("overlay").classList.toggle("show");
-}
-function toggleCart(){
-document.getElementById("cartDrawer").classList.toggle("active");
-document.getElementById("overlay").classList.toggle("show");
-}
-function closeAll(){
-document.querySelectorAll(".active").forEach(el=>el.classList.remove("active"));
-document.getElementById("overlay").classList.remove("show");
-}
-
-render();
-updateCart();
+    function borrarVenta(i) { sales.splice(i, 1); localStorage.setItem("sales", JSON.stringify(sales)); renderSales(); }
+    function borrarTodoHistorial() { if(confirm("¿Borrar todo?")) { sales = []; localStorage.setItem("sales", JSON.stringify(sales)); renderSales(); } }
+    function eliminar(i) { products.splice(i,1); localStorage.setItem("prods", JSON.stringify(products)); renderAdminProds(); render(); }
+    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
+    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
+    function closeAll() { document.querySelectorAll(".active, .show").forEach(el => el.classList.remove("active", "show")); }
+    
+    render();
 </script>
 </body>
 </html>
