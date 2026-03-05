@@ -3,196 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neo Repuestos - Oficial</title>
+    <title>Repuestos PRO - Premium Store</title>
     <style>
         :root {
             --bg: #0f172a; --card: #1e293b; --text: #f1f5f9;
             --accent: #2563eb; --sidebar-bg: #1e40af;
-            --shadow: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --success: #10b981;
         }
         body.light { --bg: #f4f6f9; --card: #ffffff; --text: #111; --sidebar-bg: #2563eb; }
-        body { margin:0; font-family: sans-serif; background:var(--bg); color:var(--text); transition:.3s; }
+        body { margin:0; font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); transition:.3s; overflow-x: hidden; }
         
-        /* HEADER SLIM (Basado en tu imagen) */
+        /* HEADER MEJORADO */
         header { 
             display:flex; justify-content:space-between; align-items:center; 
-            padding: 5px 15px; background:var(--card); box-shadow:var(--shadow); 
-            position:sticky; top:0; z-index:1000; height: 45px;
+            padding:10px 20px; background:var(--card); box-shadow:var(--shadow); 
+            position:sticky; top:0; z-index:1000; height: 60px; box-sizing: border-box;
         }
-        .search-container { flex-grow: 1; max-width: 400px; margin: 0 15px; }
-        .search-container input { width: 100%; padding: 6px 12px; border-radius: 15px; border: none; background: rgba(0,0,0,0.2); color: white; font-size: 13px; }
+        .search-bar {
+            flex-grow: 1; max-width: 400px; margin: 0 20px;
+        }
+        .search-bar input {
+            width: 100%; padding: 8px 15px; border-radius: 20px; border: 1px solid #444;
+            background: rgba(0,0,0,0.2); color: white; outline: none;
+        }
+        .icon-group { display: flex; gap: 15px; align-items: center; }
+        .icon { cursor:pointer; font-size:20px; position: relative; transition: 0.2s; }
+        .badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 10px; padding: 2px 5px; border-radius: 50%; font-weight: bold; }
 
-        .icon-group { display: flex; gap: 12px; align-items: center; }
-        .icon { cursor:pointer; font-size:18px; position: relative; }
-        
-        /* SIDEBAR DELGADA */
+        /* SIDEBAR */
         .sidebar {
-            position: fixed; left: -240px; top: 0; width: 230px; height: 100%;
-            background: var(--sidebar-bg); color: white; transition: 0.3s; z-index: 2000;
+            position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
+            background: var(--sidebar-bg); color: white; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2000; padding-top: 20px;
         }
         .sidebar.active { left: 0; }
-        .sidebar a { display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .sidebar-footer { position: absolute; bottom: 0; width: 100%; background: #ff5e5e; padding: 10px; text-align: center; font-size: 11px; font-weight: bold; }
+        .sidebar a { display: block; padding: 15px 25px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-footer { position: absolute; bottom: 0; width: 100%; background: #fb7185; padding: 15px; text-align: center; font-weight: bold; font-size: 12px; }
 
-        /* GRID PRODUCTOS AJUSTADO */
-        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px, 1fr)); gap:15px; padding:15px; }
-        .card { background:var(--card); padding:10px; border-radius:10px; text-align:center; box-shadow: var(--shadow); }
-        .card img { width: 100%; height: 100px; object-fit: contain; border-radius: 8px; }
+        /* CARRITO */
+        .cart-drawer {
+            position: fixed; right: -350px; top: 0; width: 320px; height: 100%;
+            background: var(--card); transition: 0.3s; z-index: 3000; padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
+        }
+        .cart-drawer.active { right: 0; }
+        .cart-items { flex-grow: 1; overflow-y: auto; margin: 15px 0; }
+        .savings { color: var(--success); font-size: 0.9em; font-weight: bold; text-align: center; margin-bottom: 10px; }
+
+        /* PRODUCTOS */
+        .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; padding:20px; }
+        .card { background:var(--card); padding:15px; border-radius:15px; text-align:center; box-shadow: var(--shadow); transition: 0.3s; }
+        .card img { width: 100%; height: 130px; object-fit: contain; margin-bottom: 10px; }
+        .price-main { font-size: 1.2em; font-weight: bold; color: var(--accent); }
+
+        /* PANEL ADMIN */
+        .admin-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+            display: none; justify-content: center; align-items: center; z-index: 4000;
+        }
+        .admin-content { 
+            background: var(--card); width: 90%; max-width: 600px; height: 85vh; 
+            border-radius: 20px; padding: 25px; position: relative; overflow-y: auto;
+        }
+        .close-btn { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 24px; z-index: 10; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #444; background: #000; color: white; box-sizing: border-box; }
         
-        .price-tag { font-weight: bold; color: var(--accent); font-size: 1.1em; margin: 5px 0; }
-        .promo-tag { color: #059669; font-size: 0.8em; display: block; margin-bottom: 5px; }
-        .mayorista-tag { background: #fef3c7; color: #92400e; padding: 2px 5px; border-radius: 4px; font-size: 0.8em; }
-
-        /* MODALES Y ADMIN */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 15px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 450px; border-radius: 12px; padding: 20px; position: relative; max-height: 90vh; overflow-y: auto; }
-        
-        input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 6px; border: 1px solid #444; background: #000; color: white; box-sizing: border-box; }
-        button { background: var(--accent); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 5px; }
-        .btn-alt { background: #64748b; margin-top: 10px; }
-        .btn-del { background: #ef4444; width: auto; padding: 4px 8px; font-size: 11px; }
-
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1500; }
         .overlay.show { display: block; }
+        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-edit { background: #eab308; width: auto; padding: 5px 10px; font-size: 12px; margin-right: 5px; color: black; }
+        .btn-del { background: #ef4444; width: auto; padding: 5px 10px; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="cursor:pointer; font-size: 20px;" onclick="toggleSidebar()">☰</span>
-        <div style="font-weight:bold; font-size: 13px;">NEO REPUESTOS</div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="cursor:pointer; font-size: 24px;" onclick="toggleSidebar()">☰</span>
+        <div style="font-weight:bold; letter-spacing: 1px;">NEO REPUESTOS</div>
     </div>
-    <div class="search-container">
-        <input type="text" id="bus" placeholder="Buscar producto..." onkeyup="filtrar()">
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Buscar repuesto..." onkeyup="filtrarProductos()">
     </div>
+
     <div class="icon-group">
-        <span class="icon" onclick="toggleDark()">🌗</span>
+        <span class="icon" onclick="toggleLightMode()">🌗</span>
+        <span class="icon" onclick="abrirAdmin()">🔑</span>
         <span class="icon" onclick="document.getElementById('loginModal').style.display='flex'">👤</span>
-        <span class="icon" onclick="alert('Funcionalidad de carrito vinculada al botón Agregar')">🛒</span>
+        <span class="icon" onclick="toggleCart()">🛒<span id="cartCount" class="badge">0</span></span>
     </div>
 </header>
 
 <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
 <nav class="sidebar" id="sidebar">
-    <div style="padding: 15px; font-weight: bold; font-size: 13px;">MENU</div>
+    <div style="padding: 20px; font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #ffffff22;">MENÚ</div>
     <a href="#" onclick="closeAll()">🏠 Inicio</a>
-    <a href="#" onclick="openAdmin()">🔑 Administrador</a>
+    <a href="#" onclick="alert('WhatsApp: +54...')">ℹ️ Contacto</a>
     <a href="https://instagram.com" target="_blank">📸 Instagram</a>
-    <div class="sidebar-footer">¡Quiero una tienda así para mi emprendimiento!</div>
+    <div class="sidebar-footer">Desarrollado para Emprendedores</div>
 </nav>
 
-<div id="adminPanel" class="modal">
-    <div class="modal-content">
-        <span style="float:right; cursor:pointer;" onclick="document.getElementById('adminPanel').style.display='none'">✕</span>
-        <h3>Gestión de Productos</h3>
-        <input type="hidden" id="editIndex">
-        <input id="n" placeholder="Nombre (ej: Yerba)">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-            <input id="p_ind" type="number" placeholder="Precio Ind.">
-            <input id="p_x2" type="number" placeholder="Precio x2">
-            <input id="p_may" type="number" placeholder="Precio Mayorista">
-            <input id="stock" type="number" placeholder="Stock">
+<div class="cart-drawer" id="cartDrawer">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>Mi Carrito</h3>
+        <span onclick="toggleCart()" style="cursor:pointer; font-size: 20px;">✕</span>
+    </div>
+    <div class="cart-items" id="cartList"></div>
+    <div id="savingsBox" class="savings"></div>
+    <div style="border-top: 1px solid #444; padding-top: 15px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size: 1.2em; font-weight: bold;">
+            <span>Total:</span>
+            <span id="cartTotal">$0</span>
         </div>
-        <input id="img" placeholder="URL Imagen">
-        <button onclick="guardar()" id="btnGuardar">Guardar Producto</button>
+        <button onclick="enviarPedido()" style="background:#25d366">Enviar a WhatsApp</button>
+    </div>
+</div>
+
+<div class="admin-modal" id="adminModal">
+    <div class="admin-content">
+        <span class="close-btn" onclick="document.getElementById('adminModal').style.display='none'">✕</span>
+        <h2>Panel de Control</h2>
         
-        <div style="display:flex; gap:5px; margin-top:15px;">
-            <button onclick="tab('p')" style="background:#444; font-size:11px">Productos</button>
-            <button onclick="tab('h')" style="background:#444; font-size:11px">Ventas</button>
+        <div id="formAdmin">
+            <input type="hidden" id="editIndex">
+            <input id="n" placeholder="Nombre del Repuesto">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <input id="p_ind" type="number" placeholder="Precio Un.">
+                <input id="p_x2" type="number" placeholder="Precio x2">
+                <input id="p_may" type="number" placeholder="Precio Mayorista">
+                <input id="stock" type="number" placeholder="Stock">
+            </div>
+            <input id="img" placeholder="URL de la Imagen">
+            <button onclick="guardar()" id="btnGuardar">Añadir Producto</button>
         </div>
-        <div id="tab-p" style="margin-top:10px; max-height:200px; overflow-y:auto;"></div>
-        <div id="tab-h" style="margin-top:10px; display:none; max-height:200px; overflow-y:auto;"></div>
+
+        <h3 style="margin-top: 30px;">Productos / Historial</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <button class="btn-edit" onclick="verTab('productos')" style="background: #444; color: white;">Productos</button>
+            <button class="btn-edit" onclick="verTab('historial')" style="background: #444; color: white;">Ventas</button>
+        </div>
+        
+        <div id="tab-productos">
+            <div id="listaAdmin"></div>
+        </div>
+        <div id="tab-historial" style="display:none;">
+            <div id="listaVentas"></div>
+        </div>
     </div>
 </div>
 
 <div class="products" id="products"></div>
 
-<div class="modal" id="loginModal">
-    <div class="modal-content">
-        <span style="float:right; cursor:pointer;" onclick="document.getElementById('loginModal').style.display='none'">✕</span>
-        <h3 id="modalTitle">Ingreso Mayorista</h3>
-        <div id="authInputs">
-            <input id="user" placeholder="Usuario">
-            <input id="pass" type="password" placeholder="Contraseña">
-        </div>
-        <div id="loginBtns">
-            <button onclick="login()">Entrar</button>
-            <p style="text-align:center; font-size:0.8em; cursor:pointer" onclick="toggleAuthMode(true)">¿No tienes cuenta? Regístrate</p>
-        </div>
-        <div id="registerBtns" style="display:none">
-            <button onclick="registrar()" style="background:#9333ea">Crear Cuenta</button>
-            <p style="text-align:center; font-size:0.8em; cursor:pointer" onclick="toggleAuthMode(false)">Ya tengo cuenta</p>
-        </div>
-        <div id="sessionActive" style="display:none">
-            <p id="welcomeMsg" style="text-align:center; font-weight:bold"></p>
-            <button onclick="logout()" class="btn-del" style="width:100%">Cerrar Sesión</button>
-        </div>
-    </div>
-</div>
-
 <script>
     let products = JSON.parse(localStorage.getItem("products")) || [];
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-    let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
     let sales = JSON.parse(localStorage.getItem("sales")) || [];
+    let cart = [];
+    let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
 
-    function render(lista = products) {
+    function render(filtro = "") {
         const container = document.getElementById("products");
-        container.innerHTML = "";
-        lista.forEach((p, i) => {
-            let htmlPrecios = `<div class="price-tag">$${p.p_ind} c/u</div>`;
-            if(p.p_x2 > 0) htmlPrecios += `<div class="promo-tag">Llevando 2: $${p.p_x2}</div>`;
-            if(currentUser) htmlPrecios += `<div class="mayorista-tag">Mayorista: $${p.p_may}</div>`;
-
-            container.innerHTML += `
+        const filtrados = products.filter(p => p.name.toLowerCase().includes(filtro.toLowerCase()));
+        
+        container.innerHTML = filtrados.map((p, i) => {
+            // Buscamos el índice real en el array original 'products' para que el carrito no se rompa al filtrar
+            const realIndex = products.indexOf(p);
+            return `
                 <div class="card">
                     <img src="${p.img || 'https://via.placeholder.com/150'}">
-                    <div style="font-size:13px; font-weight:bold; margin:5px 0">${p.name}</div>
-                    ${htmlPrecios}
-                    <p style="font-size:0.7em">Stock: ${p.stock}</p>
-                    <button onclick="comprar('${p.name}', ${currentUser ? p.p_may : p.p_ind})">Agregar</button>
+                    <h4>${p.name}</h4>
+                    <div class="price-main">$${p.p_ind}</div>
+                    ${p.p_x2 > 0 ? `<div style="color:#10b981; font-size:12px;">Promo x2: $${p.p_x2}</div>` : ''}
+                    ${currentUser ? `<div style="color:#eab308; font-size:11px;">Mayorista: $${p.p_may}</div>` : ''}
+                    <button onclick="addToCart(${realIndex})" style="margin-top:10px;">🛒 Agregar</button>
                 </div>
             `;
-        });
+        }).join("");
     }
 
-    // --- EL CARRITO DEL PRIMER CÓDIGO (WhatsApp Directo) ---
-    function comprar(nombre, precio) {
-        let msg = `Hola! Quiero comprar: ${nombre} - Precio: $${precio}`;
-        sales.push(`${new Date().toLocaleString()}: ${nombre} ($${precio})`);
-        localStorage.setItem("sales", JSON.stringify(sales));
-        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
+    function filtrarProductos() {
+        const busqueda = document.getElementById("searchInput").value;
+        render(busqueda);
     }
 
-    // --- FUNCIONES ADMIN ---
-    function openAdmin() {
-        if(prompt("Pass:") === "admin") {
-            document.getElementById("adminPanel").style.display = "flex";
+    function addToCart(index) {
+        const item = cart.find(c => c.id === index);
+        if (item) item.qty++;
+        else cart.push({ id: index, qty: 1 });
+        updateCart();
+    }
+
+    function updateCart() {
+        const list = document.getElementById("cartList");
+        const countEl = document.getElementById("cartCount");
+        const savingsEl = document.getElementById("savingsBox");
+        let total = 0; let count = 0; let originalTotal = 0;
+
+        list.innerHTML = cart.map((item, idx) => {
+            const p = products[item.id];
+            let subtotal = 0;
+            originalTotal += item.qty * p.p_ind;
+
+            if (p.p_x2 > 0 && item.qty >= 2) {
+                let pares = Math.floor(item.qty / 2);
+                let sueltos = item.qty % 2;
+                subtotal = (pares * p.p_x2) + (sueltos * p.p_ind);
+            } else {
+                subtotal = item.qty * p.p_ind;
+            }
+
+            total += subtotal;
+            count += item.qty;
+            return `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px;">
+                    <span>${p.name} (x${item.qty})</span>
+                    <span>$${subtotal} <b onclick="removeFromCart(${idx})" style="color:red; cursor:pointer; margin-left:5px;">✕</b></span>
+                </div>`;
+        }).join("");
+
+        document.getElementById("cartTotal").innerText = "$" + total;
+        countEl.innerText = count;
+        
+        let ahorro = originalTotal - total;
+        savingsEl.innerText = ahorro > 0 ? `¡Estás ahorrando $${ahorro}! ⚡` : "";
+    }
+
+    function removeFromCart(idx) {
+        cart.splice(idx, 1);
+        updateCart();
+    }
+
+    function abrirAdmin() {
+        if(prompt("Contraseña:") === "admin") {
+            document.getElementById("adminModal").style.display = "flex";
             cargarAdminList();
+            cargarVentas();
         }
     }
 
     function guardar() {
-        let index = document.getElementById("editIndex").value;
-        let prod = {
+        const idx = document.getElementById("editIndex").value;
+        const p = {
             name: document.getElementById("n").value,
-            p_ind: parseInt(document.getElementById("p_ind").value),
+            p_ind: parseInt(document.getElementById("p_ind").value) || 0,
             p_x2: parseInt(document.getElementById("p_x2").value) || 0,
-            p_may: parseInt(document.getElementById("p_may").value),
-            stock: parseInt(document.getElementById("stock").value),
+            p_may: parseInt(document.getElementById("p_may").value) || 0,
+            stock: parseInt(document.getElementById("stock").value) || 0,
             img: document.getElementById("img").value
         };
-        if(index === "") products.push(prod);
-        else products[index] = prod;
+
+        if (idx === "") products.push(p);
+        else products[idx] = p;
 
         localStorage.setItem("products", JSON.stringify(products));
-        location.reload();
+        resetForm();
+        render(); 
+        cargarAdminList();
+    }
+
+    function resetForm() {
+        document.getElementById("editIndex").value = "";
+        document.getElementById("n").value = "";
+        document.getElementById("p_ind").value = "";
+        document.getElementById("p_x2").value = "";
+        document.getElementById("p_may").value = "";
+        document.getElementById("stock").value = "";
+        document.getElementById("img").value = "";
+        document.getElementById("btnGuardar").innerText = "Añadir Producto";
     }
 
     function editar(i) {
-        let p = products[i];
+        const p = products[i];
         document.getElementById("n").value = p.name;
         document.getElementById("p_ind").value = p.p_ind;
         document.getElementById("p_x2").value = p.p_x2;
@@ -201,78 +284,60 @@
         document.getElementById("img").value = p.img;
         document.getElementById("editIndex").value = i;
         document.getElementById("btnGuardar").innerText = "Actualizar Producto";
-        tab('p');
+        document.getElementById("n").focus();
     }
 
     function cargarAdminList() {
-        document.getElementById("tab-p").innerHTML = products.map((p, i) => `
-            <div style="border-bottom:1px solid #444; padding:5px; display:flex; justify-content:space-between; align-items:center; font-size:12px">
-                <span>${p.name}</span>
+        document.getElementById("listaAdmin").innerHTML = products.map((p, i) => `
+            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #444;">
+                <span style="font-size:13px">${p.name} ($${p.p_ind})</span>
                 <div>
-                    <span onclick="editar(${i})" style="color:orange; cursor:pointer; margin-right:10px">Edit</span>
-                    <span onclick="eliminar(${i})" style="color:red; cursor:pointer">✕</span>
+                    <button class="btn-edit" onclick="editar(${i})">Edit</button>
+                    <button class="btn-del" onclick="eliminar(${i})">✕</button>
                 </div>
-            </div>`).join("");
-        
-        document.getElementById("tab-h").innerHTML = sales.map(s => `
-            <div style="font-size:10px; background:#000; padding:5px; margin-bottom:3px; border-radius:4px">${s}</div>
-        `).reverse().join("");
+            </div>
+        `).join("");
     }
 
     function eliminar(i) {
-        if(confirm("¿Eliminar?")) {
+        if(confirm("¿Eliminar producto?")) {
             products.splice(i, 1);
             localStorage.setItem("products", JSON.stringify(products));
-            cargarAdminList(); render();
+            render(); cargarAdminList();
         }
     }
 
-    // --- SISTEMA DE USUARIOS ---
-    function toggleAuthMode(isRegister) {
-        document.getElementById("modalTitle").innerText = isRegister ? "Registro Mayorista" : "Ingreso Mayorista";
-        document.getElementById("loginBtns").style.display = isRegister ? "none" : "block";
-        document.getElementById("registerBtns").style.display = isRegister ? "block" : "none";
+    function enviarPedido() {
+        if(cart.length === 0) return;
+        let msg = "Nuevo Pedido:\n";
+        cart.forEach(c => msg += `- ${products[c.id].name} x${c.qty}\n`);
+        msg += "Total: " + document.getElementById("cartTotal").innerText;
+        sales.push({ fecha: new Date().toLocaleString(), detalle: msg });
+        localStorage.setItem("sales", JSON.stringify(sales));
+        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
     }
 
-    function registrar() {
-        let u = document.getElementById("user").value, p = document.getElementById("pass").value;
-        if(u && p) {
-            users.push({user: u, pass: p});
-            localStorage.setItem("users", JSON.stringify(users));
-            alert("Cuenta creada."); toggleAuthMode(false);
-        }
+    function cargarVentas() {
+        document.getElementById("listaVentas").innerHTML = sales.map(s => `
+            <div style="font-size:11px; background:#000; padding:10px; margin-bottom:5px; border-radius:5px;">
+                <b>${s.fecha}</b><br>${s.detalle.replace(/\n/g, '<br>')}
+            </div>
+        `).reverse().join("");
     }
 
-    function login() {
-        let u = document.getElementById("user").value, p = document.getElementById("pass").value;
-        let found = users.find(x => x.user === u && x.pass === p);
-        if(found) {
-            localStorage.setItem("currentUser", JSON.stringify(found));
-            location.reload();
-        } else alert("Error");
+    function verTab(tab) {
+        document.getElementById("tab-productos").style.display = tab === 'productos' ? 'block' : 'none';
+        document.getElementById("tab-historial").style.display = tab === 'historial' ? 'block' : 'none';
     }
 
-    function logout() { localStorage.removeItem("currentUser"); location.reload(); }
-
-    // --- UI ---
-    function toggleDark() { document.body.classList.toggle("light"); }
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
-    function closeAll() { document.getElementById("sidebar").classList.remove("active"); document.getElementById("overlay").classList.remove("show"); }
-    function filtrar() {
-        let b = document.getElementById("bus").value.toLowerCase();
-        render(products.filter(p => p.name.toLowerCase().includes(b)));
+    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("overlay").classList.toggle("show"); }
+    function closeAll() { 
+        document.getElementById("sidebar").classList.remove("active"); 
+        document.getElementById("cartDrawer").classList.remove("active"); 
+        document.getElementById("overlay").classList.remove("show"); 
     }
-    function tab(t) {
-        document.getElementById("tab-p").style.display = t === 'p' ? 'block' : 'none';
-        document.getElementById("tab-h").style.display = t === 'h' ? 'block' : 'none';
-    }
-
-    if(currentUser) {
-        document.getElementById("authInputs").style.display = "none";
-        document.getElementById("loginBtns").style.display = "none";
-        document.getElementById("sessionActive").style.display = "block";
-        document.getElementById("welcomeMsg").innerText = "Bienvenido, " + currentUser.user;
-    }
+    function toggleLightMode() { document.body.classList.toggle("light"); }
 
     render();
 </script>
