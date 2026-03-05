@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEO REPUESTOS - OFICIAL</title>
+    <title>NEO REPUESTOS - SISTEMA COMPLETO</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --bg: #0b0f1a; --card: #161b2a; --text: #f1f5f9; --accent: #3b82f6; --promo: #f59e0b; --success: #10b981; }
+        :root { --bg: #0b0f1a; --card: #161b2a; --text: #f1f5f9; --accent: #3b82f6; --promo: #f59e0b; --success: #10b981; --danger: #ef4444; }
         body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); overflow-x: hidden; }
         
-        /* HEADER FIEL A LA IMAGEN */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--card); position: sticky; top: 0; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         .search-bar { flex: 1; max-width: 400px; margin: 0 20px; padding: 10px; border-radius: 8px; border: 1px solid #2d3748; background: #1a202c; color: white; }
         .cart-icon { cursor: pointer; position: relative; font-size: 22px; }
-        .badge { position: absolute; top: -8px; right: -10px; background: #ef4444; color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
+        .badge { position: absolute; top: -8px; right: -10px; background: var(--danger); color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
 
-        /* GRID PRODUCTOS */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding: 20px; }
         .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #2d3748; display: flex; flex-direction: column; position: relative; }
         .promo-tag { background: var(--promo); color: #000; font-size: 11px; font-weight: 800; padding: 8px; text-align: center; }
@@ -25,25 +23,22 @@
         .info { padding: 15px; flex-grow: 1; }
         .price { font-size: 24px; font-weight: 900; color: var(--accent); margin: 5px 0; }
         
-        /* PANELES LATERALES */
         .side-panel { position: fixed; right: -100%; top: 0; width: 100%; max-width: 380px; height: 100%; background: #161b2a; z-index: 4000; transition: 0.3s ease; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
         .side-panel.open { right: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 3000; display: none; backdrop-filter: blur(4px); }
         
-        /* BOTONES Y FORMULARIOS */
         .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
         .btn-add { background: #234785; color: white; }
         .btn-wa { background: #2ecc71; color: white; margin-top: 20px; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #2d3748; background: #0b0f1a; color: white; box-sizing: border-box; }
-        
         #envioFields { display: none; margin-top: 10px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--accent); }
-        .admin-controls { display: flex; gap: 5px; margin-top: 10px; }
+        .admin-btn-group { display: flex; gap: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <header>
-    <b onclick="checkAdmin()" style="cursor:pointer; font-size:20px;">NEO <span style="color:var(--accent)">REPUESTOS</span></b>
+    <b onclick="loginAdmin()" style="cursor:pointer; font-size:20px;">NEO <span style="color:var(--accent)">REPUESTOS</span></b>
     <input type="text" class="search-bar" placeholder="Buscar producto..." onkeyup="renderProds(this.value)">
     <div class="cart-icon" onclick="togglePanel('cartSide', true)">
         🛒 <span class="badge" id="cartBadge">0</span>
@@ -55,12 +50,11 @@
 
 <div id="cartSide" class="side-panel">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-        <h2 style="margin:0">Mi Pedido</h2>
+        <h2 style="margin:0">Mi Carrito</h2>
         <span onclick="closePanels()" style="cursor:pointer; font-size:28px">&times;</span>
     </div>
     <div id="cartList" style="flex-grow:1; overflow-y:auto; font-size: 14px;"></div>
     <div style="border-top: 1px solid #2d3748; padding-top: 15px;">
-        <label style="font-size:12px; color:var(--accent); font-weight:bold">MÉTODO DE ENTREGA</label>
         <select id="shipMethod" onchange="updateCartUI()">
             <option value="retiro">Retiro en Local</option>
             <option value="envio">Envío a Domicilio</option>
@@ -70,27 +64,28 @@
             <input type="text" id="shipDir" placeholder="Dirección">
             <input type="text" id="shipLoc" placeholder="Localidad">
         </div>
-        <div style="display:flex; justify-content:space-between; margin-top: 15px;">
-            <span>Total:</span>
-            <b id="cartTotal" style="font-size:24px; color:var(--success)">$0</b>
-        </div>
-        <button class="btn btn-wa" onclick="sendWA()">PEDIR POR WHATSAPP</button>
+        <h2 id="cartTotal" style="margin: 15px 0;">Total: $0</h2>
+        <button class="btn btn-wa" onclick="sendWA()">WHATSAPP</button>
     </div>
 </div>
 
 <div id="adminSide" class="side-panel">
-    <h3>Gestión de Productos</h3>
-    <input type="text" id="admNombre" placeholder="Nombre Producto">
-    <input type="number" id="admPrecio" placeholder="Precio Unidad">
-    <input type="text" id="admPromo" placeholder="Promo (ej: 2 x 2500)">
-    <input type="number" id="admStock" placeholder="Stock">
-    <input type="text" id="admImg" placeholder="Link de Imagen">
-    <button class="btn btn-add" onclick="saveProduct()">GUARDAR PRODUCTO</button>
-    <button class="btn" style="background:#475569" onclick="logout()">CERRAR SESIÓN</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <h2 style="margin:0">Panel Admin</h2>
+        <span onclick="closePanels()" style="cursor:pointer; font-size:28px">&times;</span>
+    </div>
+    <div style="overflow-y:auto; flex-grow:1;">
+        <input type="text" id="admNombre" placeholder="Nombre">
+        <input type="number" id="admPrecio" placeholder="Precio">
+        <input type="text" id="admPromo" placeholder="Promo (Ej: 2 x 2500)">
+        <input type="number" id="admStock" placeholder="Stock">
+        <input type="text" id="admImg" placeholder="Link Imagen">
+        <button class="btn btn-add" onclick="saveProduct()">GUARDAR PRODUCTO</button>
+        <button class="btn" style="background:var(--danger); margin-top:20px" onclick="logout()">CERRAR SESIÓN</button>
+    </div>
 </div>
 
 <script>
-    // Configuración Firebase (Usando tus credenciales actuales)
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -106,7 +101,6 @@
     let cart = [];
     let isAdmin = false;
 
-    // Sincronización con Firebase
     db.collection("productos").onSnapshot(snap => {
         prods = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderProds();
@@ -120,14 +114,14 @@
                 ${p.promo ? `<div class="promo-tag">🔥 ${p.promo}</div>` : ''}
                 <div class="img-container"><img src="${p.imagen}"></div>
                 <div class="info">
-                    <small style="color:#10b981; font-weight:bold">STOCK: ${p.stock || 0}</small>
+                    <small style="color:var(--success); font-weight:bold">STOCK: ${p.stock || 0}</small>
                     <div style="font-weight:700; font-size:16px; margin-top:4px">${p.nombre}</div>
                     <div class="price">$${p.precio}</div>
                     <button class="btn btn-add" onclick="addCart('${p.id}')">AGREGAR</button>
                     ${isAdmin ? `
-                        <div class="admin-controls">
-                            <button class="btn" style="background:#64748b; font-size:10px" onclick="editStock('${p.id}', ${p.stock})">STOCK</button>
-                            <button class="btn" style="background:#ef4444; font-size:10px" onclick="deleteProd('${p.id}')">BORRAR</button>
+                        <div class="admin-btn-group">
+                            <button class="btn" style="background:#475569; font-size:10px; padding:5px" onclick="editStock('${p.id}', ${p.stock})">STOCK</button>
+                            <button class="btn" style="background:var(--danger); font-size:10px; padding:5px" onclick="deleteProd('${p.id}')">BORRAR</button>
                         </div>
                     ` : ''}
                 </div>
@@ -144,15 +138,11 @@
     function updateCartUI() {
         const list = document.getElementById("cartList");
         const totalTxt = document.getElementById("cartTotal");
-        const badge = document.getElementById("cartBadge");
         const method = document.getElementById("shipMethod").value;
-        
         document.getElementById("envioFields").style.display = method === "envio" ? "block" : "none";
 
         let total = 0;
         let html = "";
-        let count = 0;
-
         cart.forEach(item => {
             const p = prods.find(x => x.id === item.id);
             if(!p) return;
@@ -160,35 +150,25 @@
             let pFinal = parseFloat(p.precio);
             if(p.promo) {
                 const n = p.promo.match(/\d+/g);
-                if(n && n.length >= 2) {
-                    const cantMin = parseInt(n[0]);
-                    const precioCombo = parseInt(n[1]);
-                    if(item.q >= cantMin) pFinal = precioCombo / cantMin;
+                if(n && n.length >= 2 && item.q >= parseInt(n[0])) {
+                    pFinal = parseInt(n[1]) / parseInt(n[0]);
                 }
             }
-
             const sub = pFinal * item.q;
             total += sub;
-            count += item.q;
-
-            html += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #2d3748; padding-bottom:8px">
-                    <div>
-                        <div style="font-weight:bold">${p.nombre}</div>
-                        <div style="font-size:12px; opacity:0.7">${item.q} x $${pFinal.toFixed(0)}</div>
-                    </div>
-                    <div style="font-weight:bold; color:var(--accent)">$${sub.toFixed(0)}</div>
-                </div>`;
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #2d3748; padding-bottom:5px">
+                <div><b>${p.nombre}</b><br><small>${item.q} x $${pFinal.toFixed(0)}</small></div>
+                <b>$${sub.toFixed(0)}</b>
+            </div>`;
         });
-
-        list.innerHTML = html || "<p style='text-align:center; opacity:0.5'>Carrito vacío</p>";
-        badge.innerText = count;
-        totalTxt.innerText = "$" + total.toFixed(0);
+        list.innerHTML = html || "Carrito vacío";
+        document.getElementById("cartBadge").innerText = cart.reduce((a,b) => a + b.q, 0);
+        totalTxt.innerText = "Total: $" + total.toFixed(0);
     }
 
-    function checkAdmin() {
-        const pass = prompt("Contraseña Administrativa:");
-        if(pass === "neo2024") {
+    function loginAdmin() {
+        const p = prompt("Clave de acceso:");
+        if(p === "neo2024") {
             isAdmin = true;
             togglePanel('adminSide', true);
             renderProds();
@@ -204,18 +184,18 @@
             imagen: document.getElementById("admImg").value
         };
         db.collection("productos").add(p).then(() => {
-            alert("Producto guardado correctamente");
+            alert("Guardado");
             closePanels();
         });
     }
 
-    function editStock(id, current) {
-        const nuevo = prompt("Actualizar stock:", current);
-        if(nuevo !== null) db.collection("productos").doc(id).update({stock: parseInt(nuevo)});
+    function editStock(id, cur) {
+        const n = prompt("Nuevo Stock:", cur);
+        if(n !== null) db.collection("productos").doc(id).update({stock: parseInt(n)});
     }
 
     function deleteProd(id) {
-        if(confirm("¿Eliminar definitivamente este producto?")) db.collection("productos").doc(id).delete();
+        if(confirm("¿Eliminar?")) db.collection("productos").doc(id).delete();
     }
 
     function togglePanel(id, show) {
@@ -229,32 +209,24 @@
     }
 
     function sendWA() {
-        if(cart.length === 0) return alert("El carrito está vacío");
-        let msg = "*NUEVO PEDIDO - NEO REPUESTOS*\n";
+        let msg = "*PEDIDO NEO REPUESTOS*\n";
         let total = 0;
         cart.forEach(c => {
             const p = prods.find(x => x.id === c.id);
-            let pPrice = p.precio;
+            let pFinal = p.precio;
             const n = p.promo ? p.promo.match(/\d+/g) : null;
-            if(n && n.length >= 2 && c.q >= n[0]) pPrice = n[1]/n[0];
-            const sub = pPrice * c.q;
+            if(n && n.length >= 2 && c.q >= n[0]) pFinal = n[1]/n[0];
+            const sub = pFinal * c.q;
             total += sub;
             msg += `- ${p.nombre} (x${c.q}): $${sub.toFixed(0)}\n`;
         });
         msg += `\n*TOTAL: $${total.toFixed(0)}*`;
         const method = document.getElementById("shipMethod").value;
-        msg += `\n📍 ENTREGA: ${method === 'envio' ? 'Envío a domicilio' : 'Retiro en local'}`;
-        if(method === "envio") {
-            msg += `\n👤 Nombre: ${document.getElementById("shipName").value}\n🏠 Dir: ${document.getElementById("shipDir").value}\n🏙️ Loc: ${document.getElementById("shipLoc").value}`;
-        }
+        if(method === "envio") msg += `\n\n📍 ENVÍO: ${document.getElementById("shipName").value}, ${document.getElementById("shipDir").value}`;
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
     }
 
-    function logout() {
-        isAdmin = false;
-        renderProds();
-        closePanels();
-    }
+    function logout() { isAdmin = false; renderProds(); closePanels(); }
 </script>
 </body>
 </html>
