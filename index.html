@@ -3,85 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEO REPUESTOS - SISTEMA COMPLETO</title>
+    <title>NEO REPUESTOS - SISTEMA INTEGRAL</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <style>
-        :root { --bg: #0b0f1a; --card: #161b2a; --text: #f1f5f9; --accent: #3b82f6; --promo: #f59e0b; --success: #10b981; --danger: #ef4444; }
-        body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); overflow-x: hidden; }
-        
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--card); position: sticky; top: 0; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .search-bar { flex: 1; max-width: 400px; margin: 0 20px; padding: 10px; border-radius: 8px; border: 1px solid #2d3748; background: #1a202c; color: white; }
-        .cart-icon { cursor: pointer; position: relative; font-size: 22px; }
-        .badge { position: absolute; top: -8px; right: -10px; background: var(--danger); color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding: 20px; }
-        .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #2d3748; display: flex; flex-direction: column; position: relative; }
-        .promo-tag { background: var(--promo); color: #000; font-size: 11px; font-weight: 800; padding: 8px; text-align: center; }
-        .img-container { background: #fff; height: 150px; display: flex; align-items: center; justify-content: center; padding: 10px; }
-        .img-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .info { padding: 15px; flex-grow: 1; }
-        .price { font-size: 24px; font-weight: 900; color: var(--accent); margin: 5px 0; }
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #3b82f6;
+            --success: #10b981; --promo: #f59e0b; --danger: #ef4444;
+            --input-bg: rgba(30, 41, 59, 0.7);
+        }
+        body.light {
+            --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --accent: #2563eb;
+            --input-bg: #f1f5f9;
+        }
+        body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); transition: 0.3s; overflow-x: hidden; }
+
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 15px; background: var(--card); position: sticky; top: 0; z-index: 1000; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-bottom: 1px solid rgba(128,128,128,0.1);
+        }
+        .header-icons { display: flex; gap: 15px; align-items: center; }
+        .icon-btn { cursor: pointer; font-size: 20px; transition: 0.2s; position: relative; }
+
+        .search-container { flex: 1; max-width: 450px; margin: 0 15px; }
+        .search-bar { width: 100%; padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(128,128,128,0.3); background: var(--input-bg); color: inherit; outline: none; box-sizing: border-box; }
+
+        .products-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); 
+            gap: 15px; padding: 15px; 
+        }
+        @media (min-width: 768px) {
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 25px; }
+        }
+
+        .product-card { 
+            background: var(--card); border-radius: 20px; overflow: hidden; 
+            border: 1px solid rgba(128,128,128,0.1); position: relative; transition: 0.3s;
+            display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .img-box { 
+            background: #fff; width: 100%; height: 140px; 
+            display: flex; align-items: center; justify-content: center; position: relative; 
+        }
+        .img-box img { max-width: 75%; max-height: 75%; object-fit: contain; }
         
-        .side-panel { position: fixed; right: -100%; top: 0; width: 100%; max-width: 380px; height: 100%; background: #161b2a; z-index: 4000; transition: 0.3s ease; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
-        .side-panel.open { right: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 3000; display: none; backdrop-filter: blur(4px); }
+        .promo-banner {
+            background: var(--promo); color: #000; font-size: 11px; font-weight: 900; padding: 8px; text-align: center; border-bottom: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .stock-indicator {
+            font-size: 10px; color: var(--success); font-weight: 700;
+            display: flex; align-items: center; gap: 4px; margin-bottom: 5px;
+            background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 6px; width: fit-content;
+        }
+
+        .info-box { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-title { 
+            margin: 0 0 8px 0; font-size: 14px; font-weight: 600; line-height: 1.2; 
+            color: var(--text); height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+        .price-container { margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(128,128,128,0.1); }
+        .price-label { font-size: 10px; opacity: 0.7; }
+        .price-val { font-size: 22px; font-weight: 900; color: var(--accent); }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 10px; }
+        .modal-content { 
+            background: var(--card); padding: 25px; border-radius: 25px; width: 100%; max-width: 650px; 
+            max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); 
+        }
+
+        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 15px; }
+        .tab-btn { flex: 1; text-align: center; cursor: pointer; padding: 10px; border-radius: 10px; font-weight: bold; opacity: 0.5; transition: 0.3s; font-size: 12px; }
+        .tab-btn.active { opacity: 1; background: var(--accent); color: white; }
         
-        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
-        .btn-add { background: #234785; color: white; }
-        .btn-wa { background: #2ecc71; color: white; margin-top: 20px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #2d3748; background: #0b0f1a; color: white; box-sizing: border-box; }
-        #envioFields { display: none; margin-top: 10px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--accent); }
-        .admin-btn-group { display: flex; gap: 5px; margin-top: 10px; }
+        #cartDrawer { position: fixed; right: -100%; top: 0; width: 100%; max-width: 350px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 20px; box-shadow: -10px 0 40px rgba(0,0,0,0.5); display:flex; flex-direction:column; box-sizing: border-box; }
+        #cartDrawer.active { right: 0; }
+        
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: var(--input-bg); color: inherit; border: 1px solid rgba(128,128,128,0.2); border-radius: 10px; box-sizing: border-box; font-size: 14px; }
+        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 5px; font-size: 14px; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-back { background: transparent; color: var(--text); border: 1px solid rgba(128,128,128,0.3); margin-top: 10px; }
+        
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 2000; }
+        .overlay.active { display: block; }
+        .qty-badge { position: absolute; top: -5px; right: -8px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; }
+
+        #deliveryForm { background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px; margin-top: 10px; display: none; }
+        .cart-section-title { font-size: 12px; font-weight: bold; text-transform: uppercase; opacity: 0.7; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(128,128,128,0.1); }
     </style>
 </head>
 <body>
 
 <header>
-    <b onclick="loginAdmin()" style="cursor:pointer; font-size:20px;">NEO <span style="color:var(--accent)">REPUESTOS</span></b>
-    <input type="text" class="search-bar" placeholder="Buscar producto..." onkeyup="renderProds(this.value)">
-    <div class="cart-icon" onclick="togglePanel('cartSide', true)">
-        🛒 <span class="badge" id="cartBadge">0</span>
+    <b style="font-size:20px; cursor:pointer" onclick="location.reload()">NEO<span style="color:var(--accent)">REPUESTOS</span></b>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto..." onkeyup="render()">
+    </div>
+    <div class="header-icons">
+        <span class="icon-btn" onclick="toggleTheme()">🌗</span>
+        <span class="icon-btn" onclick="abrirModal('loginModal')">👤</span>
+        <span class="icon-btn" onclick="verificarAdmin()">⚙️</span>
+        <div class="icon-btn" onclick="toggleCart()">🛒 <b id="cartCount" class="qty-badge">0</b></div>
     </div>
 </header>
 
-<div class="overlay" id="overlay" onclick="closePanels()"></div>
-<div class="grid" id="mainGrid"></div>
+<div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
+<div class="products-grid" id="productsCont"></div>
 
-<div id="cartSide" class="side-panel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-        <h2 style="margin:0">Mi Carrito</h2>
-        <span onclick="closePanels()" style="cursor:pointer; font-size:28px">&times;</span>
-    </div>
-    <div id="cartList" style="flex-grow:1; overflow-y:auto; font-size: 14px;"></div>
-    <div style="border-top: 1px solid #2d3748; padding-top: 15px;">
-        <select id="shipMethod" onchange="updateCartUI()">
-            <option value="retiro">Retiro en Local</option>
-            <option value="envio">Envío a Domicilio</option>
-        </select>
-        <div id="envioFields">
-            <input type="text" id="shipName" placeholder="Tu nombre">
-            <input type="text" id="shipDir" placeholder="Dirección">
-            <input type="text" id="shipLoc" placeholder="Localidad">
+<div class="modal" id="loginModal">
+    <div class="modal-content" style="max-width:380px">
+        <div id="loginView">
+            <h2>Acceso Mayorista</h2>
+            <input id="userInp" placeholder="Usuario">
+            <input id="passInp" type="password" placeholder="Contraseña">
+            <button class="btn btn-primary" onclick="checkLogin()">INGRESAR</button>
+            <button class="btn btn-back" onclick="closeAll()">VOLVER</button>
+            <p style="text-align:center; margin-top:15px; font-size: 14px;">¿No eres cliente? <a href="#" onclick="switchAuth(true)" style="color:var(--accent)">Crear Solicitud</a></p>
         </div>
-        <h2 id="cartTotal" style="margin: 15px 0;">Total: $0</h2>
-        <button class="btn btn-wa" onclick="sendWA()">WHATSAPP</button>
+        <div id="regView" style="display:none">
+            <h2>Solicitud de Alta</h2>
+            <input id="regNom" placeholder="Nombre / Comercio">
+            <input id="regCuit" placeholder="CUIT / DNI">
+            <button class="btn btn-primary" onclick="enviarSolicitud()">ENVIAR DATOS</button>
+            <button class="btn btn-back" onclick="switchAuth(false)">VOLVER AL LOGIN</button>
+        </div>
     </div>
 </div>
 
-<div id="adminSide" class="side-panel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-        <h2 style="margin:0">Panel Admin</h2>
-        <span onclick="closePanels()" style="cursor:pointer; font-size:28px">&times;</span>
+<div class="modal" id="adminModal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+            <h2 style="margin:0">Panel Admin</h2>
+            <button class="btn" style="width:auto; margin:0; background:var(--danger); padding: 5px 15px;" onclick="closeAll()">X</button>
+        </div>
+        <div class="tab-nav">
+            <div class="tab-btn active" id="btn-tab1" onclick="tab('tab1')">STOCK</div>
+            <div class="tab-btn" id="btn-tab2" onclick="tab('tab2')">SOLICITUDES</div>
+            <div class="tab-btn" id="btn-tab3" onclick="tab('tab3')">VENTAS</div>
+        </div>
+        
+        <div id="tab1">
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; border:1px solid rgba(128,128,128,0.2)">
+                <input type="hidden" id="editId">
+                <input id="fNom" placeholder="Nombre del Producto">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
+                    <input id="fPre" type="number" placeholder="Precio Min">
+                    <input id="fPreM" type="number" placeholder="Precio May">
+                </div>
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px">
+                    <input id="fPromo" placeholder="Ej: Llevando 2 $4500 c/u">
+                    <input id="fStock" type="number" placeholder="Stock cant.">
+                </div>
+                <input id="fImg" placeholder="URL Imagen">
+                <button class="btn btn-primary" onclick="guardarProducto()">GUARDAR</button>
+                <button class="btn btn-back" style="margin-top:5px" onclick="limpiarForm()">LIMPIAR</button>
+            </div>
+            <div style="overflow-x:auto">
+                <table>
+                    <thead><tr><th>Producto</th><th>Cant.</th><th>Acciones</th></tr></thead>
+                    <tbody id="adminProdsList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab2" style="display:none">
+            <table>
+                <thead><tr><th>Cliente</th><th>ID</th><th>Acción</th></tr></thead>
+                <tbody id="adminSolisList"></tbody>
+            </table>
+        </div>
+
+        <div id="tab3" style="display:none">
+            <button class="btn" style="background:var(--danger); margin-bottom:10px" onclick="vaciarVentas()">BORRAR HISTORIAL</button>
+            <table>
+                <thead><tr><th>Fecha</th><th>Total</th><th>Detalle</th></tr></thead>
+                <tbody id="adminSalesList"></tbody>
+            </table>
+        </div>
     </div>
-    <div style="overflow-y:auto; flex-grow:1;">
-        <input type="text" id="admNombre" placeholder="Nombre">
-        <input type="number" id="admPrecio" placeholder="Precio">
-        <input type="text" id="admPromo" placeholder="Promo (Ej: 2 x 2500)">
-        <input type="number" id="admStock" placeholder="Stock">
-        <input type="text" id="admImg" placeholder="Link Imagen">
-        <button class="btn btn-add" onclick="saveProduct()">GUARDAR PRODUCTO</button>
-        <button class="btn" style="background:var(--danger); margin-top:20px" onclick="logout()">CERRAR SESIÓN</button>
+</div>
+
+<div id="cartDrawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+        <h2 style="margin:0">Mi Carrito</h2>
+        <span onclick="toggleCart()" style="cursor:pointer; font-size:24px">✕</span>
+    </div>
+    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto"></div>
+    <div style="padding-top:15px; border-top:1px solid rgba(128,128,128,0.2)">
+        <div class="cart-section-title">Método de entrega</div>
+        <select id="deliveryMethod" onchange="toggleDeliveryForm()">
+            <option value="retiro">Retiro en local</option>
+            <option value="envio">Envío a domicilio</option>
+        </select>
+        <div id="deliveryForm">
+            <input id="envioNombre" placeholder="Nombre completo">
+            <input id="envioDireccion" placeholder="Dirección">
+            <input id="envioLocalidad" placeholder="Localidad">
+        </div>
+        <h3 id="cartTotalText" style="margin: 15px 0 10px 0">Total: $0</h3>
+        <button class="btn btn-primary" style="background:#25d366" onclick="enviarWhatsApp()">PEDIR POR WHATSAPP</button>
     </div>
 </div>
 
@@ -97,136 +222,169 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let prods = [];
-    let cart = [];
-    let isAdmin = false;
+    let productos = [];
+    let carrito = [];
+    let esMayorista = localStorage.getItem("neo_may") === "true";
 
+    // CARGA DE DATOS
     db.collection("productos").onSnapshot(snap => {
-        prods = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderProds();
+        productos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        render();
+        renderAdminProds();
     });
 
-    function renderProds(filter = "") {
-        const grid = document.getElementById("mainGrid");
-        const filtered = prods.filter(p => p.nombre.toLowerCase().includes(filter.toLowerCase()));
-        grid.innerHTML = filtered.map(p => `
-            <div class="card">
-                ${p.promo ? `<div class="promo-tag">🔥 ${p.promo}</div>` : ''}
-                <div class="img-container"><img src="${p.imagen}"></div>
-                <div class="info">
-                    <small style="color:var(--success); font-weight:bold">STOCK: ${p.stock || 0}</small>
-                    <div style="font-weight:700; font-size:16px; margin-top:4px">${p.nombre}</div>
-                    <div class="price">$${p.precio}</div>
-                    <button class="btn btn-add" onclick="addCart('${p.id}')">AGREGAR</button>
-                    ${isAdmin ? `
-                        <div class="admin-btn-group">
-                            <button class="btn" style="background:#475569; font-size:10px; padding:5px" onclick="editStock('${p.id}', ${p.stock})">STOCK</button>
-                            <button class="btn" style="background:var(--danger); font-size:10px; padding:5px" onclick="deleteProd('${p.id}')">BORRAR</button>
-                        </div>
-                    ` : ''}
+    db.collection("solicitudes_mayoristas").onSnapshot(snap => {
+        document.getElementById("adminSolisList").innerHTML = snap.docs.map(doc => {
+            const s = doc.data();
+            return `<tr><td>${s.nombre}</td><td>${s.cuit}</td><td><button onclick="aprobarSoli('${doc.id}')">✅</button> <button onclick="eliminarSoli('${doc.id}')">🗑️</button></td></tr>`;
+        }).join("");
+    });
+
+    db.collection("ventas").orderBy("creado", "desc").onSnapshot(snap => {
+        document.getElementById("adminSalesList").innerHTML = snap.docs.map(doc => {
+            const v = doc.data();
+            return `<tr><td>${v.hora}</td><td>$${v.total}</td><td><button onclick="alert('${v.detalle}')">Ver</button></td></tr>`;
+        }).join("");
+    });
+
+    // RENDERIZADO PRINCIPAL
+    function render() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
+        const cont = document.getElementById("productsCont");
+        cont.innerHTML = productos.filter(p => p.nombre.toLowerCase().includes(query)).map(p => `
+            <div class="product-card">
+                ${p.promo ? `<div class="promo-banner">🔥 ${p.promo}</div>` : ''}
+                <div class="img-box"><img src="${p.imagen || 'https://via.placeholder.com/150'}"></div>
+                <div class="info-box">
+                    <div class="stock-indicator">📦 ${p.stock || 0} disponibles</div>
+                    <h4 class="product-title">${p.nombre}</h4>
+                    <div class="price-container">
+                        <div class="price-label">Precio x Unidad:</div>
+                        <div class="price-val">$${esMayorista ? p.precio_may : p.precio}</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addToCart('${p.id}')" style="margin-top:10px">AGREGAR</button>
                 </div>
             </div>`).join("");
     }
 
-    function addCart(id) {
-        const item = cart.find(c => c.id === id);
-        if(item) item.q++; else cart.push({id, q:1});
+    // LÓGICA CARRITO
+    function addToCart(id) {
+        const exist = carrito.find(c => c.id === id);
+        if(exist) exist.qty++; else carrito.push({id, qty:1});
         updateCartUI();
-        togglePanel('cartSide', true);
     }
 
     function updateCartUI() {
-        const list = document.getElementById("cartList");
-        const totalTxt = document.getElementById("cartTotal");
-        const method = document.getElementById("shipMethod").value;
-        document.getElementById("envioFields").style.display = method === "envio" ? "block" : "none";
-
         let total = 0;
-        let html = "";
-        cart.forEach(item => {
-            const p = prods.find(x => x.id === item.id);
-            if(!p) return;
-
-            let pFinal = parseFloat(p.precio);
-            if(p.promo) {
-                const n = p.promo.match(/\d+/g);
-                if(n && n.length >= 2 && item.q >= parseInt(n[0])) {
-                    pFinal = parseInt(n[1]) / parseInt(n[0]);
-                }
+        document.getElementById("cartCount").innerText = carrito.reduce((a,b)=>a+b.qty, 0);
+        const list = document.getElementById("cartItemsList");
+        list.innerHTML = carrito.map(c => {
+            const p = productos.find(x => x.id === c.id);
+            let pUnit = esMayorista ? p.precio_may : p.precio;
+            
+            // Corrección de lógica de promo
+            if (p.promo) {
+                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (m && c.qty >= parseInt(m[1])) pUnit = parseInt(m[2]) / parseInt(m[1]);
             }
-            const sub = pFinal * item.q;
+            
+            const sub = pUnit * c.qty;
             total += sub;
-            html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #2d3748; padding-bottom:5px">
-                <div><b>${p.nombre}</b><br><small>${item.q} x $${pFinal.toFixed(0)}</small></div>
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px">
+                <span>${p.nombre} (x${c.qty})</span>
                 <b>$${sub.toFixed(0)}</b>
             </div>`;
-        });
-        list.innerHTML = html || "Carrito vacío";
-        document.getElementById("cartBadge").innerText = cart.reduce((a,b) => a + b.q, 0);
-        totalTxt.innerText = "Total: $" + total.toFixed(0);
+        }).join("");
+        document.getElementById("cartTotalText").innerText = "Total: $" + total.toFixed(0);
     }
 
-    function loginAdmin() {
-        const p = prompt("Clave de acceso:");
-        if(p === "neo2024") {
-            isAdmin = true;
-            togglePanel('adminSide', true);
-            renderProds();
-        }
+    function toggleDeliveryForm() {
+        document.getElementById("deliveryForm").style.display = document.getElementById("deliveryMethod").value === "envio" ? "block" : "none";
     }
 
-    function saveProduct() {
-        const p = {
-            nombre: document.getElementById("admNombre").value,
-            precio: document.getElementById("admPrecio").value,
-            promo: document.getElementById("admPromo").value,
-            stock: parseInt(document.getElementById("admStock").value),
-            imagen: document.getElementById("admImg").value
-        };
-        db.collection("productos").add(p).then(() => {
-            alert("Guardado");
-            closePanels();
-        });
-    }
+    async function enviarWhatsApp() {
+        if(!carrito.length) return;
+        const metodo = document.getElementById("deliveryMethod").value;
+        const n = document.getElementById("envioNombre").value;
+        const d = document.getElementById("envioDireccion").value;
+        const l = document.getElementById("envioLocalidad").value;
+        if (metodo === "envio" && (!n || !d || !l)) return alert("Completa los datos de envío.");
 
-    function editStock(id, cur) {
-        const n = prompt("Nuevo Stock:", cur);
-        if(n !== null) db.collection("productos").doc(id).update({stock: parseInt(n)});
-    }
-
-    function deleteProd(id) {
-        if(confirm("¿Eliminar?")) db.collection("productos").doc(id).delete();
-    }
-
-    function togglePanel(id, show) {
-        document.getElementById(id).classList.toggle("open", show);
-        document.getElementById("overlay").style.display = show ? "block" : "none";
-    }
-
-    function closePanels() {
-        document.querySelectorAll('.side-panel').forEach(p => p.classList.remove('open'));
-        document.getElementById("overlay").style.display = "none";
-    }
-
-    function sendWA() {
-        let msg = "*PEDIDO NEO REPUESTOS*\n";
+        const ahora = new Date();
+        const hStr = ahora.toLocaleString();
         let total = 0;
-        cart.forEach(c => {
-            const p = prods.find(x => x.id === c.id);
-            let pFinal = p.precio;
-            const n = p.promo ? p.promo.match(/\d+/g) : null;
-            if(n && n.length >= 2 && c.q >= n[0]) pFinal = n[1]/n[0];
-            const sub = pFinal * c.q;
+        let msg = "*NUEVO PEDIDO NEO*\n--------------------------\n";
+        
+        carrito.forEach(c => {
+            const p = productos.find(x => x.id === c.id);
+            let pFinal = esMayorista ? p.precio_may : p.precio;
+            if (p.promo) {
+                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (m && c.qty >= parseInt(m[1])) pFinal = parseInt(m[2]) / parseInt(m[1]);
+            }
+            const sub = pFinal * c.qty;
             total += sub;
-            msg += `- ${p.nombre} (x${c.q}): $${sub.toFixed(0)}\n`;
+            msg += `• ${p.nombre}\n  Cant: ${c.qty} x $${pFinal.toFixed(0)} = $${sub.toFixed(0)}\n`;
         });
-        msg += `\n*TOTAL: $${total.toFixed(0)}*`;
-        const method = document.getElementById("shipMethod").value;
-        if(method === "envio") msg += `\n\n📍 ENVÍO: ${document.getElementById("shipName").value}, ${document.getElementById("shipDir").value}`;
+
+        msg += `--------------------------\n*TOTAL: $${total.toFixed(0)}*\n\n`;
+        msg += `📍 ENTREGA: ${metodo === 'retiro' ? 'Retira en Local' : 'Envío'}\n`;
+        if(metodo === "envio") msg += `👤 ${n}\n🏠 ${d}\n🏙️ ${l}`;
+
+        await db.collection("ventas").add({ creado: ahora.getTime(), hora: hStr, total: total.toFixed(0), detalle: msg });
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
+        carrito = []; updateCartUI(); closeAll();
     }
 
-    function logout() { isAdmin = false; renderProds(); closePanels(); }
+    // ADMIN Y MODALES
+    function verificarAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
+    function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
+    function closeAll() { document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); document.getElementById("cartDrawer").classList.remove("active"); document.getElementById("mainOverlay").classList.remove("active"); }
+    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
+    function toggleTheme() { document.body.classList.toggle("light"); }
+    function tab(t) {
+        ['tab1','tab2','tab3'].forEach(x => document.getElementById(x).style.display = x===t?'block':'none');
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.id==='btn-'+t));
+    }
+
+    async function guardarProducto() {
+        const id = document.getElementById("editId").value;
+        const data = {
+            nombre: document.getElementById("fNom").value,
+            precio: Number(document.getElementById("fPre").value),
+            precio_may: Number(document.getElementById("fPreM").value),
+            promo: document.getElementById("fPromo").value,
+            stock: Number(document.getElementById("fStock").value),
+            imagen: document.getElementById("fImg").value
+        };
+        id ? await db.collection("productos").doc(id).update(data) : await db.collection("productos").add(data);
+        limpiarForm();
+    }
+
+    function renderAdminProds() {
+        document.getElementById("adminProdsList").innerHTML = productos.map(p => `<tr><td>${p.nombre}</td><td>${p.stock || 0}</td><td><button onclick="editP('${p.id}')">✏️</button> <button onclick="deleteP('${p.id}')">🗑️</button></td></tr>`).join("");
+    }
+
+    function editP(id) {
+        const p = productos.find(x => x.id === id);
+        document.getElementById("editId").value = p.id;
+        document.getElementById("fNom").value = p.nombre;
+        document.getElementById("fPre").value = p.precio;
+        document.getElementById("fPreM").value = p.precio_may;
+        document.getElementById("fPromo").value = p.promo || "";
+        document.getElementById("fStock").value = p.stock || 0;
+        document.getElementById("fImg").value = p.imagen || "";
+        tab('tab1');
+    }
+
+    function checkLogin() { if(document.getElementById("userInp").value === "mayorista") { esMayorista=true; localStorage.setItem("neo_may", "true"); closeAll(); render(); } }
+    function switchAuth(r) { document.getElementById("loginView").style.display = r ? 'none' : 'block'; document.getElementById("regView").style.display = r ? 'block' : 'none'; }
+    async function enviarSolicitud() { await db.collection("solicitudes_mayoristas").add({ nombre: document.getElementById("regNom").value, cuit: document.getElementById("regCuit").value }); alert("Solicitud Enviada"); switchAuth(false); }
+    async function deleteP(id) { if(confirm("¿Borrar?")) await db.collection("productos").doc(id).delete(); }
+    async function aprobarSoli(id) { alert("¡Aprobado!"); await db.collection("solicitudes_mayoristas").doc(id).delete(); }
+    async function eliminarSoli(id) { await db.collection("solicitudes_mayoristas").doc(id).delete(); }
+    async function vaciarVentas() { if(confirm("¿Borrar historial?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
+    function limpiarForm() { document.getElementById("editId").value = ""; document.querySelectorAll("#tab1 input").forEach(i => i.value = ""); }
 </script>
 </body>
 </html>
