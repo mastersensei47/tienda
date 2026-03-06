@@ -23,16 +23,16 @@
             display: flex; justify-content: space-between; align-items: center; 
             padding: 0 20px; background: var(--card); position: sticky; top: 0; z-index: 1000; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.4); border-bottom: 1px solid rgba(128,128,128,0.1);
-            height: 80px; box-sizing: border-box; 
+            height: 110px; box-sizing: border-box; 
         }
         
         .header-left { display: flex; align-items: center; gap: 12px; }
-        
-        /* CORRECCIÓN DEL LOGO */
+
+        /* MODIFICACIÓN 1: LOGO DE INICIO MÁS GRANDE */
         .main-logo {
-            height: 70px; /* Ajustado para que quepa bien en los 80px del header */
+            height: 100px; 
             width: auto; 
-            max-width: 140px; 
+            max-width: 180px; 
             object-fit: contain; 
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
             transition: transform 0.3s ease;
@@ -120,30 +120,32 @@
 
 <div id="infoDrawer" class="drawer">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-        <img src="logoo.png" alt="Logo" style="height: 70px; width: auto; object-fit: contain;">
+        <h2 style="margin: 0; color: var(--accent); font-size: 22px;">Distribuidora Elnen</h2>
         <span onclick="toggleInfo()" style="cursor:pointer; font-size:24px">✕</span>
     </div>
 
     <div style="flex-grow:1; overflow-y:auto; font-size:14px">
-        <h2 style="margin: 0 0 15px 0; color: var(--accent); font-size: 22px;">Distribuidora Elnen</h2>
-
         <div id="userBadge" style="display:none; background:rgba(59,130,246,0.1); padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid var(--accent)">
             <p style="margin:0; font-weight:bold; color:var(--accent)">MODO MAYORISTA ACTIVO</p>
             <button class="btn" style="background:var(--danger); color:white; padding:5px; margin-top:10px; font-size:11px" onclick="logout()">Cerrar Sesión</button>
         </div>
 
         <p>📍 <b>Ubicación:</b><br>Belgrano 7102, Santa Fe Capital</p>
-        <p>📞 <b>WhatsApp:</b><br>aca va el contacto de la empresa/dueño</p>
+        <p>📞 <b>WhatsApp:</b><br>Belgrano 7102, Santa Fe Capital</p>
         <p>⏰ <b>Horarios:</b><br>Lun a Vie: 08:00 - 18:00</p>
         
         <div class="map-container">
             <iframe 
                 src="https://www.google.com/maps/embed?pb=!4v1772834608375!6m8!1m7!1smr3lvtp6cuNHDZtPeGXyew!2m2!1d-31.60368288145714!2d-60.68902259133684!3f84.64853106821984!4f-4.265811270668806!5f0.7820865974627469" 
-                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
             </iframe>
         </div>
 
         <a href="https://wa.me/5493434508948" target="_blank" class="btn btn-primary" style="background:#25d366; text-decoration:none; display:block; text-align:center; margin-top:20px">CONTACTAR SOPORTE</a>
+
+        <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
+            <img src="logoo.png" alt="Logo" style="width: 85%; max-width: 260px; height: auto; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
+        </div>
     </div>
 </div>
 
