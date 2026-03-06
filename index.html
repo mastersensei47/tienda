@@ -105,10 +105,15 @@
 
 <div id="infoDrawer" class="drawer">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-        <h2 style="margin:0; color:var(--accent); font-size: 20px;">Información</h2>
+        <h2 style="margin:0; color:var(--accent); font-size: 20px;">Menú</h2>
         <span onclick="toggleInfo()" style="cursor:pointer; font-size:24px">✕</span>
     </div>
     <div style="flex-grow:1; overflow-y:auto; font-size:14px">
+        <div id="userBadge" style="display:none; background:rgba(59,130,246,0.1); padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid var(--accent)">
+            <p style="margin:0; font-weight:bold; color:var(--accent)">MODO MAYORISTA ACTIVO</p>
+            <button class="btn" style="background:var(--danger); color:white; padding:5px; margin-top:10px; font-size:11px" onclick="logout()">Cerrar Sesión</button>
+        </div>
+
         <p>📍 <b>Ubicación:</b><br>Paraná, Entre Ríos</p>
         <p>📞 <b>WhatsApp:</b><br>+54 9 343 450-8948</p>
         <p>⏰ <b>Horarios:</b><br>Lun a Vie: 08:00 - 18:00</p>
@@ -214,6 +219,7 @@
         productos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
         render(); 
         renderAdminProds(); 
+        verificarInsigniaMayorista();
     });
 
     db.collection("solicitudes_mayoristas").onSnapshot(snap => { 
@@ -235,7 +241,7 @@
         const cont = document.getElementById("productsCont");
         cont.innerHTML = productos.filter(p => p.nombre.toLowerCase().includes(query)).map(p => `
             <div class="product-card">
-                ${p.promo ? `<div class="promo-banner">🔥 ${p.promo}</div>` : ''}
+                ${p.promo && !esMayorista ? `<div class="promo-banner">🔥 ${p.promo}</div>` : ''}
                 <div class="img-box"><img src="${p.imagen || 'https://via.placeholder.com/150'}" loading="lazy"></div>
                 <div class="info-box">
                     <div class="stock-indicator">📦 ${p.stock || 0} disp.</div>
@@ -255,27 +261,37 @@
         document.getElementById("cartCount").innerText = carrito.reduce((a,b)=>a+b.qty,0);
         const list = document.getElementById("cartItemsList");
         if(!carrito.length) { list.innerHTML = `<p style="text-align:center; opacity:0.5; margin-top:20px">El carrito está vacío</p>`; document.getElementById("cartTotalText").innerText = "Total: $0"; return; }
+        
         list.innerHTML = carrito.map(it => {
             const p = productos.find(x => x.id === it.id);
             let pU = esMayorista ? p.precio_may : p.precio;
             let promoActive = false;
-            if(p.promo) { 
+
+            // LÓGICA CORREGIDA: Si es mayorista, IGNORA la promo minorista.
+            if(!esMayorista && p.promo) { 
                 const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i); 
-                if(m && it.qty >= parseInt(m[1])) { pU = parseInt(m[2]) / parseInt(m[1]); promoActive = true; } 
+                if(m && it.qty >= parseInt(m[1])) { 
+                    pU = parseInt(m[2]) / parseInt(m[1]); 
+                    promoActive = true; 
+                } 
             }
+
             const sub = pU * it.qty; total += sub;
             return `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; margin-bottom:10px; border:1px solid rgba(128,128,128,0.1)">
                 <div style="display:flex; justify-content:space-between; margin-bottom:5px">
                     <b style="font-size:13px; flex:1; padding-right:5px">${p.nombre}</b>
                     <b style="color:var(--accent)">$${sub.toFixed(0)}</b>
                 </div>
+                <div style="font-size:11px; opacity:0.8; color:${promoActive?'var(--promo)':'inherit'}">
+                    ${promoActive ? '✨ Precio Promo: ' : (esMayorista ? '🏷️ Precio Mayorista: ' : 'Unitario: ')}$${pU.toFixed(0)}
+                </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px">
                     <div style="background:var(--bg); display:flex; align-items:center; gap:12px; padding:4px 12px; border-radius:8px">
                         <button onclick="changeQty('${it.id}',-1)" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold">-</button>
-                        <span style="font-weight:bold">${it.qty}</span>
+                        <span style="font-weight:bold; min-width:15px; text-align:center">${it.qty}</span>
                         <button onclick="changeQty('${it.id}',1)" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold">+</button>
                     </div>
-                    <button onclick="removeItem('${it.id}')" style="background:none; border:none; color:var(--danger); font-size:11px">Quitar</button>
+                    <button onclick="removeItem('${it.id}')" style="background:none; border:none; color:var(--danger); font-size:11px; text-decoration:underline">Quitar</button>
                 </div>
             </div>`;
         }).join("");
@@ -291,7 +307,7 @@
         carrito.forEach(it => {
             const p = productos.find(x => x.id === it.id);
             let pF = esMayorista ? p.precio_may : p.precio;
-            if(p.promo) { const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i); if(m && it.qty >= parseInt(m[1])) pF = parseInt(m[2]) / parseInt(m[1]); }
+            if(!esMayorista && p.promo) { const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i); if(m && it.qty >= parseInt(m[1])) pF = parseInt(m[2]) / parseInt(m[1]); }
             const sub = pF * it.qty; t += sub;
             msg += `• ${p.nombre} (x${it.qty}) = $${sub.toFixed(0)}\n`;
         });
@@ -311,59 +327,35 @@
     function tab(t) { ['tab1','tab2','tab3'].forEach(x => document.getElementById(x).style.display = x===t?'block':'none'); document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.id==='btn-'+t)); }
     function verificarAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
 
-    // --- LÓGICA DE LOGIN REAL ---
     async function checkLogin() { 
-        const u = document.getElementById("userInp").value;
-        const p = document.getElementById("passInp").value;
+        const u = document.getElementById("userInp").value, p = document.getElementById("passInp").value;
         const btn = document.getElementById("btnLogin");
-
-        if(!u || !p) return alert("Ingresa usuario y clave");
-        
-        btn.innerText = "Verificando...";
+        if(!u || !p) return alert("Ingresa datos");
         btn.disabled = true;
-
-        try {
-            const query = await db.collection("usuarios_mayoristas")
-                .where("user", "==", u)
-                .where("pass", "==", p)
-                .get();
-
-            if(!query.empty) {
-                esMayorista = true; 
-                localStorage.setItem("neo_may", "true"); 
-                closeAll(); render(); 
-                alert("¡Bienvenido " + u + "! Precios mayoristas activados.");
-            } else {
-                alert("Usuario o Clave incorrectos, o aún no has sido aprobado.");
-            }
-        } catch(e) {
-            console.error(e);
-            alert("Error al conectar.");
-        }
-        btn.innerText = "INGRESAR";
+        const q = await db.collection("usuarios_mayoristas").where("user", "==", u).where("pass", "==", p).get();
+        if(!q.empty) {
+            esMayorista = true; localStorage.setItem("neo_may", "true");
+            closeAll(); render(); verificarInsigniaMayorista();
+            alert("Hola " + u + ", modo mayorista activado.");
+        } else { alert("Usuario o clave incorrectos o no aprobados."); }
         btn.disabled = false;
     }
 
-    // --- LÓGICA DE ADMINISTRACIÓN DE USUARIOS ---
+    function logout() { localStorage.removeItem("neo_may"); esMayorista = false; location.reload(); }
+    function verificarInsigniaMayorista() { document.getElementById("userBadge").style.display = esMayorista ? "block" : "none"; }
+
     async function aprobarSoli(id, user, pass, nombre) { 
-        try {
-            // 1. Lo agregamos a la lista de aprobados
-            await db.collection("usuarios_mayoristas").add({ user, pass, nombre });
-            // 2. Borramos la solicitud
-            await db.collection("solicitudes_mayoristas").doc(id).delete();
-            alert("¡Usuario " + user + " aprobado con éxito!");
-        } catch(e) { alert("Error al aprobar"); }
+        await db.collection("usuarios_mayoristas").add({ user, pass, nombre });
+        await db.collection("solicitudes_mayoristas").doc(id).delete();
+        alert("Usuario aprobado.");
     }
 
     function switchAuth(r) { document.getElementById("loginView").style.display = r ? 'none' : 'block'; document.getElementById("regView").style.display = r ? 'block' : 'none'; }
-    
     async function enviarSolicitud() { 
-        const n = document.getElementById("regNom").value, c = document.getElementById("regCuit").value;
-        const u = document.getElementById("regUser").value, p = document.getElementById("regPass").value;
+        const n = document.getElementById("regNom").value, c = document.getElementById("regCuit").value, u = document.getElementById("regUser").value, p = document.getElementById("regPass").value;
         if(!n || !c || !u || !p) return alert("Completa todo");
         await db.collection("solicitudes_mayoristas").add({ nombre: n, cuit: c, user: u, pass: p }); 
-        alert("Solicitud enviada. El administrador te habilitará pronto."); 
-        switchAuth(false); 
+        alert("Solicitud enviada."); switchAuth(false); 
     }
 
     async function guardarProducto() {
@@ -375,8 +367,8 @@
     function renderAdminProds() { document.getElementById("adminProdsList").innerHTML = productos.map(p => `<tr><td>${p.nombre}</td><td>${p.stock}</td><td><button onclick="editP('${p.id}')">✏️</button><button onclick="deleteP('${p.id}')">🗑️</button></td></tr>`).join(""); }
     function editP(id) { const p = productos.find(x => x.id === id); document.getElementById("editId").value=p.id; document.getElementById("fNom").value=p.nombre; document.getElementById("fPre").value=p.precio; document.getElementById("fPreM").value=p.precio_may; document.getElementById("fPromo").value=p.promo||""; document.getElementById("fStock").value=p.stock; document.getElementById("fImg").value=p.imagen||""; tab('tab1'); }
     async function deleteP(id) { if(confirm("Borrar?")) await db.collection("productos").doc(id).delete(); }
-    async function eliminarSoli(id) { if(confirm("¿Eliminar solicitud?")) await db.collection("solicitudes_mayoristas").doc(id).delete(); }
-    async function vaciarVentas() { if(confirm("Borrar todo?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
+    async function eliminarSoli(id) { if(confirm("¿Eliminar?")) await db.collection("solicitudes_mayoristas").doc(id).delete(); }
+    async function vaciarVentas() { if(confirm("¿Vaciar historial?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
     function limpiarForm() { document.getElementById("editId").value = ""; document.querySelectorAll("#tab1 input").forEach(i => i.value = ""); }
 </script>
 </body>
