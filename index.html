@@ -19,7 +19,6 @@
         }
         body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); transition: 0.3s; overflow-x: hidden; }
 
-        /* HEADER OPTIMIZADO PARA PNG TRANSPARENTE */
         header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 0 20px; background: var(--card); position: sticky; top: 0; z-index: 1000; 
@@ -28,34 +27,16 @@
         }
         
         .header-left { display: flex; align-items: center; gap: 12px; }
-        
-        .main-logo {
-            height: 60px; /* Un poco más pequeño para que no toque los bordes */
-            width: auto; 
-            max-width: 80px;
-            object-fit: contain; 
-            /* Sin fondo blanco para respetar la transparencia del PNG */
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); /* Sombra suave al PNG */
-        }
-
+        .main-logo { height: 60px; width: auto; max-width: 80px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
         .header-icons { display: flex; gap: 15px; align-items: center; }
         .icon-btn { cursor: pointer; font-size: 20px; transition: 0.2s; position: relative; display: flex; align-items: center; }
 
         .search-container { flex: 1; max-width: 500px; margin: 0 20px; }
         .search-bar { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(128,128,128,0.3); background: var(--input-bg); color: inherit; outline: none; box-sizing: border-box; font-size: 15px; }
 
-        /* Estilos de Grid y Cards */
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 25px; } }
         
-        @media (max-width: 480px) {
-            header { height: 70px; padding: 0 10px; }
-            .main-logo { height: 45px; } 
-            .search-container { margin: 0 10px; }
-            .logo-text { display: none; } /* Ocultamos texto en móvil para dar espacio al logo y buscador */
-        }
-
-        /* Resto de tu código CSS se mantiene igual... */
         .product-card { background: var(--card); border-radius: 18px; overflow: hidden; border: 1px solid rgba(128,128,128,0.1); position: relative; transition: 0.3s; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .img-box { background: #fff; width: 100%; height: 140px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .img-box img { max-width: 85%; max-height: 85%; object-fit: contain; }
@@ -91,6 +72,11 @@
         th, td { padding: 8px 4px; border-bottom: 1px solid rgba(128,128,128,0.1); text-align: left; }
         
         .map-container { width: 100%; border-radius: 12px; overflow: hidden; margin-top: 15px; border: 1px solid rgba(128,128,128,0.2); height: 180px; }
+
+        /* ESTILOS DETALLE CARRITO */
+        .cart-summary-item { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; opacity: 0.9; }
+        .cart-summary-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 900; margin-top: 10px; padding-top: 10px; border-top: 2px dashed rgba(128,128,128,0.3); color: var(--accent); }
+        .promo-saving { color: var(--success); font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -130,23 +116,18 @@
             <button class="btn" style="background:var(--danger); color:white; padding:5px; margin-top:10px; font-size:11px" onclick="logout()">Cerrar Sesión</button>
         </div>
 
-        <p>📍 <b>Ubicación:</b><br>Paraná, Entre Ríos</p>
-        <p>📞 <b>WhatsApp:</b><br>ACA VA EL WHATSAPP DE LA PERSONA</p>
+        <p>📍 <b>Ubicación:</b><br>Belgrano 7102, Santa Fe Capital</p>
+        <p>📞 <b>WhatsApp:</b><br>+54 9 342 123 4567</p>
         <p>⏰ <b>Horarios:</b><br>Lun a Vie: 08:00 - 18:00</p>
         
-<div class="map-container">
-    <iframe 
-        src="https://www.google.com/maps/embed?pb=!4v1772834608375!6m8!1m7!1smr3lvtp6cuNHDZtPeGXyew!2m2!1d-31.60368288145714!2d-60.68902259133684!3f84.64853106821984!4f-4.265811270668806!5f0.7820865974627469" 
-        width="100%" 
-        height="100%" 
-        style="border:0;" 
-        allowfullscreen="" 
-        loading="lazy" 
-        referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
-</div>
+        <div class="map-container">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3400.7556775323447!2d-60.6865261!3d-31.5994462!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95b5049303534b4f%3A0x64369e16d41829e0!2sBelgrano%207102%2C%20S3000%20Santa%20Fe!5e0!3m2!1ses!2sar!4v1700000000000!5m2!1ses!2sar" 
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+        </div>
 
-        <a href="https://wa.me/5493434508948" target="_blank" class="btn btn-primary" style="background:#25d366; text-decoration:none; display:block; text-align:center; margin-top:20px">SI QUERES UNA PAGINA ASI PRESIONA AQUI</a>
+        <a href="https://wa.me/5493434508948" target="_blank" class="btn btn-primary" style="background:#25d366; text-decoration:none; display:block; text-align:center; margin-top:20px">CONTACTAR SOPORTE</a>
     </div>
 </div>
 
@@ -157,16 +138,17 @@
     </div>
     <div id="cartItemsList" style="flex-grow:1; overflow-y:auto; padding-right:5px"></div>
     <div style="padding-top:15px; border-top:1px solid rgba(128,128,128,0.2)">
-        <select id="deliveryMethod" onchange="toggleDeliveryForm()">
+        <select id="deliveryMethod" onchange="toggleDeliveryForm(); updateCartUI();">
             <option value="retiro">Retiro en local</option>
-            <option value="envio">Envío a domicilio</option>
+            <option value="envio">Envío a domicilio (+$1500)</option>
         </select>
         <div id="deliveryForm">
             <input id="envioNombre" placeholder="Tu Nombre">
             <input id="envioDireccion" placeholder="Dirección">
             <input id="envioLocalidad" placeholder="Localidad">
         </div>
-        <h3 id="cartTotalText" style="margin: 12px 0; font-size: 18px;">Total: $0</h3>
+        <div id="cartTotalText" style="margin: 12px 0;">
+            </div>
         <button class="btn btn-primary" style="background:#25d366" onclick="enviarWhatsApp()">FINALIZAR PEDIDO</button>
     </div>
 </div>
@@ -213,18 +195,16 @@
                     <input id="fPreM" type="number" placeholder="Precio Mayor">
                 </div>
                 <div style="display:grid; grid-template-columns: 2fr 1fr; gap:8px">
-                    <input id="fPromo" placeholder="Promo (Ej: 2 x $5000)">
+                    <input id="fPromo" placeholder="Ej: llevando 2 $5000">
                     <input id="fStock" type="number" placeholder="Stock">
                 </div>
                 <input id="fImg" placeholder="Link de imagen">
                 <button class="btn btn-primary" onclick="guardarProducto()">GUARDAR PRODUCTO</button>
             </div>
-            <div style="overflow-x:auto">
-                <table><thead><tr><th>Nombre</th><th>Stock</th><th>Acción</th></tr></thead><tbody id="adminProdsList"></tbody></table>
-            </div>
+            <table><thead><tr><th>Nombre</th><th>Stock</th><th>Acción</th></tr></thead><tbody id="adminProdsList"></tbody></table>
         </div>
-        <div id="tab2" style="display:none"><div style="overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Usuario/Clave</th><th>Acción</th></tr></thead><tbody id="adminSolisList"></tbody></table></div></div>
-        <div id="tab3" style="display:none"><button class="btn" style="background:var(--danger); margin-bottom:10px; font-size:12px; width:auto" onclick="vaciarVentas()">Limpiar Historial</button><div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Total</th><th>Info</th></tr></thead><tbody id="adminSalesList"></tbody></table></div></div>
+        <div id="tab2" style="display:none"><table><thead><tr><th>Cliente</th><th>Usuario/Clave</th><th>Acción</th></tr></thead><tbody id="adminSolisList"></tbody></table></div>
+        <div id="tab3" style="display:none"><button class="btn" onclick="vaciarVentas()" style="background:var(--danger); width:auto; margin-bottom:10px">Vaciar Historial</button><table><thead><tr><th>Fecha</th><th>Total</th><th>Info</th></tr></thead><tbody id="adminSalesList"></tbody></table></div>
     </div>
 </div>
 
@@ -254,7 +234,7 @@
     db.collection("solicitudes_mayoristas").onSnapshot(snap => { 
         document.getElementById("adminSolisList").innerHTML = snap.docs.map(doc => { 
             const s = doc.data(); 
-            return `<tr><td>${s.nombre}</td><td>U: ${s.user}<br>P: ${s.pass}</td><td><button onclick="aprobarSoli('${doc.id}', '${s.user}', '${s.pass}', '${s.nombre}')">✅</button> <button onclick="eliminarSoli('${doc.id}')">🗑️</button></td></tr>`; 
+            return `<tr><td>${s.nombre}</td><td>U: ${s.user}</td><td><button onclick="aprobarSoli('${doc.id}', '${s.user}', '${s.pass}', '${s.nombre}')">✅</button></td></tr>`; 
         }).join(""); 
     });
 
@@ -286,53 +266,98 @@
     function removeItem(id) { carrito = carrito.filter(c => c.id !== id); updateCartUI(); }
 
     function updateCartUI() {
-        let total = 0;
-        document.getElementById("cartCount").innerText = carrito.reduce((a,b)=>a+b.qty,0);
+        let subtotalItems = 0;
+        let ahorroTotal = 0;
+        const costoEnvio = document.getElementById("deliveryMethod").value === "envio" ? 1500 : 0;
+
+        document.getElementById("cartCount").innerText = carrito.reduce((a, b) => a + b.qty, 0);
         const list = document.getElementById("cartItemsList");
-        if(!carrito.length) { list.innerHTML = `<p style="text-align:center; opacity:0.5; margin-top:20px">Tu carrito está vacío</p>`; document.getElementById("cartTotalText").innerText = "Total: $0"; return; }
-        
+
+        if (!carrito.length) {
+            list.innerHTML = `<p style="text-align:center; opacity:0.5; margin-top:20px">Tu carrito está vacío</p>`;
+            document.getElementById("cartTotalText").innerHTML = "Total: $0";
+            return;
+        }
+
         list.innerHTML = carrito.map(it => {
             const p = productos.find(x => x.id === it.id);
-            let pU = esMayorista ? p.precio_may : p.precio;
-            let promoActive = false;
-            if(!esMayorista && p.promo) { 
-                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i); 
-                if(m && it.qty >= parseInt(m[1])) { pU = parseInt(m[2]) / parseInt(m[1]); promoActive = true; } 
+            let pOriginal = esMayorista ? p.precio_may : p.precio;
+            let pFinal = pOriginal;
+            let ahorroIt = 0;
+
+            if (!esMayorista && p.promo) {
+                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (m && it.qty >= parseInt(m[1])) {
+                    pFinal = parseInt(m[2]) / parseInt(m[1]);
+                    ahorroIt = (pOriginal - pFinal) * it.qty;
+                }
             }
-            const sub = pU * it.qty; total += sub;
+
+            const sub = pFinal * it.qty;
+            subtotalItems += pOriginal * it.qty;
+            ahorroTotal += ahorroIt;
+
             return `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; margin-bottom:10px; border:1px solid rgba(128,128,128,0.1)">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-                    <b style="font-size:13px; flex:1; padding-right:5px">${p.nombre}</b>
-                    <b style="color:var(--accent)">$${sub.toFixed(0)}</b>
+                <div style="display:flex; justify-content:space-between">
+                    <b style="font-size:13px; flex:1;">${p.nombre}</b>
+                    <b style="color:var(--text)">$${sub.toFixed(0)}</b>
                 </div>
+                ${ahorroIt > 0 ? `<div class="promo-saving">✨ Promo aplicada: -$${ahorroIt.toFixed(0)}</div>` : ''}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px">
-                    <div style="background:var(--bg); display:flex; align-items:center; gap:12px; padding:4px 12px; border-radius:8px">
-                        <button onclick="changeQty('${it.id}',-1)" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold">-</button>
-                        <span style="font-weight:bold">${it.qty}</span>
-                        <button onclick="changeQty('${it.id}',1)" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold">+</button>
+                    <div style="background:var(--bg); display:flex; gap:12px; padding:4px 12px; border-radius:8px">
+                        <button onclick="changeQty('${it.id}',-1)" style="background:none; border:none; color:white; font-weight:bold">-</button>
+                        <span>${it.qty}</span>
+                        <button onclick="changeQty('${it.id}',1)" style="background:none; border:none; color:white; font-weight:bold">+</button>
                     </div>
-                    <button onclick="removeItem('${it.id}')" style="background:none; border:none; color:var(--danger); font-size:11px">Quitar</button>
+                    <button onclick="removeItem('${it.id}')" style="color:var(--danger); border:none; background:none; font-size:11px">Quitar</button>
                 </div>
             </div>`;
         }).join("");
-        document.getElementById("cartTotalText").innerText = "Total: $" + total.toFixed(0);
+
+        const totalFinal = subtotalItems - ahorroTotal + costoEnvio;
+
+        document.getElementById("cartTotalText").innerHTML = `
+            <div class="cart-summary-item"><span>Subtotal:</span> <span>$${subtotalItems.toFixed(0)}</span></div>
+            ${ahorroTotal > 0 ? `<div class="cart-summary-item" style="color:var(--success)"><span>Ahorro Promos:</span> <span>-$${ahorroTotal.toFixed(0)}</span></div>` : ''}
+            ${costoEnvio > 0 ? `<div class="cart-summary-item"><span>Envío:</span> <span>$${costoEnvio.toFixed(0)}</span></div>` : ''}
+            <div class="cart-summary-total"><span>TOTAL:</span> <span>$${totalFinal.toFixed(0)}</span></div>
+        `;
     }
 
     async function enviarWhatsApp() {
-        if(!carrito.length) return;
+        if (!carrito.length) return;
         const met = document.getElementById("deliveryMethod").value;
         const n = document.getElementById("envioNombre").value, d = document.getElementById("envioDireccion").value, l = document.getElementById("envioLocalidad").value;
-        if(met === "envio" && (!n || !d || !l)) return alert("Completa los datos de envío.");
-        let t = 0, msg = "*NUEVO PEDIDO MS47*\n----------------\n";
+        if (met === "envio" && (!n || !d || !l)) return alert("Completa los datos de envío.");
+
+        let subtotalItems = 0;
+        let ahorroTotal = 0;
+        const costoEnvio = met === "envio" ? 1500 : 0;
+        let msg = "*NUEVO PEDIDO MS47*\n--------------------------\n";
+
         carrito.forEach(it => {
             const p = productos.find(x => x.id === it.id);
-            let pF = esMayorista ? p.precio_may : p.precio;
-            const sub = pF * it.qty; t += sub;
+            let pOriginal = esMayorista ? p.precio_may : p.precio;
+            let pFinal = pOriginal;
+            if (!esMayorista && p.promo) {
+                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
+                if (m && it.qty >= parseInt(m[1])) pFinal = parseInt(m[2]) / parseInt(m[1]);
+            }
+            const sub = pFinal * it.qty;
+            subtotalItems += pOriginal * it.qty;
+            ahorroTotal += (pOriginal - pFinal) * it.qty;
             msg += `• ${p.nombre} (x${it.qty}) = $${sub.toFixed(0)}\n`;
         });
-        msg += `----------------\n*TOTAL: $${t.toFixed(0)}*\n\n📍 ENTREGA: ${met==='retiro'?'Retiro en Local':'Envío a Domicilio'}\n`;
-        if(met==='envio') msg += `👤 Cliente: ${n}\n🏠 Dir: ${d}\n🏙️ Loc: ${l}`;
-        await db.collection("ventas").add({ creado: Date.now(), hora: new Date().toLocaleString(), total: t.toFixed(0), detalle: msg });
+
+        const totalFinal = subtotalItems - ahorroTotal + costoEnvio;
+        msg += `--------------------------\n`;
+        if (ahorroTotal > 0) msg += `Ahorro Promos: -$${ahorroTotal.toFixed(0)}\n`;
+        if (costoEnvio > 0) msg += `Envío: $${costoEnvio.toFixed(0)}\n`;
+        msg += `*TOTAL: $${totalFinal.toFixed(0)}*\n\n`;
+        msg += `📍 ENTREGA: ${met === 'retiro' ? 'Retiro en Local' : 'Envío a Domicilio'}\n`;
+        if (met === 'envio') msg += `👤 Cliente: ${n}\n🏠 Dir: ${d}\n🏙️ Loc: ${l}`;
+
+        await db.collection("ventas").add({ creado: Date.now(), hora: new Date().toLocaleString(), total: totalFinal.toFixed(0), detalle: msg });
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
         carrito = []; updateCartUI(); closeAll();
     }
@@ -348,16 +373,12 @@
 
     async function checkLogin() { 
         const u = document.getElementById("userInp").value, p = document.getElementById("passInp").value;
-        const btn = document.getElementById("btnLogin");
         if(!u || !p) return alert("Ingresa datos");
-        btn.disabled = true;
         const q = await db.collection("usuarios_mayoristas").where("user", "==", u).where("pass", "==", p).get();
         if(!q.empty) {
             esMayorista = true; localStorage.setItem("neo_may", "true");
             closeAll(); render(); verificarInsigniaMayorista();
-            alert("Acceso Mayorista Autorizado.");
         } else { alert("Datos incorrectos."); }
-        btn.disabled = false;
     }
 
     function logout() { localStorage.removeItem("neo_may"); esMayorista = false; location.reload(); }
@@ -386,8 +407,7 @@
     function renderAdminProds() { document.getElementById("adminProdsList").innerHTML = productos.map(p => `<tr><td>${p.nombre}</td><td>${p.stock}</td><td><button onclick="editP('${p.id}')">✏️</button><button onclick="deleteP('${p.id}')">🗑️</button></td></tr>`).join(""); }
     function editP(id) { const p = productos.find(x => x.id === id); document.getElementById("editId").value=p.id; document.getElementById("fNom").value=p.nombre; document.getElementById("fPre").value=p.precio; document.getElementById("fPreM").value=p.precio_may; document.getElementById("fPromo").value=p.promo||""; document.getElementById("fStock").value=p.stock; document.getElementById("fImg").value=p.imagen||""; tab('tab1'); }
     async function deleteP(id) { if(confirm("¿Borrar?")) await db.collection("productos").doc(id).delete(); }
-    async function eliminarSoli(id) { if(confirm("¿Eliminar?")) await db.collection("solicitudes_mayoristas").doc(id).delete(); }
-    async function vaciarVentas() { if(confirm("¿Limpiar?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
+    async function vaciarVentas() { if(confirm("¿Limpiar historial?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
     function limpiarForm() { document.getElementById("editId").value = ""; document.querySelectorAll("#tab1 input").forEach(i => i.value = ""); }
 </script>
 </body>
