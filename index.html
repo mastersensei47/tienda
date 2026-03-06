@@ -19,7 +19,6 @@
         }
         body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); transition: 0.3s; overflow-x: hidden; }
 
-        /* HEADER OPTIMIZADO */
         header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 10px 15px; background: var(--card); position: sticky; top: 0; z-index: 1000; 
@@ -32,7 +31,6 @@
         .search-container { flex: 1; max-width: 400px; margin: 0 10px; }
         .search-bar { width: 100%; padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(128,128,128,0.3); background: var(--input-bg); color: inherit; outline: none; box-sizing: border-box; font-size: 14px; }
 
-        /* GRID RESPONSIVE */
         .products-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
@@ -42,7 +40,6 @@
             .products-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
             .icon-btn { font-size: 20px; }
         }
-        /* Ocultar buscador en móviles muy chicos si es necesario o achicarlo */
         @media (max-width: 480px) {
             .search-container { margin: 0 5px; }
             header { padding: 10px 8px; }
@@ -58,7 +55,6 @@
         .product-title { margin: 0 0 6px 0; font-size: 13px; font-weight: 600; line-height: 1.2; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price-val { font-size: 18px; font-weight: 900; color: var(--accent); }
 
-        /* SIDEBARS ADAPTABLES */
         .drawer { position: fixed; top: 0; width: 85%; max-width: 340px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; box-sizing: border-box; }
         #infoDrawer { left: -100%; }
         #infoDrawer.active { left: 0; }
@@ -90,6 +86,7 @@
 <header>
     <div style="display:flex; align-items:center; gap:8px">
         <span class="icon-btn" onclick="toggleInfo()">☰</span>
+        <img src="logo.png" alt="Logo" style="height: 32px; width: auto; object-fit: contain;">
         <b class="logo-text" style="font-size:17px; cursor:pointer" onclick="location.reload()">NEO<span style="color:var(--accent)">REPUESTOS</span></b>
     </div>
     <div class="search-container">
@@ -115,13 +112,10 @@
         <p>📍 <b>Ubicación:</b><br>Paraná, Entre Ríos</p>
         <p>📞 <b>WhatsApp:</b><br>+54 9 343 450-8948</p>
         <p>⏰ <b>Horarios:</b><br>Lun a Vie: 08:00 - 18:00</p>
-        
         <div style="border-radius:15px; overflow:hidden; height:140px; margin:15px 0; border:1px solid rgba(128,128,128,0.2)">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3393.314781442123!2d-60.525!3d-31.733!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDQzJzU4LjgiUyA2MMKwMzEnMzAuMCJX!5e0!3m2!1ses!2sar!4v1700000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d108535.4514311145!2d-60.59600508511677!3d-31.77093557579132!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95b452880f42773d%3A0x464e320d75005897!2sParan%C3%A1%2C%20Entre%20R%C3%ADos!5e0!3m2!1ses-419!2sar!4v1700000000000!5m2!1ses-419!2sar" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         </div>
-
         <a href="https://wa.me/5493434508948" target="_blank" class="btn btn-primary" style="background:#25d366; text-decoration:none; display:block; text-align:center">CONSULTAR WHATSAPP</a>
-
         <div style="margin-top:25px; padding:12px; border:1px dashed var(--accent); border-radius:12px; text-align:center; background:rgba(59,130,246,0.05)">
             <p style="font-weight:bold; color:var(--accent); margin:0; font-size:13px">¿Querés una web como esta?</p>
             <p style="font-size:11px; margin:5px 0">Potenciá tu negocio hoy mismo.</p>
@@ -206,7 +200,6 @@
 </div>
 
 <script>
-    // CONFIGURACIÓN FIREBASE (Mantener tal cual)
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -222,7 +215,6 @@
     let carrito = [];
     let esMayorista = localStorage.getItem("neo_may") === "true";
 
-    // SINCRONIZACIÓN
     db.collection("productos").onSnapshot(snap => { 
         productos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
         render(); 
@@ -243,7 +235,6 @@
         }).join(""); 
     });
 
-    // LÓGICA DE RENDERIZADO
     function render() {
         const query = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
@@ -260,7 +251,6 @@
             </div>`).join("");
     }
 
-    // CARRITO Y QTY
     function addToCart(id) { const ex = carrito.find(c => c.id === id); if(ex) ex.qty++; else carrito.push({id, qty:1}); updateCartUI(); }
     function changeQty(id, delta) { const it = carrito.find(c => c.id === id); if(it) { it.qty += delta; if(it.qty <= 0) removeItem(id); else updateCartUI(); } }
     function removeItem(id) { carrito = carrito.filter(c => c.id !== id); updateCartUI(); }
@@ -304,7 +294,6 @@
         const met = document.getElementById("deliveryMethod").value;
         const n = document.getElementById("envioNombre").value, d = document.getElementById("envioDireccion").value, l = document.getElementById("envioLocalidad").value;
         if(met === "envio" && (!n || !d || !l)) return alert("Por favor, completa los datos de envío.");
-        
         let t = 0, msg = "*NUEVO PEDIDO NEO*\n----------------\n";
         carrito.forEach(it => {
             const p = productos.find(x => x.id === it.id);
@@ -315,13 +304,11 @@
         });
         msg += `----------------\n*TOTAL: $${t.toFixed(0)}*\n\n📍 ENTREGA: ${met==='retiro'?'Retiro en Local':'Envío a Domicilio'}\n`;
         if(met==='envio') msg += `👤 Cliente: ${n}\n🏠 Dir: ${d}\n🏙️ Loc: ${l}`;
-        
         await db.collection("ventas").add({ creado: Date.now(), hora: new Date().toLocaleString(), total: t.toFixed(0), detalle: msg });
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
         carrito = []; updateCartUI(); closeAll();
     }
 
-    // FUNCIONES DE INTERFAZ
     function toggleInfo() { document.getElementById("infoDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
     function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
     function toggleTheme() { document.body.classList.toggle("light"); }
@@ -329,31 +316,22 @@
     function closeAll() { document.querySelectorAll(".drawer").forEach(d => d.classList.remove("active")); document.getElementById("mainOverlay").classList.remove("active"); document.querySelectorAll(".modal").forEach(m => m.style.display="none"); }
     function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
     function tab(t) { ['tab1','tab2','tab3'].forEach(x => document.getElementById(x).style.display = x===t?'block':'none'); document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.id==='btn-'+t)); }
-    function verificarAdmin() { if(prompt("Clave de Administrador:") === "admin") abrirModal("adminModal"); }
-    function checkLogin() { if(document.getElementById("userInp").value === "mayorista") { esMayorista=true; localStorage.setItem("neo_may", "true"); closeAll(); render(); alert("Acceso Mayorista Activado"); } else { alert("Usuario incorrecto"); } }
+    function verificarAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
+    function checkLogin() { if(document.getElementById("userInp").value === "mayorista") { esMayorista=true; localStorage.setItem("neo_may", "true"); closeAll(); render(); } }
     function switchAuth(r) { document.getElementById("loginView").style.display = r ? 'none' : 'block'; document.getElementById("regView").style.display = r ? 'block' : 'none'; }
-    async function enviarSolicitud() { const n = document.getElementById("regNom").value, c = document.getElementById("regCuit").value; if(!n || !c) return alert("Completa los datos"); await db.collection("solicitudes_mayoristas").add({ nombre: n, cuit: c }); alert("Solicitud enviada correctamente."); switchAuth(false); }
-    
+    async function enviarSolicitud() { const n = document.getElementById("regNom").value, c = document.getElementById("regCuit").value; await db.collection("solicitudes_mayoristas").add({ nombre: n, cuit: c }); alert("Enviado"); switchAuth(false); }
     async function guardarProducto() {
         const id = document.getElementById("editId").value;
-        const d = { 
-            nombre: document.getElementById("fNom").value, 
-            precio: Number(document.getElementById("fPre").value), 
-            precio_may: Number(document.getElementById("fPreM").value), 
-            promo: document.getElementById("fPromo").value, 
-            stock: Number(document.getElementById("fStock").value), 
-            imagen: document.getElementById("fImg").value 
-        };
-        if(!d.nombre || !d.precio) return alert("Nombre y Precio son obligatorios");
+        const d = { nombre: document.getElementById("fNom").value, precio: Number(document.getElementById("fPre").value), precio_may: Number(document.getElementById("fPreM").value), promo: document.getElementById("fPromo").value, stock: Number(document.getElementById("fStock").value), imagen: document.getElementById("fImg").value };
         id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
         limpiarForm();
     }
     function renderAdminProds() { document.getElementById("adminProdsList").innerHTML = productos.map(p => `<tr><td>${p.nombre}</td><td>${p.stock}</td><td><button onclick="editP('${p.id}')">✏️</button><button onclick="deleteP('${p.id}')">🗑️</button></td></tr>`).join(""); }
     function editP(id) { const p = productos.find(x => x.id === id); document.getElementById("editId").value=p.id; document.getElementById("fNom").value=p.nombre; document.getElementById("fPre").value=p.precio; document.getElementById("fPreM").value=p.precio_may; document.getElementById("fPromo").value=p.promo||""; document.getElementById("fStock").value=p.stock; document.getElementById("fImg").value=p.imagen||""; tab('tab1'); }
-    async function deleteP(id) { if(confirm("¿Eliminar este producto?")) await db.collection("productos").doc(id).delete(); }
-    async function aprobarSoli(id) { await db.collection("solicitudes_mayoristas").doc(id).delete(); alert("Cliente Aprobado (Simulación)"); }
-    async function eliminarSoli(id) { if(confirm("¿Eliminar solicitud?")) await db.collection("solicitudes_mayoristas").doc(id).delete(); }
-    async function vaciarVentas() { if(confirm("¿Borrar todo el historial de ventas?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
+    async function deleteP(id) { if(confirm("Borrar?")) await db.collection("productos").doc(id).delete(); }
+    async function aprobarSoli(id) { await db.collection("solicitudes_mayoristas").doc(id).delete(); alert("Aprobado"); }
+    async function eliminarSoli(id) { await db.collection("solicitudes_mayoristas").doc(id).delete(); }
+    async function vaciarVentas() { if(confirm("Borrar todo?")) { const s = await db.collection("ventas").get(); s.forEach(d => d.ref.delete()); } }
     function limpiarForm() { document.getElementById("editId").value = ""; document.querySelectorAll("#tab1 input").forEach(i => i.value = ""); }
 </script>
 </body>
