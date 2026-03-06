@@ -28,7 +28,6 @@
         
         .header-left { display: flex; align-items: center; gap: 12px; }
 
-        /* MODIFICACIÓN 1: LOGO DE INICIO MÁS GRANDE */
         .main-logo {
             height: 100px; 
             width: auto; 
@@ -60,11 +59,16 @@
         .product-title { margin: 0 0 6px 0; font-size: 14px; font-weight: 600; line-height: 1.2; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price-val { font-size: 20px; font-weight: 900; color: var(--accent); }
 
-        .drawer { position: fixed; top: 0; width: 85%; max-width: 340px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; box-sizing: border-box; }
+        /* PANEL LATERAL - CORRECCIÓN DE BARRAS */
+        .drawer { position: fixed; top: 0; width: 85%; max-width: 340px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; box-sizing: border-box; overflow-x: hidden; }
         #infoDrawer { left: -100%; }
         #infoDrawer.active { left: 0; }
         #cartDrawer { right: -100%; }
         #cartDrawer.active { right: 0; }
+
+        /* Ocultar barras de scroll visualmente */
+        #infoDrawer::-webkit-scrollbar, .drawer-content::-webkit-scrollbar { display: none; }
+        .drawer-content { flex-grow:1; overflow-y:auto; overflow-x:hidden; font-size:14px; -ms-overflow-style: none; scrollbar-width: none; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 15px; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
@@ -98,9 +102,6 @@
     <div class="header-left">
         <span class="icon-btn" onclick="toggleInfo()">☰</span>
         <img src="logoo.png" alt="Logo" class="main-logo">
-        <b class="logo-text" style="font-size:20px; cursor:pointer" onclick="location.reload()">
-            <span style="color:var(--accent)"></span>
-        </b>
     </div>
     
     <div class="search-container">
@@ -124,14 +125,14 @@
         <span onclick="toggleInfo()" style="cursor:pointer; font-size:24px">✕</span>
     </div>
 
-    <div style="flex-grow:1; overflow-y:auto; font-size:14px">
+    <div class="drawer-content">
         <div id="userBadge" style="display:none; background:rgba(59,130,246,0.1); padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid var(--accent)">
             <p style="margin:0; font-weight:bold; color:var(--accent)">MODO MAYORISTA ACTIVO</p>
             <button class="btn" style="background:var(--danger); color:white; padding:5px; margin-top:10px; font-size:11px" onclick="logout()">Cerrar Sesión</button>
         </div>
 
         <p>📍 <b>Ubicación:</b><br>Belgrano 7102, Santa Fe Capital</p>
-        <p>📞 <b>WhatsApp:</b><br>Belgrano 7102, Santa Fe Capital</p>
+        <p>📞 <b>WhatsApp:</b><br>3434508948</p>
         <p>⏰ <b>Horarios:</b><br>Lun a Vie: 08:00 - 18:00</p>
         
         <div class="map-container">
@@ -154,7 +155,7 @@
         <h2 style="margin:0; font-size: 20px;">Mi Carrito</h2>
         <span onclick="toggleCart()" style="cursor:pointer; font-size:24px">✕</span>
     </div>
-    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto; padding-right:5px"></div>
+    <div id="cartItemsList" class="drawer-content" style="padding-right:5px"></div>
     <div style="padding-top:15px; border-top:1px solid rgba(128,128,128,0.2)">
         <select id="deliveryMethod" onchange="toggleDeliveryForm(); updateCartUI();">
             <option value="retiro">Retiro en local</option>
@@ -165,8 +166,7 @@
             <input id="envioDireccion" placeholder="Dirección">
             <input id="envioLocalidad" placeholder="Localidad">
         </div>
-        <div id="cartTotalText" style="margin: 12px 0;">
-            </div>
+        <div id="cartTotalText" style="margin: 12px 0;"></div>
         <button class="btn btn-primary" style="background:#25d366" onclick="enviarWhatsApp()">FINALIZAR PEDIDO</button>
     </div>
 </div>
@@ -287,22 +287,18 @@
         let subtotalItems = 0;
         let ahorroTotal = 0;
         const costoEnvio = document.getElementById("deliveryMethod").value === "envio" ? 1500 : 0;
-
         document.getElementById("cartCount").innerText = carrito.reduce((a, b) => a + b.qty, 0);
         const list = document.getElementById("cartItemsList");
-
         if (!carrito.length) {
             list.innerHTML = `<p style="text-align:center; opacity:0.5; margin-top:20px">Tu carrito está vacío</p>`;
             document.getElementById("cartTotalText").innerHTML = "Total: $0";
             return;
         }
-
         list.innerHTML = carrito.map(it => {
             const p = productos.find(x => x.id === it.id);
             let pOriginal = esMayorista ? p.precio_may : p.precio;
             let pFinal = pOriginal;
             let ahorroIt = 0;
-
             if (!esMayorista && p.promo) {
                 const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
                 if (m && it.qty >= parseInt(m[1])) {
@@ -310,11 +306,9 @@
                     ahorroIt = (pOriginal - pFinal) * it.qty;
                 }
             }
-
             const sub = pFinal * it.qty;
             subtotalItems += pOriginal * it.qty;
             ahorroTotal += ahorroIt;
-
             return `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; margin-bottom:10px; border:1px solid rgba(128,128,128,0.1)">
                 <div style="display:flex; justify-content:space-between">
                     <b style="font-size:13px; flex:1;">${p.nombre}</b>
@@ -331,9 +325,7 @@
                 </div>
             </div>`;
         }).join("");
-
         const totalFinal = subtotalItems - ahorroTotal + costoEnvio;
-
         document.getElementById("cartTotalText").innerHTML = `
             <div class="cart-summary-item"><span>Subtotal:</span> <span>$${subtotalItems.toFixed(0)}</span></div>
             ${ahorroTotal > 0 ? `<div class="cart-summary-item" style="color:var(--success)"><span>Ahorro Promos:</span> <span>-$${ahorroTotal.toFixed(0)}</span></div>` : ''}
@@ -347,12 +339,10 @@
         const met = document.getElementById("deliveryMethod").value;
         const n = document.getElementById("envioNombre").value, d = document.getElementById("envioDireccion").value, l = document.getElementById("envioLocalidad").value;
         if (met === "envio" && (!n || !d || !l)) return alert("Completa los datos de envío.");
-
         let subtotalItems = 0;
         let ahorroTotal = 0;
         const costoEnvio = met === "envio" ? 1500 : 0;
         let msg = "*NUEVO PEDIDO MS47*\n--------------------------\n";
-
         carrito.forEach(it => {
             const p = productos.find(x => x.id === it.id);
             let pOriginal = esMayorista ? p.precio_may : p.precio;
@@ -366,7 +356,6 @@
             ahorroTotal += (pOriginal - pFinal) * it.qty;
             msg += `• ${p.nombre} (x${it.qty}) = $${sub.toFixed(0)}\n`;
         });
-
         const totalFinal = subtotalItems - ahorroTotal + costoEnvio;
         msg += `--------------------------\n`;
         if (ahorroTotal > 0) msg += `Ahorro Promos: -$${ahorroTotal.toFixed(0)}\n`;
@@ -374,7 +363,6 @@
         msg += `*TOTAL: $${totalFinal.toFixed(0)}*\n\n`;
         msg += `📍 ENTREGA: ${met === 'retiro' ? 'Retiro en Local' : 'Envío a Domicilio'}\n`;
         if (met === 'envio') msg += `👤 Cliente: ${n}\n🏠 Dir: ${d}\n🏙️ Loc: ${l}`;
-
         await db.collection("ventas").add({ creado: Date.now(), hora: new Date().toLocaleString(), total: totalFinal.toFixed(0), detalle: msg });
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
         carrito = []; updateCartUI(); closeAll();
@@ -388,34 +376,20 @@
     function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
     function tab(t) { ['tab1','tab2','tab3'].forEach(x => document.getElementById(x).style.display = x===t?'block':'none'); document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.id==='btn-'+t)); }
     function verificarAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
-
     async function checkLogin() { 
         const u = document.getElementById("userInp").value, p = document.getElementById("passInp").value;
-        if(!u || !p) return alert("Ingresa datos");
         const q = await db.collection("usuarios_mayoristas").where("user", "==", u).where("pass", "==", p).get();
-        if(!q.empty) {
-            esMayorista = true; localStorage.setItem("neo_may", "true");
-            closeAll(); render(); verificarInsigniaMayorista();
-        } else { alert("Datos incorrectos."); }
+        if(!q.empty) { esMayorista = true; localStorage.setItem("neo_may", "true"); closeAll(); render(); verificarInsigniaMayorista(); } else { alert("Datos incorrectos."); }
     }
-
     function logout() { localStorage.removeItem("neo_may"); esMayorista = false; location.reload(); }
     function verificarInsigniaMayorista() { document.getElementById("userBadge").style.display = esMayorista ? "block" : "none"; }
-
-    async function aprobarSoli(id, user, pass, nombre) { 
-        await db.collection("usuarios_mayoristas").add({ user, pass, nombre });
-        await db.collection("solicitudes_mayoristas").doc(id).delete();
-        alert("Usuario aprobado.");
-    }
-
+    async function aprobarSoli(id, user, pass, nombre) { await db.collection("usuarios_mayoristas").add({ user, pass, nombre }); await db.collection("solicitudes_mayoristas").doc(id).delete(); alert("Usuario aprobado."); }
     function switchAuth(r) { document.getElementById("loginView").style.display = r ? 'none' : 'block'; document.getElementById("regView").style.display = r ? 'block' : 'none'; }
     async function enviarSolicitud() { 
         const n = document.getElementById("regNom").value, c = document.getElementById("regCuit").value, u = document.getElementById("regUser").value, p = document.getElementById("regPass").value;
-        if(!n || !c || !u || !p) return alert("Completa todo");
         await db.collection("solicitudes_mayoristas").add({ nombre: n, cuit: c, user: u, pass: p }); 
         alert("Solicitud enviada."); switchAuth(false); 
     }
-
     async function guardarProducto() {
         const id = document.getElementById("editId").value;
         const d = { nombre: document.getElementById("fNom").value, precio: Number(document.getElementById("fPre").value), precio_may: Number(document.getElementById("fPreM").value), promo: document.getElementById("fPromo").value, stock: Number(document.getElementById("fStock").value), imagen: document.getElementById("fImg").value };
