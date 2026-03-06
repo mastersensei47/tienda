@@ -29,15 +29,13 @@
         
         .header-left { display: flex; align-items: center; gap: 15px; }
         
-        /* Ajuste de tamaño para que el logo cuadrado se luzca */
-        .main-logo {
+.main-logo {
             height: 65px; 
             width: 65px; 
             object-fit: contain; 
             border-radius: 10px;
-            background: white; /* Mantiene el fondo blanco del logo para que resalte */
-            padding: 2px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            /* SE ELIMINÓ EL BACKGROUND WHITE Y EL PADDING */
+            transition: 0.3s;
         }
 
         .header-icons { display: flex; gap: 15px; align-items: center; }
