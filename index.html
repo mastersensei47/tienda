@@ -59,14 +59,12 @@
         .product-title { margin: 0 0 6px 0; font-size: 14px; font-weight: 600; line-height: 1.2; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price-val { font-size: 20px; font-weight: 900; color: var(--accent); }
 
-        /* PANEL LATERAL - CORRECCIÓN DE BARRAS */
         .drawer { position: fixed; top: 0; width: 85%; max-width: 340px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; box-sizing: border-box; overflow-x: hidden; }
         #infoDrawer { left: -100%; }
         #infoDrawer.active { left: 0; }
         #cartDrawer { right: -100%; }
         #cartDrawer.active { right: 0; }
 
-        /* Ocultar barras de scroll visualmente */
         #infoDrawer::-webkit-scrollbar, .drawer-content::-webkit-scrollbar { display: none; }
         .drawer-content { flex-grow:1; overflow-y:auto; overflow-x:hidden; font-size:14px; -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -159,7 +157,7 @@
     <div style="padding-top:15px; border-top:1px solid rgba(128,128,128,0.2)">
         <select id="deliveryMethod" onchange="toggleDeliveryForm(); updateCartUI();">
             <option value="retiro">Retiro en local</option>
-            <option value="envio">Envío a domicilio (+$1500)</option>
+            <option value="envio">Envío a domicilio</option>
         </select>
         <div id="deliveryForm">
             <input id="envioNombre" placeholder="Tu Nombre">
@@ -286,7 +284,7 @@
     function updateCartUI() {
         let subtotalItems = 0;
         let ahorroTotal = 0;
-        const costoEnvio = document.getElementById("deliveryMethod").value === "envio" ? 1500 : 0;
+        const costoEnvio = 0; // Envío sin cargo configurado aquí
         document.getElementById("cartCount").innerText = carrito.reduce((a, b) => a + b.qty, 0);
         const list = document.getElementById("cartItemsList");
         if (!carrito.length) {
@@ -329,7 +327,6 @@
         document.getElementById("cartTotalText").innerHTML = `
             <div class="cart-summary-item"><span>Subtotal:</span> <span>$${subtotalItems.toFixed(0)}</span></div>
             ${ahorroTotal > 0 ? `<div class="cart-summary-item" style="color:var(--success)"><span>Ahorro Promos:</span> <span>-$${ahorroTotal.toFixed(0)}</span></div>` : ''}
-            ${costoEnvio > 0 ? `<div class="cart-summary-item"><span>Envío:</span> <span>$${costoEnvio.toFixed(0)}</span></div>` : ''}
             <div class="cart-summary-total"><span>TOTAL:</span> <span>$${totalFinal.toFixed(0)}</span></div>
         `;
     }
@@ -341,7 +338,7 @@
         if (met === "envio" && (!n || !d || !l)) return alert("Completa los datos de envío.");
         let subtotalItems = 0;
         let ahorroTotal = 0;
-        const costoEnvio = met === "envio" ? 1500 : 0;
+        const costoEnvio = 0; // Envío sin cargo configurado aquí para el total de WhatsApp
         let msg = "*NUEVO PEDIDO MS47*\n--------------------------\n";
         carrito.forEach(it => {
             const p = productos.find(x => x.id === it.id);
@@ -359,7 +356,6 @@
         const totalFinal = subtotalItems - ahorroTotal + costoEnvio;
         msg += `--------------------------\n`;
         if (ahorroTotal > 0) msg += `Ahorro Promos: -$${ahorroTotal.toFixed(0)}\n`;
-        if (costoEnvio > 0) msg += `Envío: $${costoEnvio.toFixed(0)}\n`;
         msg += `*TOTAL: $${totalFinal.toFixed(0)}*\n\n`;
         msg += `📍 ENTREGA: ${met === 'retiro' ? 'Retiro en Local' : 'Envío a Domicilio'}\n`;
         if (met === 'envio') msg += `👤 Cliente: ${n}\n🏠 Dir: ${d}\n🏙️ Loc: ${l}`;
