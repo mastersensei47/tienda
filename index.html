@@ -32,7 +32,7 @@
         .icon-btn { cursor: pointer; font-size: 20px; position: relative; display: flex; align-items: center; padding: 8px; border-radius: 50%; }
 
         .hero {
-            height: 40vh; min-height: 300px;
+            height: 30vh; min-height: 200px;
             background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.8)), url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a?q=80&w=1500&auto=format&fit=crop');
             background-size: cover; background-position: center;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -60,9 +60,13 @@
         .price-val { font-size: 22px; font-weight: 800; color: var(--accent); }
         .btn-add { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 12px; }
 
+        /* ARREGLO DE DRAWERS */
         .drawer { position: fixed; top: 0; width: 85%; max-width: 350px; height: 100%; background: var(--card); transition: 0.4s; z-index: 3000; padding: 25px; box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; box-sizing: border-box; }
-        #infoDrawer { left: -100%; } #infoDrawer.active { left: 0; }
-        #cartDrawer { right: -100%; } #cartDrawer.active { right: 0; }
+        #infoDrawer { left: -100%; } 
+        #infoDrawer.active { left: 0; }
+        #cartDrawer { right: -100%; } 
+        #cartDrawer.active { right: 0; }
+        
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; z-index: 2000; }
         .overlay.active { display: block; }
         
@@ -71,17 +75,12 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 15px; }
         .modal-content { background: var(--card); padding: 25px; border-radius: var(--radius); width: 100%; max-width: 550px; max-height: 85vh; overflow-y: auto; }
         
-        .tab-nav { display: flex; gap: 5px; background: rgba(0,0,0,0.1); padding: 5px; border-radius: 12px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; opacity: 0.5; }
-        .tab-btn.active { opacity: 1; background: var(--accent); color: white; }
-
-        .promo-banner { background: var(--promo); color: #000; font-size: 10px; font-weight: 900; padding: 5px; text-align: center; border-radius: 5px; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; margin: 5px 0; border-radius: 10px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0; border-radius: 10px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; box-sizing: border-box; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
-<body>
+<body class="dark">
 
 <header>
     <div class="header-left">
@@ -97,8 +96,7 @@
 </header>
 
 <section class="hero">
-    <h1 style="color:white; font-weight:800">MS47 DISTRIBUIDORA</h1>
-    <p style="color:white; opacity:0.8">Tu pedido a un clic de distancia</p>
+    <h1 style="color:white; font-weight:800; margin:0">MS47 DISTRIBUIDORA</h1>
 </section>
 
 <div class="cat-grid">
@@ -108,7 +106,7 @@
     <div class="cat-card" id="cat-almacen" onclick="setSearch('almacen')"><span>🥫</span><b>Almacén</b></div>
 </div>
 
-<div id="productos-seccion" class="search-container">
+<div class="search-container">
     <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto..." onkeyup="render()">
 </div>
 
@@ -124,14 +122,17 @@
     <div id="userBadge" style="display:none; background:rgba(16,185,129,0.1); padding:10px; border-radius:10px; color:var(--success); font-weight:bold; margin-bottom:15px; border:1px solid var(--success)">✓ MAYORISTA ACTIVO</div>
     <p>📍 <b>Belgrano 7102</b><br>Santa Fe Capital</p>
     <p>📞 <b>WhatsApp:</b><br>3434508948</p>
-    <button onclick="logout()" style="background:var(--danger); color:white; border:none; padding:10px; border-radius:10px; width:100%; cursor:pointer">Cerrar Sesión</button>
+    <button onclick="logout()" style="background:var(--danger); color:white; border:none; padding:10px; border-radius:10px; width:100%; cursor:pointer; margin-top:auto">Cerrar Sesión</button>
 </div>
 
 <div id="cartDrawer" class="drawer">
-    <h2 style="margin-top:0">Mi Pedido</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+        <h2 style="margin: 0;">Mi Pedido</h2>
+        <span onclick="toggleCart()" style="cursor:pointer; font-size:24px">✕</span>
+    </div>
     <div id="cartItemsList" style="flex-grow:1; overflow-y:auto;"></div>
     <div style="border-top:1px solid rgba(128,128,128,0.2); padding-top:15px">
-        <select id="deliveryMethod" onchange="toggleDeliveryForm(); updateCartUI();">
+        <select id="deliveryMethod" onchange="toggleDeliveryForm()">
             <option value="retiro">Retiro en local</option>
             <option value="envio">Envío a domicilio</option>
         </select>
@@ -139,61 +140,38 @@
             <input id="envioNombre" placeholder="Tu Nombre">
             <input id="envioDireccion" placeholder="Dirección">
         </div>
-        <div id="cartTotalText" style="margin: 15px 0; font-weight:800; font-size:20px"></div>
+        <div id="cartTotalText" style="margin: 15px 0; font-weight:800; font-size:20px; color:var(--accent)">Total: $0</div>
         <button class="btn-add" style="width:100%; background:#25d366" onclick="enviarWhatsApp()">ENVIAR WHATSAPP</button>
-    </div>
-</div>
-
-<div class="modal" id="loginModal">
-    <div class="modal-content">
-        <div id="loginView">
-            <h2>Acceso Mayorista</h2>
-            <input id="userInp" placeholder="Usuario">
-            <input id="passInp" type="password" placeholder="Contraseña">
-            <button class="btn-add" style="width:100%" onclick="checkLogin()">ENTRAR</button>
-            <p onclick="switchAuth(true)" style="text-align:center; cursor:pointer; color:var(--accent); margin-top:15px">Solicitar cuenta</p>
-        </div>
-        <div id="regView" style="display:none">
-            <h2>Solicitud de Alta</h2>
-            <input id="regNom" placeholder="Nombre / Comercio">
-            <input id="regCuit" placeholder="DNI / CUIT">
-            <input id="regUser" placeholder="Usuario">
-            <input id="regPass" type="password" placeholder="Contraseña">
-            <button class="btn-add" style="width:100%" onclick="enviarSolicitud()">ENVIAR SOLICITUD</button>
-            <button onclick="switchAuth(false)" style="width:100%; background:none; border:none; color:var(--text); margin-top:10px">Volver</button>
-        </div>
     </div>
 </div>
 
 <div class="modal" id="adminModal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px">
-            <h3>Administración</h3>
-            <span onclick="closeAll()" style="cursor:pointer">✕</span>
-        </div>
-        <div class="tab-nav">
-            <div class="tab-btn active" id="btn-tab1" onclick="tab('tab1')">PRODUCTOS</div>
-            <div class="tab-btn" id="btn-tab2" onclick="tab('tab2')">SOLICITUDES</div>
-            <div class="tab-btn" id="btn-tab3" onclick="tab('tab3')">VENTAS</div>
-        </div>
-        <div id="tab1">
-            <div style="background:rgba(0,0,0,0.1); padding:15px; border-radius:12px; margin-bottom:15px">
-                <input type="hidden" id="editId">
-                <input id="fNom" placeholder="Nombre Producto">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px">
-                    <input id="fPre" type="number" placeholder="Precio Público">
-                    <input id="fPreM" type="number" placeholder="Precio Mayor">
-                </div>
-                <input id="fCat" placeholder="Categoría (bebida, snack, almacen)">
-                <input id="fPromo" placeholder="Promo (Ej: llevando 2 $5000)">
-                <input id="fStock" type="number" placeholder="Stock">
-                <input id="fImg" placeholder="Link Imagen">
-                <button class="btn-add" style="width:100%" onclick="guardarProducto()">GUARDAR</button>
+        <h3>Panel de Control</h3>
+        <div style="background:rgba(0,0,0,0.1); padding:15px; border-radius:12px; margin-bottom:15px">
+            <input type="hidden" id="editId">
+            <input id="fNom" placeholder="Nombre Producto">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px">
+                <input id="fPre" type="number" placeholder="Precio Público">
+                <input id="fPreM" type="number" placeholder="Precio Mayor">
             </div>
-            <table><tbody id="adminProdsList"></tbody></table>
+            <input id="fCat" placeholder="Categoría (bebida, snack, almacen)">
+            <input id="fImg" placeholder="Link Imagen">
+            <input id="fStock" type="number" placeholder="Stock">
+            <button class="btn-add" style="width:100%" onclick="guardarProducto()">GUARDAR PRODUCTO</button>
         </div>
-        <div id="tab2" style="display:none"><table><tbody id="adminSolisList"></tbody></table></div>
-        <div id="tab3" style="display:none"><table><tbody id="adminSalesList"></tbody></table></div>
+        <table><tbody id="adminProdsList"></tbody></table>
+        <button onclick="closeAll()" style="width:100%; margin-top:10px; background:none; border:none; color:var(--text)">Cerrar</button>
+    </div>
+</div>
+
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <h2>Acceso Mayorista</h2>
+        <input id="userInp" placeholder="Usuario">
+        <input id="passInp" type="password" placeholder="Contraseña">
+        <button class="btn-add" style="width:100%" onclick="checkLogin()">ENTRAR</button>
+        <button onclick="closeAll()" style="width:100%; margin-top:10px; background:none; border:none; color:var(--text)">Cancelar</button>
     </div>
 </div>
 
@@ -213,30 +191,19 @@
     let carrito = [];
     let esMayorista = localStorage.getItem("neo_may") === "true";
 
+    // CARGA DE DATOS
     db.collection("productos").onSnapshot(snap => { 
         productos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
-        render(); renderAdminProds(); verificarInsigniaMayorista();
+        render(); 
+        renderAdminProds();
+        if(esMayorista) document.getElementById("userBadge").style.display = "block";
     });
 
-    db.collection("solicitudes_mayoristas").onSnapshot(snap => { 
-        document.getElementById("adminSolisList").innerHTML = snap.docs.map(doc => { 
-            const s = doc.data(); 
-            return `<tr><td>${s.nombre}</td><td><button onclick="aprobarSoli('${doc.id}', '${s.user}', '${s.pass}', '${s.nombre}')">✅</button></td></tr>`; 
-        }).join(""); 
-    });
-
-    db.collection("ventas").orderBy("creado", "desc").onSnapshot(snap => { 
-        document.getElementById("adminSalesList").innerHTML = snap.docs.map(doc => { 
-            const v = doc.data(); 
-            return `<tr><td>${v.hora}</td><td>$${v.total}</td><td><button onclick="alert('${v.detalle}')">👁️</button></td></tr>`; 
-        }).join(""); 
-    });
-
+    // RENDER PRINCIPAL
     function render() {
         const query = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
         
-        // Filtramos por búsqueda en Nombre O por Categoría
         const filtrados = productos.filter(p => {
             const matchesNombre = p.nombre.toLowerCase().includes(query);
             const matchesCat = p.categoria && p.categoria.toLowerCase() === query;
@@ -245,10 +212,8 @@
 
         cont.innerHTML = filtrados.map(p => `
             <div class="product-card">
-                ${p.promo && !esMayorista ? `<div class="promo-banner">🔥 ${p.promo}</div>` : ''}
                 <div class="img-box"><img src="${p.imagen || 'https://via.placeholder.com/150'}"></div>
                 <div class="info-box">
-                    <div style="font-size:10px; color:var(--success)">📦 ${p.stock || 0} disp.</div>
                     <h4 class="product-title">${p.nombre}</h4>
                     <div class="price-val">$${esMayorista ? p.precio_may : p.precio}</div>
                     <button class="btn-add" onclick="addToCart('${p.id}')">AGREGAR</button>
@@ -258,89 +223,59 @@
 
     function setSearch(val) {
         document.getElementById("searchInput").value = val;
-        // Manejo visual de botones activos
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
         if(val === '') document.getElementById('cat-all').classList.add('active');
         else if(document.getElementById('cat-'+val)) document.getElementById('cat-'+val).classList.add('active');
-        
         render();
-        document.getElementById("productos-seccion").scrollIntoView();
     }
 
-    // --- LÓGICA CARRITO ---
-    function addToCart(id) { const ex = carrito.find(c => c.id === id); if(ex) ex.qty++; else carrito.push({id, qty:1}); updateCartUI(); }
-    function changeQty(id, delta) { const it = carrito.find(c => c.id === id); if(it) { it.qty += delta; if(it.qty <= 0) removeItem(id); else updateCartUI(); } }
-    function removeItem(id) { carrito = carrito.filter(c => c.id !== id); updateCartUI(); }
+    // LÓGICA DRAWERS (SOLUCIONADO)
+    function toggleInfo() { 
+        document.getElementById("infoDrawer").classList.toggle("active"); 
+        document.getElementById("mainOverlay").classList.toggle("active"); 
+    }
+    function toggleCart() { 
+        document.getElementById("cartDrawer").classList.toggle("active"); 
+        document.getElementById("mainOverlay").classList.toggle("active"); 
+    }
+    function closeAll() { 
+        document.getElementById("infoDrawer").classList.remove("active");
+        document.getElementById("cartDrawer").classList.remove("active");
+        document.getElementById("mainOverlay").classList.remove("active");
+        document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+    }
+
+    // CARRITO
+    function addToCart(id) {
+        const ex = carrito.find(c => c.id === id);
+        if(ex) ex.qty++; else carrito.push({id, qty:1});
+        updateCartUI();
+    }
 
     function updateCartUI() {
         let total = 0;
-        document.getElementById("cartCount").innerText = carrito.reduce((a, b) => a + b.qty, 0);
+        let count = 0;
         const list = document.getElementById("cartItemsList");
+        
         list.innerHTML = carrito.map(it => {
             const p = productos.find(x => x.id === it.id);
-            let pPrice = esMayorista ? p.precio_may : p.precio;
-            if (!esMayorista && p.promo) {
-                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
-                if (m && it.qty >= parseInt(m[1])) pPrice = parseInt(m[2]) / parseInt(m[1]);
-            }
-            total += pPrice * it.qty;
-            return `<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-bottom:8px">
-                <div style="display:flex; justify-content:space-between; font-size:13px"><b>${p.nombre}</b> <b>$${(pPrice * it.qty).toFixed(0)}</b></div>
-                <div style="display:flex; gap:15px; align-items:center; margin-top:5px">
-                    <button onclick="changeQty('${it.id}',-1)">-</button> <span>${it.qty}</span> <button onclick="changeQty('${it.id}',1)">+</button>
-                    <button onclick="removeItem('${it.id}')" style="margin-left:auto; color:var(--danger); background:none; border:none; font-size:11px">Quitar</button>
-                </div>
+            const precio = esMayorista ? p.precio_may : p.precio;
+            total += precio * it.qty;
+            count += it.qty;
+            return `<div style="padding:10px; border-bottom:1px solid #334155">
+                <div style="display:flex; justify-content:space-between"><b>${p.nombre}</b> <span>$${precio * it.qty}</span></div>
+                <div style="margin-top:5px">Cant: ${it.qty}</div>
             </div>`;
         }).join("");
-        document.getElementById("cartTotalText").innerText = "Total: $" + total.toFixed(0);
+
+        document.getElementById("cartCount").innerText = count;
+        document.getElementById("cartTotalText").innerText = "Total: $" + total;
     }
 
-    async function enviarWhatsApp() {
-        if (!carrito.length) return;
-        let msg = "*NUEVO PEDIDO MS47*\n\n";
-        let total = 0;
-        carrito.forEach(it => {
-            const p = productos.find(x => x.id === it.id);
-            let pF = esMayorista ? p.precio_may : p.precio;
-            if (!esMayorista && p.promo) {
-                const m = p.promo.match(/llevando\s*(\d+)\s*\$?(\d+)/i);
-                if (m && it.qty >= parseInt(m[1])) pF = parseInt(m[2]) / parseInt(m[1]);
-            }
-            total += pF * it.qty;
-            msg += `• ${p.nombre} (x${it.qty}) $${(pF * it.qty).toFixed(0)}\n`;
-        });
-        msg += `\n*TOTAL: $${total.toFixed(0)}*`;
-        if(document.getElementById("deliveryMethod").value === "envio") {
-            msg += `\n\n📍 Envío a: ${document.getElementById("envioNombre").value} - ${document.getElementById("envioDireccion").value}`;
-        }
-        await db.collection("ventas").add({ creado: Date.now(), hora: new Date().toLocaleString(), total: total.toFixed(0), detalle: msg });
-        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
-        carrito = []; updateCartUI(); closeAll();
-    }
-
-    // --- UI HELPERS ---
-    function toggleInfo() { document.getElementById("infoDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
-    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
-    function closeAll() { document.querySelectorAll(".drawer, .modal").forEach(el => { el.classList.remove("active"); el.style.display="none"; }); document.getElementById("mainOverlay").classList.remove("active"); }
-    function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
-    function toggleTheme() { document.body.classList.toggle("light"); }
-    function toggleDeliveryForm() { document.getElementById("deliveryForm").style.display = document.getElementById("deliveryMethod").value === "envio" ? "block" : "none"; }
-    function tab(t) { ['tab1','tab2','tab3'].forEach(x => document.getElementById(x).style.display = x===t?'block':'none'); document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.id==='btn-'+t)); }
+    // ADMIN
     function verificarAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
+    function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
     
-    // --- AUTH & ADMIN ---
-    async function checkLogin() { 
-        const u = document.getElementById("userInp").value, p = document.getElementById("passInp").value;
-        const q = await db.collection("usuarios_mayoristas").where("user", "==", u).where("pass", "==", p).get();
-        if(!q.empty) { esMayorista = true; localStorage.setItem("neo_may", "true"); location.reload(); } else alert("Error");
-    }
-    function logout() { localStorage.removeItem("neo_may"); location.reload(); }
-    function verificarInsigniaMayorista() { document.getElementById("userBadge").style.display = esMayorista ? "block" : "none"; }
-    function switchAuth(r) { document.getElementById("loginView").style.display = r ? 'none' : 'block'; document.getElementById("regView").style.display = r ? 'block' : 'none'; }
-    async function enviarSolicitud() { 
-        await db.collection("solicitudes_mayoristas").add({ nombre: document.getElementById("regNom").value, cuit: document.getElementById("regCuit").value, user: document.getElementById("regUser").value, pass: document.getElementById("regPass").value });
-        alert("Enviado"); switchAuth(false); 
-    }
     async function guardarProducto() {
         const id = document.getElementById("editId").value;
         const d = { 
@@ -348,16 +283,34 @@
             precio: Number(document.getElementById("fPre").value), 
             precio_may: Number(document.getElementById("fPreM").value), 
             categoria: document.getElementById("fCat").value.toLowerCase(), 
-            promo: document.getElementById("fPromo").value, 
             stock: Number(document.getElementById("fStock").value), 
             imagen: document.getElementById("fImg").value 
         };
         id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
-        document.getElementById("editId").value = ""; document.querySelectorAll("#tab1 input").forEach(i => i.value = "");
+        alert("Guardado");
+        document.getElementById("editId").value = "";
+        document.querySelectorAll("#adminModal input").forEach(i => i.value = "");
     }
-    function renderAdminProds() { document.getElementById("adminProdsList").innerHTML = productos.map(p => `<tr><td>${p.nombre}</td><td><button onclick="editP('${p.id}')">✏️</button></td></tr>`).join(""); }
-    function editP(id) { const p = productos.find(x => x.id === id); document.getElementById("editId").value=p.id; document.getElementById("fNom").value=p.nombre; document.getElementById("fPre").value=p.precio; document.getElementById("fPreM").value=p.precio_may; document.getElementById("fCat").value=p.categoria||""; document.getElementById("fPromo").value=p.promo||""; document.getElementById("fStock").value=p.stock; document.getElementById("fImg").value=p.imagen||""; tab('tab1'); }
-    async function aprobarSoli(id, user, pass, nombre) { await db.collection("usuarios_mayoristas").add({ user, pass, nombre }); await db.collection("solicitudes_mayoristas").doc(id).delete(); alert("Aprobado"); }
+
+    function renderAdminProds() {
+        document.getElementById("adminProdsList").innerHTML = productos.map(p => `
+            <tr><td>${p.nombre}</td><td><button onclick="editP('${p.id}')">✏️</button></td></tr>
+        `).join("");
+    }
+
+    function editP(id) {
+        const p = productos.find(x => x.id === id);
+        document.getElementById("editId").value = p.id;
+        document.getElementById("fNom").value = p.nombre;
+        document.getElementById("fPre").value = p.precio;
+        document.getElementById("fPreM").value = p.precio_may;
+        document.getElementById("fCat").value = p.categoria || "";
+        document.getElementById("fStock").value = p.stock || 0;
+        document.getElementById("fImg").value = p.imagen || "";
+    }
+
+    function toggleTheme() { document.body.classList.toggle("light"); }
+    function toggleDeliveryForm() { document.getElementById("deliveryForm").style.display = document.getElementById("deliveryMethod").value === "envio" ? "block" : "none"; }
 </script>
 </body>
 </html>
