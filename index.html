@@ -61,7 +61,7 @@
         .price-val { font-size: 22px; font-weight: 800; color: var(--accent); }
         .btn-add { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: auto; }
 
-        /* ARREGLO DE DRAWERS */
+        /* --- CORRECCIÓN DE DRAWERS --- */
         .drawer { position: fixed; top: 0; width: 85%; max-width: 350px; height: 100%; background: var(--card); transition: 0.4s; z-index: 5000; padding: 25px; box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; box-sizing: border-box; }
         #infoDrawer { left: -100%; } 
         #infoDrawer.active { left: 0; }
@@ -204,9 +204,9 @@
         const query = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
         const filtrados = productos.filter(p => {
-            const matchesNombre = p.nombre.toLowerCase().includes(query);
-            const matchesCat = p.categoria && p.categoria.toLowerCase() === query;
-            return matchesNombre || matchesCat;
+            const n = p.nombre.toLowerCase().includes(query);
+            const c = p.categoria && p.categoria.toLowerCase() === query;
+            return n || c;
         });
 
         cont.innerHTML = filtrados.map(p => `
@@ -257,7 +257,7 @@
             const p = productos.find(x => x.id === it.id);
             const precio = esMayorista ? p.precio_may : p.precio;
             total += precio * it.qty; count += it.qty;
-            return `<div style="padding:10px; border-bottom:1px solid #334155">
+            return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1)">
                 <div style="display:flex; justify-content:space-between"><b>${p.nombre}</b> <span>$${precio * it.qty}</span></div>
                 <div style="margin-top:5px">Cant: ${it.qty}</div>
             </div>`;
