@@ -30,60 +30,72 @@
         .header-left { display: flex; align-items: center; gap: 12px; }
         .main-logo { height: 70px; width: auto; object-fit: contain; filter: drop-shadow(0 0 8px var(--accent)); }
         .header-icons { display: flex; gap: 12px; align-items: center; }
-        .icon-btn { cursor: pointer; font-size: 20px; position: relative; display: flex; align-items: center; padding: 8px; border-radius: 50%; }
+        .icon-btn { cursor: pointer; font-size: 20px; position: relative; display: flex; align-items: center; padding: 8px; border-radius: 50%; transition: 0.2s; }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); }
 
         .hero {
-            height: 30vh; min-height: 200px;
-            background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.8)), url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a?q=80&w=1500&auto=format&fit=crop');
+            height: 35vh; min-height: 250px;
+            background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a?q=80&w=1500&auto=format&fit=crop');
             background-size: cover; background-position: center;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 20px;
+            text-align: center; padding: 20px; border-bottom: 2px solid var(--accent);
         }
 
-        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 15px; max-width: 900px; margin: -30px auto 30px; position: relative; z-index: 10; }
-        .cat-card { background: var(--card); padding: 15px 5px; border-radius: var(--radius); text-align: center; cursor: pointer; border: 1px solid rgba(128,128,128,0.2); transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .cat-card:hover, .cat-card.active { transform: translateY(-5px); border-color: var(--accent); background: var(--accent); color: white; }
-        .cat-card span { font-size: 20px; display: block; margin-bottom: 5px; }
-        .cat-card b { font-size: 10px; text-transform: uppercase; }
+        /* --- CATEGORÍAS --- */
+        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 15px; max-width: 900px; margin: -40px auto 30px; position: relative; z-index: 10; }
+        .cat-card { background: var(--card); padding: 18px 5px; border-radius: var(--radius); text-align: center; cursor: pointer; border: 1px solid rgba(128,128,128,0.2); transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+        .cat-card:hover, .cat-card.active { transform: translateY(-8px); border-color: var(--accent); background: var(--accent); color: white; }
+        .cat-card span { font-size: 22px; display: block; margin-bottom: 8px; }
+        .cat-card b { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .search-container { max-width: 600px; margin: 0 auto 20px; padding: 0 15px; }
-        .search-bar { width: 100%; padding: 14px 20px; border-radius: 14px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; font-size: 16px; outline: none; }
+        /* --- PRODUCTOS --- */
+        .search-container { max-width: 600px; margin: 0 auto 30px; padding: 0 15px; }
+        .search-bar { width: 100%; padding: 16px 24px; border-radius: 16px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; font-size: 16px; outline: none; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .search-bar:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
 
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; max-width: 1200px; margin: auto; }
-        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; } }
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; max-width: 1200px; margin: auto; }
+        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; } }
         
-        .product-card { background: var(--card); border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(128,128,128,0.1); transition: 0.3s; display: flex; flex-direction: column; position: relative; }
-        .promo-badge { position: absolute; top: 10px; left: 10px; background: var(--promo); color: #000; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; z-index: 5; }
-        .stock-tag { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 3px 6px; border-radius: 4px; z-index: 5; }
+        .product-card { background: var(--card); border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(128,128,128,0.1); transition: 0.4s; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 30px rgba(0,0,0,0.3); border-color: rgba(59, 130, 246, 0.3); }
         
-        .img-box { background: var(--img-bg); width: 100%; height: 150px; display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; }
-        .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .promo-badge { position: absolute; top: 12px; left: 12px; background: var(--promo); color: #000; font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 8px; z-index: 5; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .stock-tag { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 4px 8px; border-radius: 6px; z-index: 5; backdrop-filter: blur(4px); }
         
-        .info-box { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-        .product-title { margin: 0 0 8px; font-size: 14px; font-weight: 600; height: 34px; overflow: hidden; }
-        .price-val { font-size: 22px; font-weight: 800; color: var(--accent); }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: auto; }
+        .img-box { background: var(--img-bg); width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
+        .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
+        
+        .info-box { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-title { margin: 0 0 10px; font-size: 15px; font-weight: 600; line-height: 1.4; height: 42px; overflow: hidden; }
+        .price-val { font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: auto; transition: 0.3s; border-bottom: 3px solid rgba(0,0,0,0.2); }
+        .btn-add:active { transform: scale(0.95); border-bottom-width: 1px; }
 
-        .drawer { position: fixed; top: 0; width: 85%; max-width: 350px; height: 100%; background: var(--card); transition: 0.4s; z-index: 5000; padding: 25px; box-shadow: 0 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; box-sizing: border-box; }
+        /* --- MODALES & DRAWERS --- */
+        .drawer { position: fixed; top: 0; width: 85%; max-width: 380px; height: 100%; background: var(--card); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5000; padding: 30px; box-shadow: 0 0 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; box-sizing: border-box; }
         #infoDrawer { left: -100%; } #infoDrawer.active { left: 0; }
         #cartDrawer { right: -100%; } #cartDrawer.active { right: 0; }
         
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; z-index: 4000; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); display: none; z-index: 4000; transition: 0.3s; }
         .overlay.active { display: block; }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 6000; padding: 15px; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 24px; width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 6000; padding: 20px; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 28px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+
+        /* --- ADMIN DASHBOARD --- */
+        .admin-tabs { display: flex; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; overflow-x: auto; }
+        .tab-btn { padding: 12px 24px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; cursor: pointer; font-weight: 600; white-space: nowrap; transition: 0.3s; }
+        .tab-btn.active { background: var(--accent); border-color: var(--accent); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+
+        .admin-section-card { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        .admin-item { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .admin-item:hover { background: rgba(255,255,255,0.05); }
+        .admin-item img { width: 55px; height: 55px; border-radius: 10px; object-fit: cover; background: white; }
         
-        input, select { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; box-sizing: border-box; outline: none; }
+        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 14px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; box-sizing: border-box; font-size: 15px; outline: none; }
+        input:focus { border-color: var(--accent); }
 
-        /* ADMIN TABS */
-        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { padding: 10px 20px; border-radius: 10px; background: rgba(255,255,255,0.05); cursor: pointer; border: none; color: white; white-space: nowrap; }
-        .tab-btn.active { background: var(--accent); }
-
-        .admin-item { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        .admin-actions { display: flex; gap: 8px; margin-left: auto; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+        .badge-status { padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
 <body class="dark">
@@ -97,85 +109,123 @@
         <span class="icon-btn" onclick="toggleTheme()">🌗</span>
         <span class="icon-btn" onclick="abrirModal('loginModal')">👤</span>
         <span class="icon-btn" onclick="verificarAdmin()">⚙️</span>
-        <div class="icon-btn" onclick="toggleCart()">🛒 <b id="cartCount" style="background:var(--danger); font-size:10px; padding:2px 6px; border-radius:10px; position:absolute; top:0; right:0">0</b></div>
+        <div class="icon-btn" onclick="toggleCart()">🛒 <b id="cartCount" style="background:var(--danger); font-size:11px; padding:2px 7px; border-radius:12px; position:absolute; top:2px; right:2px; border: 2px solid var(--card);">0</b></div>
     </div>
 </header>
 
-<div class="products-grid" id="productsCont" style="padding-top:20px"></div>
+<section class="hero">
+    <h1 style="color:white; font-weight:800; font-size:2.5rem; margin:0; letter-spacing:-1px">DISTRIBUIDORA ELNEN</h1>
+    <p style="color:rgba(255,255,255,0.8); margin-top:10px">El sistema integral más rápido de Santa Fe.</p>
+</section>
+
+<div class="cat-grid">
+    <div class="cat-card active" id="cat-all" onclick="setSearch('')"><span>🌐</span><b>Todos</b></div>
+    <div class="cat-card" id="cat-bebida" onclick="setSearch('bebida')"><span>🥤</span><b>Bebidas</b></div>
+    <div class="cat-card" id="cat-snack" onclick="setSearch('snack')"><span>🍿</span><b>Snacks</b></div>
+    <div class="cat-card" id="cat-almacen" onclick="setSearch('almacen')"><span>🥫</span><b>Almacén</b></div>
+</div>
+
+<div class="search-container">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Busca tu producto favorito..." onkeyup="render()">
+</div>
+
+<div class="products-grid" id="productsCont"></div>
 
 <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
 
-<div id="infoDrawer" class="drawer">
-    <h2 style="color:var(--accent)">Mi Cuenta</h2>
-    <div id="userBadge" style="display:none; color:var(--success); font-weight:800; margin-bottom:20px">✓ MAYORISTA ACTIVO</div>
-    <p>¿Sos comerciante? Registrate para ver precios mayoristas.</p>
-    <button class="btn-add" onclick="abrirModal('regModal')">CREAR CUENTA</button>
-    <button onclick="logout()" style="background:var(--danger); color:white; border:none; padding:12px; border-radius:10px; width:100%; cursor:pointer; margin-top:auto">Cerrar Sesión</button>
-</div>
-
 <div class="modal" id="regModal">
     <div class="modal-content" style="max-width:400px">
-        <h2>Solicitud Mayorista</h2>
-        <input id="regUser" placeholder="Nombre de Usuario">
+        <h2 style="margin-top:0">Solicitud Mayorista</h2>
+        <p style="opacity:0.7; font-size:14px">Registrate y espera a que el administrador apruebe tu cuenta para ver precios especiales.</p>
+        <input id="regUser" placeholder="Usuario deseado">
         <input id="regPass" type="password" placeholder="Contraseña">
-        <input id="regTel" placeholder="WhatsApp (sin 0 ni 15)">
-        <button class="btn-add" style="width:100%; margin-top:15px" onclick="crearCuenta()">ENVIAR SOLICITUD</button>
+        <input id="regTel" placeholder="WhatsApp (ej: 342123456)">
+        <button class="btn-add" style="width:100%; margin-top:20px; background:var(--success)" onclick="crearCuenta()">ENVIAR SOLICITUD</button>
+        <button onclick="closeAll()" style="background:none; border:none; color:var(--text); width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
     </div>
 </div>
 
 <div class="modal" id="adminModal">
     <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
+            <h2 style="margin:0">Panel Maestro MS47</h2>
+            <button onclick="closeAll()" style="background:none; border:none; color:var(--text); font-size:24px; cursor:pointer">✕</button>
+        </div>
+
         <div class="admin-tabs">
-            <button class="tab-btn active" onclick="switchTab('tab-prods')">Productos</button>
-            <button class="tab-btn" onclick="switchTab('tab-users')">Usuarios</button>
-            <button class="tab-btn" onclick="switchTab('tab-orders')">Historial</button>
+            <button class="tab-btn active" onclick="switchTab('tab-prods')">📦 Productos</button>
+            <button class="tab-btn" onclick="switchTab('tab-users')">👥 Cuentas</button>
+            <button class="tab-btn" onclick="switchTab('tab-orders')">📜 Historial</button>
         </div>
 
         <div id="tab-prods" class="admin-tab-content">
-            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:18px; margin-bottom:20px">
+            <div class="admin-section-card">
+                <h3 style="margin-top:0; font-size:14px; text-transform:uppercase; color:var(--accent)">Editor de Catálogo</h3>
                 <input type="hidden" id="editId">
-                <input id="fNom" placeholder="Nombre">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
-                    <input id="fPre" type="number" placeholder="Precio Público">
-                    <input id="fPreM" type="number" placeholder="Precio Mayor">
+                <input id="fNom" placeholder="Nombre del Producto">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                    <input id="fPre" type="number" placeholder="Precio Público ($)">
+                    <input id="fPreM" type="number" placeholder="Precio Mayor ($)">
                 </div>
-                <input id="fPromo" placeholder="Promo Lógica (ej: 3x2 o 2x5000)">
-                <input id="fImg" placeholder="Link Imagen">
-                <input id="fStock" type="number" placeholder="Stock">
-                <button class="btn-add" style="width:100%; background:var(--success)" onclick="guardarProducto()">GUARDAR</button>
+                <input id="fPromo" placeholder="Lógica de Promo (Ej: 3x2 o 2x8000)">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                    <input id="fCat" placeholder="Categoría (bebida, snack...)">
+                    <input id="fStock" type="number" placeholder="Stock">
+                </div>
+                <input id="fImg" placeholder="URL de la Imagen">
+                <button class="btn-add" style="width:100%; margin-top:15px; background:var(--success); height:55px" onclick="guardarProducto()">GUARDAR PRODUCTO</button>
             </div>
             <div id="adminProdsList"></div>
         </div>
 
         <div id="tab-users" class="admin-tab-content" style="display:none">
-            <h3>Solicitudes de Cuenta</h3>
+            <h3 style="font-size:14px; text-transform:uppercase; color:var(--accent)">Solicitudes y Clientes</h3>
             <div id="adminUsersList"></div>
         </div>
 
         <div id="tab-orders" class="admin-tab-content" style="display:none">
-            <h3>Últimos Pedidos</h3>
+            <h3 style="font-size:14px; text-transform:uppercase; color:var(--accent)">Pedidos Recientes</h3>
             <div id="adminOrdersList"></div>
         </div>
     </div>
 </div>
 
 <div class="modal" id="loginModal">
-    <div class="modal-content" style="max-width:350px">
-        <h2>Ingresar</h2>
+    <div class="modal-content" style="max-width:380px">
+        <h2 style="text-align:center; margin-top:0">Acceso</h2>
         <input id="userInp" placeholder="Usuario">
         <input id="passInp" type="password" placeholder="Contraseña">
-        <button class="btn-add" style="width:100%" onclick="checkLogin()">ENTRAR</button>
+        <button class="btn-add" style="width:100%; margin-top:10px" onclick="checkLogin()">INGRESAR</button>
+        <div style="text-align:center; margin-top:20px; font-size:14px">
+            <span style="opacity:0.7">¿No tenés cuenta?</span> 
+            <b style="color:var(--accent); cursor:pointer" onclick="abrirModal('regModal')">Pedir acceso mayorista</b>
+        </div>
     </div>
 </div>
 
+<div id="infoDrawer" class="drawer">
+    <h2 style="color:var(--accent); margin-top:0">Mi Perfil</h2>
+    <div id="userBadge" style="display:none; background:rgba(16,185,129,0.1); padding:15px; border-radius:14px; color:var(--success); font-weight:800; margin-bottom:20px; border:1px solid var(--success)">✓ CUENTA MAYORISTA ACTIVA</div>
+    
+    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:18px; margin-bottom:20px">
+        <p style="margin:0 0 10px 0">📍 <b>Belgrano 7102</b><br>Santa Fe Capital</p>
+        <p style="margin:0">📞 <b>WhatsApp:</b> 3434508948</p>
+    </div>
+    
+    <button onclick="logout()" style="background:var(--danger); color:white; border:none; padding:15px; border-radius:14px; width:100%; cursor:pointer; margin-top:auto; font-weight:700">Cerrar Sesión</button>
+</div>
+
 <div id="cartDrawer" class="drawer">
-    <h2>Mi Pedido</h2>
-    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto"></div>
-    <div id="cartTotalText" style="font-weight:800; font-size:20px; color:var(--accent); margin:15px 0">Total: $0</div>
-    <button class="btn-add" style="width:100%; background:#25d366" onclick="finalizarPedido()">ENVIAR POR WHATSAPP</button>
+    <h2 style="margin-top:0">Mi Carrito</h2>
+    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto; padding-right:5px"></div>
+    <div style="border-top:2px solid rgba(128,128,128,0.1); padding-top:20px">
+        <div id="cartTotalText" style="margin-bottom:20px; font-weight:800; font-size:24px; color:var(--accent)">Total: $0</div>
+        <button class="btn-add" style="width:100%; background:#25d366; height:60px; font-size:16px" onclick="finalizarPedido()">FINALIZAR POR WHATSAPP</button>
+    </div>
 </div>
 
 <script>
+    // CONFIGURACIÓN FIREBASE (Mantener tus datos)
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -188,100 +238,81 @@
     const db = firebase.firestore();
 
     let productos = [], carrito = [], usuarios = [], pedidos = [];
-    let esMayorista = localStorage.getItem("ms47_may") === "true";
+    let esMayorista = localStorage.getItem("ms47_may_v2") === "true";
 
-    // CARGA DE DATOS REAL-TIME
+    // SINCRONIZACIÓN REAL-TIME
     db.collection("productos").onSnapshot(s => { productos = s.docs.map(d => ({id:d.id, ...d.data()})); render(); renderAdminProds(); });
     db.collection("usuarios").onSnapshot(s => { usuarios = s.docs.map(d => ({id:d.id, ...d.data()})); renderAdminUsers(); });
-    db.collection("pedidos").orderBy("fecha", "desc").limit(20).onSnapshot(s => { pedidos = s.docs.map(d => ({id:d.id, ...d.data()})); renderAdminOrders(); });
+    db.collection("pedidos").orderBy("fecha", "desc").limit(25).onSnapshot(s => { pedidos = s.docs.map(d => ({id:d.id, ...d.data()})); renderAdminOrders(); });
 
     function render() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
-        cont.innerHTML = productos.map(p => `
+        const filtrados = productos.filter(p => p.nombre.toLowerCase().includes(query) || (p.categoria && p.categoria.toLowerCase() === query));
+
+        cont.innerHTML = filtrados.map(p => `
             <div class="product-card">
                 ${p.promo ? `<div class="promo-badge">${p.promo}</div>` : ''}
-                <div class="img-box"><img src="${p.imagen}"></div>
+                <div class="stock-tag">Stock: ${p.stock || 0}</div>
+                <div class="img-box"><img src="${p.imagen || 'https://via.placeholder.com/150'}"></div>
                 <div class="info-box">
                     <h4 class="product-title">${p.nombre}</h4>
                     <div class="price-val">$${esMayorista ? p.precio_may : p.precio}</div>
-                    <button class="btn-add" onclick="addToCart('${p.id}')">AGREGAR</button>
+                    <button class="btn-add" onclick="addToCart('${p.id}')">AGREGAR AL CARRITO</button>
                 </div>
             </div>`).join("");
+        if(esMayorista) document.getElementById("userBadge").style.display = "block";
     }
 
-    // LÓGICA DE PROMOS Y TOTALES
+    // LÓGICA DE PROMOS MATEMÁTICAS
     function updateCartUI() {
-        let total = 0;
+        let total = 0, count = 0;
         const list = document.getElementById("cartItemsList");
         list.innerHTML = carrito.map(it => {
             const p = productos.find(x => x.id === it.id);
-            let precioUnitario = esMayorista ? p.precio_may : p.precio;
-            let subtotal = precioUnitario * it.qty;
+            const unit = esMayorista ? p.precio_may : p.precio;
+            let sub = unit * it.qty;
 
-            // APLICAR PROMO SI EXISTE (Ej: 3x2 o 2x5000)
             if(p.promo && p.promo.toLowerCase().includes('x')) {
                 const parts = p.promo.toLowerCase().split('x');
-                const cantPromo = parseInt(parts[0]);
-                const valorPromo = parseInt(parts[1]);
-
-                if(it.qty >= cantPromo) {
-                    if(p.promo.includes('$')) { // Caso 2x5000
-                        const grupos = Math.floor(it.qty / cantPromo);
-                        const resto = it.qty % cantPromo;
-                        subtotal = (grupos * valorPromo) + (resto * precioUnitario);
-                    } else { // Caso 3x2 (lleva 3 paga 2)
-                        const grupos = Math.floor(it.qty / cantPromo);
-                        const resto = it.qty % cantPromo;
-                        subtotal = (grupos * valorPromo * precioUnitario) + (resto * precioUnitario);
+                const n = parseInt(parts[0]);
+                const val = parseInt(parts[1]);
+                if(it.qty >= n) {
+                    if(p.promo.includes('$')) {
+                        sub = (Math.floor(it.qty/n)*val) + ((it.qty%n)*unit);
+                    } else {
+                        sub = (Math.floor(it.qty/n)*val*unit) + ((it.qty%n)*unit);
                     }
                 }
             }
-            total += subtotal;
-            return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05)">
-                <b>${p.nombre}</b> x${it.qty} = $${subtotal}
+            total += sub; count += it.qty;
+            return `<div style="padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center">
+                <div><b style="display:block">${p.nombre}</b><small style="opacity:0.6">Cantidad: ${it.qty}</small></div>
+                <b style="color:var(--accent)">$${sub}</b>
             </div>`;
         }).join("");
         document.getElementById("cartTotalText").innerText = "Total: $" + total;
-        document.getElementById("cartCount").innerText = carrito.reduce((a,b) => a + b.qty, 0);
+        document.getElementById("cartCount").innerText = count;
     }
 
     async function finalizarPedido() {
-        if(carrito.length === 0) return;
-        const totalStr = document.getElementById("cartTotalText").innerText;
-        await db.collection("pedidos").add({
-            items: carrito.map(it => ({nom: productos.find(p=>p.id===it.id).nombre, qty: it.qty})),
-            total: totalStr,
+        if(carrito.length === 0) return alert("Carrito vacío");
+        const totalFinal = document.getElementById("cartTotalText").innerText;
+        const nuevoPedido = {
+            items: carrito.map(it => ({n: productos.find(p=>p.id===it.id).nombre, q: it.qty})),
+            total: totalFinal,
             fecha: new Date().getTime()
-        });
-        // Aquí iría el window.open de WhatsApp (mismo que antes)
-        alert("Pedido guardado e iniciando WhatsApp...");
-        toggleCart();
+        };
+        await db.collection("pedidos").add(nuevoPedido);
+        
+        let msg = `*NUEVO PEDIDO MS47*\n\n`;
+        nuevoPedido.items.forEach(i => msg += `• ${i.n} (x${i.q})\n`);
+        msg += `\n*${totalFinal}*`;
+        window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
+        carrito = []; updateCartUI(); closeAll();
     }
 
-    // GESTIÓN DE CUENTAS
-    async function crearCuenta() {
-        const u = document.getElementById("regUser").value;
-        const p = document.getElementById("regPass").value;
-        if(!u || !p) return alert("Faltan datos");
-        await db.collection("usuarios").add({ user: u, pass: p, activo: false, tel: document.getElementById("regTel").value });
-        alert("Solicitud enviada. Espera a que el admin te habilite.");
-        closeAll();
-    }
-
-    async function checkLogin() {
-        const u = document.getElementById("userInp").value;
-        const p = document.getElementById("passInp").value;
-        if(u === "admin" && p === "admin") return verificarAdmin();
-        const user = usuarios.find(x => x.user === u && x.pass === p);
-        if(user) {
-            if(user.activo) {
-                localStorage.setItem("ms47_may", "true");
-                location.reload();
-            } else alert("Tu cuenta aún no ha sido aprobada.");
-        } else alert("Usuario no encontrado.");
-    }
-
-    // PANEL ADMIN TABS Y RENDER
+    // FUNCIONES ADMIN TABS
     function switchTab(id) {
         document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -293,11 +324,14 @@
         const cont = document.getElementById("adminUsersList");
         cont.innerHTML = usuarios.map(u => `
             <div class="admin-item">
-                <div class="admin-item-info"><b>${u.user}</b> <span>Tel: ${u.tel}</span></div>
+                <div style="flex-grow:1">
+                    <b style="display:block">${u.user}</b>
+                    <small style="opacity:0.7">WA: ${u.tel}</small>
+                </div>
                 <div class="admin-actions">
-                    ${u.activo ? '<span class="badge" style="background:var(--success)">ACTIVO</span>' : 
-                    `<button class="tab-btn" style="background:var(--success)" onclick="aprobarUser('${u.id}', true)">Aprobar</button>`}
-                    <button class="tab-btn" style="background:var(--danger)" onclick="borrarDoc('usuarios','${u.id}')">Eliminar</button>
+                    ${u.activo ? '<span class="badge-status" style="background:rgba(16,185,129,0.2); color:var(--success)">Activo</span>' : 
+                    `<button class="tab-btn" style="background:var(--success); padding:6px 12px" onclick="aprobarUser('${u.id}', true)">Aprobar</button>`}
+                    <button class="tab-btn" style="background:rgba(239, 68, 68, 0.1); color:var(--danger); padding:6px 12px" onclick="borrarDoc('usuarios','${u.id}')">✕</button>
                 </div>
             </div>`).join("");
     }
@@ -306,47 +340,58 @@
         const cont = document.getElementById("adminOrdersList");
         cont.innerHTML = pedidos.map(o => `
             <div class="admin-item" style="flex-direction:column; align-items:flex-start">
-                <div style="display:flex; justify-content:space-between; width:100%">
-                    <b>${o.total}</b> <small>${new Date(o.fecha).toLocaleDateString()}</small>
+                <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:8px">
+                    <b style="color:var(--accent)">${o.total}</b>
+                    <small style="opacity:0.5">${new Date(o.fecha).toLocaleString()}</small>
                 </div>
-                <div style="font-size:11px; opacity:0.7">${o.items.map(i => i.nom + " (x"+i.qty+")").join(", ")}</div>
+                <div style="font-size:12px; line-height:1.4; opacity:0.8">${o.items.map(i => i.n + " (x"+i.q+")").join(", ")}</div>
             </div>`).join("");
     }
 
-    // ACCIONES ADMIN
-    async function aprobarUser(id, val) { await db.collection("usuarios").doc(id).update({activo: val}); }
-    async function borrarDoc(col, id) { if(confirm("¿Seguro?")) await db.collection(col).doc(id).delete(); }
-    function logout() { localStorage.removeItem("ms47_may"); location.reload(); }
-    function addToCart(id) {
-        const ex = carrito.find(c => c.id === id);
-        if(ex) ex.qty++; else carrito.push({id, qty:1});
-        updateCartUI();
+    // AUTH & GENERAL
+    async function crearCuenta() {
+        const u = document.getElementById("regUser").value;
+        const p = document.getElementById("regPass").value;
+        const t = document.getElementById("regTel").value;
+        if(!u || !p || !t) return alert("Completa todos los campos");
+        await db.collection("usuarios").add({ user:u, pass:p, tel:t, activo:false });
+        alert("¡Solicitud enviada! Avisale al admin para que te habilite.");
+        closeAll();
     }
-    function closeAll() { document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); document.querySelectorAll(".drawer").forEach(d => d.classList.remove("active")); document.getElementById("mainOverlay").classList.remove("active"); }
-    function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
-    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
-    function toggleInfo() { document.getElementById("infoDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
-    function verificarAdmin() { abrirModal("adminModal"); }
-    function toggleTheme() { document.body.classList.toggle("light"); }
+
+    async function checkLogin() {
+        const u = document.getElementById("userInp").value, p = document.getElementById("passInp").value;
+        if(u === "admin" && p === "admin") return abrirModal("adminModal");
+        const found = usuarios.find(x => x.user === u && x.pass === p);
+        if(found) {
+            if(!found.activo) return alert("Tu cuenta espera aprobación del administrador.");
+            localStorage.setItem("ms47_may_v2", "true");
+            location.reload();
+        } else alert("Datos incorrectos");
+    }
 
     async function guardarProducto() {
         const id = document.getElementById("editId").value;
-        const d = { 
-            nombre: document.getElementById("fNom").value, 
-            precio: Number(document.getElementById("fPre").value), 
+        const d = {
+            nombre: document.getElementById("fNom").value,
+            precio: Number(document.getElementById("fPre").value),
             precio_may: Number(document.getElementById("fPreM").value),
             promo: document.getElementById("fPromo").value,
-            stock: Number(document.getElementById("fStock").value), 
-            imagen: document.getElementById("fImg").value 
+            categoria: document.getElementById("fCat").value.toLowerCase(),
+            stock: Number(document.getElementById("fStock").value),
+            imagen: document.getElementById("fImg").value
         };
         id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
-        alert("Guardado");
+        alert("Catálogo actualizado");
+        document.querySelectorAll("#tab-prods input").forEach(i => i.value = "");
     }
 
     function renderAdminProds() {
-        document.getElementById("adminProdsList").innerHTML = productos.map(p => `
+        const cont = document.getElementById("adminProdsList");
+        cont.innerHTML = productos.map(p => `
             <div class="admin-item">
-                <b>${p.nombre}</b>
+                <img src="${p.imagen}">
+                <div style="flex-grow:1"><b>${p.nombre}</b><br><small>$${p.precio} | Stock: ${p.stock}</small></div>
                 <div class="admin-actions">
                     <button class="tab-btn" onclick="editP('${p.id}')">✏️</button>
                     <button class="tab-btn" style="color:var(--danger)" onclick="borrarDoc('productos','${p.id}')">🗑️</button>
@@ -354,6 +399,7 @@
             </div>`).join("");
     }
 
+    // UTILIDADES
     function editP(id) {
         const p = productos.find(x => x.id === id);
         document.getElementById("editId").value = p.id;
@@ -361,9 +407,35 @@
         document.getElementById("fPre").value = p.precio;
         document.getElementById("fPreM").value = p.precio_may;
         document.getElementById("fPromo").value = p.promo || "";
+        document.getElementById("fCat").value = p.categoria || "";
         document.getElementById("fStock").value = p.stock;
         document.getElementById("fImg").value = p.imagen;
+        window.scrollTo({top:0, behavior:'smooth'});
     }
+    async function aprobarUser(id, v) { await db.collection("usuarios").doc(id).update({activo:v}); }
+    async function borrarDoc(col, id) { if(confirm("¿Seguro?")) await db.collection(col).doc(id).delete(); }
+    function logout() { localStorage.removeItem("ms47_may_v2"); location.reload(); }
+    function addToCart(id) {
+        const p = productos.find(x => x.id === id);
+        if(p.stock <= 0) return alert("Sin stock");
+        const ex = carrito.find(c => c.id === id);
+        if(ex) { if(ex.qty < p.stock) ex.qty++; else alert("Máximo stock"); } 
+        else carrito.push({id, qty:1});
+        updateCartUI();
+    }
+    function setSearch(v) { 
+        document.getElementById("searchInput").value = v; 
+        document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+        const active = v === '' ? 'cat-all' : 'cat-'+v;
+        if(document.getElementById(active)) document.getElementById(active).classList.add('active');
+        render(); 
+    }
+    function closeAll() { document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); document.querySelectorAll(".drawer").forEach(d => d.classList.remove("active")); document.getElementById("mainOverlay").classList.remove("active"); }
+    function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
+    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
+    function toggleInfo() { document.getElementById("infoDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
+    function verificarAdmin() { let p = prompt("Clave:"); if(p==="admin") abrirModal("adminModal"); }
+    function toggleTheme() { document.body.classList.toggle("light"); }
 </script>
 </body>
 </html>
