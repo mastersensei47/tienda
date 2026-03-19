@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DISTRIBUIDORA ELNEN</title>
+    <title>DISTRIBUIDORA ELNEN - SISTEMA INTEGRAL</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -11,68 +11,61 @@
     <style>
         :root {
             --bg: #0b1426; --card: #16213e; --text: #ffffff; --accent: #3b82f6;
-            --input-bg: #1f2937; --radius: 12px;
+            --input-bg: #1f2937; --radius: 12px; --promo: #f59e0b;
         }
         body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); overflow-x: hidden; }
 
-        /* HEADER */
+        /* HEADER SEGÚN CAPTURA */
         header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 25px; background: #0b1426; position: sticky; top: 0; z-index: 1000; 
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 10px 20px; background: rgba(11, 20, 38, 0.9); position: sticky; top: 0; z-index: 1000; 
+            height: 80px; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header-icons { display: flex; gap: 20px; align-items: center; }
-        .icon-btn { cursor: pointer; font-size: 22px; color: #94a3b8; }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .main-logo { height: 55px; width: auto; }
+        .header-icons { display: flex; gap: 15px; align-items: center; }
+        .icon-btn { cursor: pointer; font-size: 20px; color: #94a3b8; position: relative; padding: 8px; }
 
-        /* HERO */
+        /* HERO REAL */
         .hero {
-            height: 50vh; background: linear-gradient(rgba(11,20,38,0.7), rgba(11,20,38,0.9)), url('https://images.unsplash.com/photo-1534723452862-4c874018d66d?q=80&w=1500');
+            height: 60vh; background: linear-gradient(rgba(11,20,38,0.5), rgba(11,20,38,0.8)), url('https://images.unsplash.com/photo-1534723452862-4c874018d66d?q=80&w=2000');
             background-size: cover; background-position: center;
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
         }
-        .btn-primary { background: var(--accent); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; }
+        .hero h1 { font-size: 2.8rem; font-weight: 800; margin: 0; }
+        .hero p { max-width: 500px; margin: 20px 0; font-size: 1.1rem; color: #cbd5e1; }
+        .btn-ver { background: var(--accent); color: white; border: none; padding: 15px 35px; border-radius: 30px; font-weight: 700; cursor: pointer; }
 
-        /* CATEGORIAS */
-        .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; padding: 25px; }
-        .cat-card { background: var(--card); padding: 20px; border-radius: var(--radius); text-align: center; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
-        .cat-card.active { border-color: var(--accent); background: rgba(59, 130, 246, 0.1); }
+        /* CATEGORÍAS TIPO GLASS */
+        .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; padding: 30px 20px; }
+        .cat-card { 
+            background: rgba(22, 33, 62, 0.6); backdrop-filter: blur(8px); padding: 25px; 
+            border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;
+        }
+        .cat-card.active { border-color: var(--accent); background: rgba(59, 130, 246, 0.2); }
+        .cat-card img { height: 45px; margin-bottom: 10px; }
 
-        /* BUSCADOR */
-        .search-container { padding: 20px; max-width: 600px; margin: auto; }
-        .search-bar { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #334155; background: var(--input-bg); color: white; outline: none; }
-
-        /* PRODUCTOS */
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 25px; }
-        .product-card { background: var(--card); border-radius: var(--radius); overflow: hidden; }
-        .img-box { background: white; height: 150px; display: flex; align-items: center; justify-content: center; padding: 10px; }
+        /* PRODUCTOS Y PROMOS */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
+        .product-card { background: var(--card); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .promo-badge { position: absolute; top: 10px; left: 10px; background: var(--promo); color: #000; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 5px; z-index: 5; }
+        .img-box { background: #fff; height: 160px; display: flex; align-items: center; justify-content: center; padding: 10px; }
         .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
         .info-box { padding: 15px; }
 
-        /* DRAWERS CORREGIDOS */
-        .drawer { 
-            position: fixed; top: 0; width: 300px; height: 100%; background: var(--card); 
-            transition: 0.4s ease-in-out; z-index: 5000; padding: 25px; box-sizing: border-box; 
-        }
-        #infoDrawer { left: -300px; } 
-        #infoDrawer.open { left: 0; }
-        #cartDrawer { right: -300px; } 
-        #cartDrawer.open { right: 0; }
-
-        /* OVERLAY CORREGIDO */
-        .overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); 
-            display: none; z-index: 4000; 
-        }
+        /* SISTEMA DE DRAWERS Y OVERLAY */
+        .drawer { position: fixed; top: 0; width: 320px; height: 100%; background: var(--card); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5000; padding: 25px; box-sizing: border-box; }
+        #infoDrawer { left: -320px; } #infoDrawer.open { left: 0; }
+        #cartDrawer { right: -320px; } #cartDrawer.open { right: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 4000; backdrop-filter: blur(4px); }
         .overlay.active { display: block; }
 
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
-            display: none; justify-content: center; align-items: center; z-index: 6000; 
-        }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; }
-
-        .qty-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
+        /* MODALES */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 6000; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0b1426; color: #fff; box-sizing: border-box; }
+        
+        .qty-badge { position: absolute; top: 0; right: 0; background: #ef4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 800; }
     </style>
 </head>
 <body>
@@ -80,7 +73,7 @@
 <header>
     <div class="header-left">
         <span class="icon-btn" onclick="openDrawer('infoDrawer')">☰</span>
-        <b style="font-size: 1.2rem;">ELNEN</b>
+        <img src="logoo.png" class="main-logo">
     </div>
     <div class="header-icons">
         <span class="icon-btn" onclick="abrirAdmin()">⚙️</span>
@@ -93,19 +86,19 @@
 
 <section class="hero">
     <h1>DISTRIBUIDORA ELNEN</h1>
-    <p>Calidad mayorista y minorista en Santa Fe.</p>
-    <button class="btn-primary" onclick="window.scrollTo({top: 600, behavior: 'smooth'})">VER PRODUCTOS</button>
+    <p>Calidad mayorista y minorista al alcance de tu mano. El sistema integral más rápido de Santa Fe.</p>
+    <button class="btn-ver" onclick="document.getElementById('cat-list').scrollIntoView({behavior:'smooth'})">VER PRODUCTOS</button>
 </section>
 
-<div class="cat-grid">
-    <div class="cat-card active" id="cat-all" onclick="setSearch('')"><b>🌐 Todos</b></div>
-    <div class="cat-card" id="cat-bebidas" onclick="setSearch('bebidas')"><b>🥤 Bebidas</b></div>
-    <div class="cat-card" id="cat-snacks" onclick="setSearch('snacks')"><b>🍿 Snacks</b></div>
-    <div class="cat-card" id="cat-almacen" onclick="setSearch('almacen')"><b>🥫 Almacén</b></div>
+<div class="cat-grid" id="cat-list">
+    <div class="cat-card active" id="cat-all" onclick="setSearch('')"><img src="https://cdn-icons-png.flaticon.com/512/854/854024.png"><b>Todos</b></div>
+    <div class="cat-card" id="cat-bebidas" onclick="setSearch('bebidas')"><img src="https://cdn-icons-png.flaticon.com/512/3122/3122044.png"><b>Bebidas</b></div>
+    <div class="cat-card" id="cat-snacks" onclick="setSearch('snacks')"><img src="https://cdn-icons-png.flaticon.com/512/2553/2553691.png"><b>Snacks</b></div>
+    <div class="cat-card" id="cat-almacen" onclick="setSearch('almacen')"><img src="https://cdn-icons-png.flaticon.com/512/2674/2674486.png"><b>Almacén</b></div>
 </div>
 
-<div class="search-container">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar..." onkeyup="render()">
+<div class="search-container" style="padding: 0 20px; max-width: 600px; margin: auto;">
+    <input type="text" id="searchInput" style="width:100%; padding:15px; border-radius:25px; border:1px solid #334155; background:var(--input-bg); color:white" placeholder="Buscar..." onkeyup="render()">
 </div>
 
 <div class="products-grid" id="productsCont"></div>
@@ -113,28 +106,37 @@
 <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
 
 <div id="infoDrawer" class="drawer">
-    <h3>Información</h3>
-    <p>📍 Belgrano 7102</p>
-    <button class="btn-primary" style="width:100%" onclick="closeAll()">CERRAR</button>
+    <h2>Información</h2>
+    <p>📍 Belgrano 7102, Santa Fe</p>
+    <p>📞 3434508948</p>
+    <button class="btn-ver" style="width:100%; margin-top:20px" onclick="closeAll()">CERRAR</button>
 </div>
 
 <div id="cartDrawer" class="drawer">
-    <h3>Tu Pedido</h3>
-    <div id="cartList" style="margin-bottom:20px"></div>
-    <h4 id="cartTotal">Total: $0</h4>
-    <button class="btn-primary" style="width:100%; background:#22c55e" onclick="enviarWhatsApp()">WHATSAPP</button>
+    <h2>Mi Carrito</h2>
+    <div id="cartItems" style="margin: 20px 0; max-height: 60vh; overflow-y: auto;"></div>
+    <h3 id="cartTotal">Total: $0</h3>
+    <button class="btn-ver" style="width:100%; background:#22c55e" onclick="enviarWhatsApp()">PEDIR POR WHATSAPP</button>
 </div>
 
 <div class="modal" id="adminModal">
     <div class="modal-content">
-        <h3>Panel Admin</h3>
+        <h2 style="margin-top:0">Panel de Control</h2>
         <input type="hidden" id="editId">
-        <input id="fNom" style="width:100%; margin-bottom:10px; padding:10px" placeholder="Nombre">
-        <input id="fPre" type="number" style="width:100%; margin-bottom:10px; padding:10px" placeholder="Precio">
-        <input id="fCat" style="width:100%; margin-bottom:10px; padding:10px" placeholder="Categoría (bebidas, snacks, almacen)">
-        <input id="fImg" style="width:100%; margin-bottom:10px; padding:10px" placeholder="Link Imagen">
-        <button class="btn-primary" style="width:100%" onclick="guardarProducto()">GUARDAR</button>
-        <button onclick="closeAll()" style="width:100%; background:none; border:none; color:white; margin-top:10px">Cerrar</button>
+        <input id="fNom" placeholder="Nombre del Producto">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+            <input id="fPre" type="number" placeholder="Precio Público">
+            <input id="fPreM" type="number" placeholder="Precio Mayor">
+        </div>
+        <input id="fPromo" placeholder="Ej: Llevando 2 $5000">
+        <input id="fCat" placeholder="Categoría (bebidas, snacks, almacen)">
+        <input id="fStock" type="number" placeholder="Stock">
+        <input id="fImg" placeholder="Link de imagen">
+        <button class="btn-ver" style="width:100%" onclick="guardarProducto()">GUARDAR PRODUCTO</button>
+        <div style="margin-top:20px; max-height: 200px; overflow-y: auto;">
+            <table style="width:100%" id="adminList"></table>
+        </div>
+        <button onclick="closeAll()" style="width:100%; background:none; border:none; color:white; margin-top:15px">Cerrar</button>
     </div>
 </div>
 
@@ -156,21 +158,22 @@
     db.collection("productos").onSnapshot(snap => {
         productos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         render();
+        renderAdminList();
     });
 
     function render() {
         const query = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
-        const filtrados = productos.filter(p => {
-            return p.nombre.toLowerCase().includes(query) || (p.categoria && p.categoria.toLowerCase() === query);
-        });
+        const filtrados = productos.filter(p => p.nombre.toLowerCase().includes(query) || (p.categoria && p.categoria.toLowerCase() === query));
+        
         cont.innerHTML = filtrados.map(p => `
             <div class="product-card">
+                ${p.promo ? `<div class="promo-badge">${p.promo}</div>` : ''}
                 <div class="img-box"><img src="${p.imagen}"></div>
                 <div class="info-box">
-                    <b>${p.nombre}</b>
-                    <div style="color:var(--accent); font-weight:800; margin:10px 0">$${p.precio}</div>
-                    <button class="btn-primary" style="width:100%" onclick="addToCart('${p.id}')">AGREGAR</button>
+                    <b style="font-size:1.1rem">${p.nombre}</b>
+                    <div style="color:var(--accent); font-size:1.4rem; font-weight:800; margin:10px 0">$${p.precio}</div>
+                    <button class="btn-ver" style="width:100%; padding:10px" onclick="addToCart('${p.id}')">AGREGAR</button>
                 </div>
             </div>`).join("");
     }
@@ -178,40 +181,38 @@
     function setSearch(val) {
         document.getElementById("searchInput").value = val;
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
-        const target = val === '' ? 'all' : val;
-        document.getElementById('cat-' + target).classList.add('active');
+        const btn = val === '' ? document.getElementById('cat-all') : document.getElementById('cat-'+val);
+        if(btn) btn.classList.add('active');
         render();
     }
 
-    // CONTROL DE DRAWERS
     function openDrawer(id) {
-        closeAll(); // Cerramos todo antes de abrir uno nuevo
+        closeAll();
         document.getElementById(id).classList.add("open");
         document.getElementById("mainOverlay").classList.add("active");
     }
 
     function closeAll() {
-        document.getElementById("infoDrawer").classList.remove("open");
-        document.getElementById("cartDrawer").classList.remove("open");
+        document.querySelectorAll(".drawer").forEach(d => d.classList.remove("open"));
         document.getElementById("mainOverlay").classList.remove("active");
         document.getElementById("adminModal").style.display = "none";
     }
 
     function addToCart(id) {
-        const p = carrito.find(c => c.id === id);
-        if(p) p.qty++; else carrito.push({id, qty:1});
+        const item = carrito.find(c => c.id === id);
+        if(item) item.qty++; else carrito.push({id, qty:1});
         updateCart();
     }
 
     function updateCart() {
-        let total = 0;
-        let count = 0;
-        const list = document.getElementById("cartList");
+        let total = 0, count = 0;
+        const list = document.getElementById("cartItems");
         list.innerHTML = carrito.map(it => {
             const p = productos.find(x => x.id === it.id);
-            total += p.precio * it.qty;
-            count += it.qty;
-            return `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${p.nombre} x${it.qty}</span><span>$${p.precio * it.qty}</span></div>`;
+            total += p.precio * it.qty; count += it.qty;
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px">
+                <span><b>${p.nombre}</b> (x${it.qty})</span><b>$${p.precio * it.qty}</b>
+            </div>`;
         }).join("");
         document.getElementById("cartCount").innerText = count;
         document.getElementById("cartTotal").innerText = "Total: $" + total;
@@ -225,22 +226,44 @@
     }
 
     async function guardarProducto() {
+        const id = document.getElementById("editId").value;
         const d = {
             nombre: document.getElementById("fNom").value,
             precio: Number(document.getElementById("fPre").value),
+            precio_may: Number(document.getElementById("fPreM").value),
+            promo: document.getElementById("fPromo").value,
             categoria: document.getElementById("fCat").value.toLowerCase(),
+            stock: Number(document.getElementById("fStock").value),
             imagen: document.getElementById("fImg").value
         };
-        await db.collection("productos").add(d);
-        alert("Guardado");
-        closeAll();
+        id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
+        alert("¡Listo!");
+        document.querySelectorAll(".modal input").forEach(i => i.value = "");
+    }
+
+    function renderAdminList() {
+        document.getElementById("adminList").innerHTML = productos.map(p => `
+            <tr><td style="padding:5px">${p.nombre}</td><td><button onclick="editP('${p.id}')">✏️</button></td></tr>
+        `).join("");
+    }
+
+    function editP(id) {
+        const p = productos.find(x => x.id === id);
+        document.getElementById("editId").value = p.id;
+        document.getElementById("fNom").value = p.nombre;
+        document.getElementById("fPre").value = p.precio;
+        document.getElementById("fPreM").value = p.precio_may;
+        document.getElementById("fPromo").value = p.promo || "";
+        document.getElementById("fCat").value = p.categoria || "";
+        document.getElementById("fStock").value = p.stock || 0;
+        document.getElementById("fImg").value = p.imagen;
     }
 
     function enviarWhatsApp() {
-        let msg = "Pedido Elnen:\n";
+        let msg = "*NUEVO PEDIDO ELNEN*\n\n";
         carrito.forEach(it => {
             const p = productos.find(x => x.id === it.id);
-            msg += `- ${p.nombre} x${it.qty}\n`;
+            msg += `• ${p.nombre} (x${it.qty}) - $${p.precio * it.qty}\n`;
         });
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
     }
