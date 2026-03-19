@@ -231,62 +231,51 @@
     }
 
     // --- EL MOTOR QUE ESTABA FALLANDO (CORREGIDO) ---
-    function updateCartUI() {
-        let totalGeneral = 0;
-        let cantIcono = 0;
-        const list = document.getElementById("cartItemsList");
-        
-        list.innerHTML = carrito.map(it => {
-            const p = productos.find(x => x.id === it.id);
-            if(!p) return "";
+function updateCartUI() {
+    let totalGeneral = 0, itemsTotal = 0;
+    const list = document.getElementById("cartItemsList");
+    
+    list.innerHTML = carrito.map(it => {
+        const p = productos.find(x => x.id === it.id);
+        const precioBase = esMayorista ? p.precio_may : p.precio;
+        let subtotalItem = precioBase * it.qty;
+
+        // LÓGICA DE PROMOS: Ejemplo "3x10000" o "2x2500"
+        if(p.promo && p.promo.toLowerCase().includes('x')) {
+            // Limpiamos el string: quitamos "$" y espacios, luego dividimos por 'x'
+            const promoLimpia = p.promo.toLowerCase().replace(/\s/g, '').replace(/\$/g, '');
+            const parts = promoLimpia.split('x');
             
-            const precioUnidad = esMayorista ? p.precio_may : p.precio;
-            let subtotal = precioUnidad * it.qty;
+            const cantReq = parseInt(parts[0]);
+            const valPromo = parseInt(parts[1]);
 
-            // Procesar Promos
-            if(p.promo && p.promo.toLowerCase().includes('x')) {
-                const parts = p.promo.toLowerCase().split('x');
-                const n = parseInt(parts[0]); // Cantidad requerida
-                const m = parts[1].includes('$') ? parseInt(parts[1].replace('$', '')) : parseInt(parts[1]); // Valor o Cantidad a pagar
-
-                if(it.qty >= n) {
-                    const packs = Math.floor(it.qty / n);
-                    const resto = it.qty % n;
-                    if(p.promo.includes('$')) {
-                        subtotal = (packs * m) + (resto * precioUnidad);
-                    } else {
-                        subtotal = (packs * m * precioUnidad) + (resto * precioUnidad);
-                    }
-                }
+            if(!isNaN(cantReq) && !isNaN(valPromo) && it.qty >= cantReq) {
+                const packs = Math.floor(it.qty / cantReq);
+                const resto = it.qty % cantReq;
+                
+                // Calculamos: (Cantidad de combos * precio especial) + (unidades sueltas * precio normal)
+                subtotalItem = (packs * valPromo) + (resto * precioBase);
             }
-            
-            totalGeneral += subtotal;
-            cantIcono += it.qty;
-
-            return `<div style="padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center">
-                <div><b>${p.nombre}</b><br><small>Cantidad: ${it.qty}</small></div>
-                <b>$${subtotal}</b>
-            </div>`;
-        }).join("");
+        }
         
-        document.getElementById("cartTotalText").innerText = "Total: $" + totalGeneral;
-        document.getElementById("cartCount").innerText = cantIcono;
-    }
+        totalGeneral += subtotalItem;
+        itemsTotal += it.qty;
 
-    function addToCart(id) {
-        const item = carrito.find(c => c.id === id);
-        if(item) item.qty++; else carrito.push({id, qty:1});
-        updateCartUI(); // <--- ESTO ES LO QUE FALTABA PARA QUE SUME AL INSTANTE
-    }
-
-    async function finalizarPedido() {
-        if(carrito.length === 0) return;
-        const total = document.getElementById("cartTotalText").innerText;
-        const pData = { items: carrito.map(it => ({n: productos.find(p=>p.id===it.id).nombre, q: it.qty})), total, fecha: Date.now() };
-        await db.collection("pedidos").add(pData);
-        let msg = `*NUEVO PEDIDO MS47*\n`;
-        pData.items.forEach(i => msg += `• ${i.n} (x${i.q})\n`);
-        msg += `\n*${total}*`;
+        return `
+            <div style="padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center">
+                <div>
+                    <b style="display:block">${p.nombre}</b>
+                    <small style="opacity:0.6">Cant: ${it.qty} x $${precioBase}</small>
+                </div>
+                <div style="text-align:right">
+                    <b style="color:var(--accent)">$${subtotalItem}</b>
+                    ${it.qty >= (parseInt(p.promo) || 999) ? `<br><small style="color:var(--promo); font-size:10px">¡Promo Aplicada!</small>` : ''}
+                </div>
+            </div>`;
+    }).join("");
+    
+    document.getElementById("cartTotalText").innerText = "Total: $" + totalGeneral;
+    document.getElementById("cartCount").innerText = itemsTotal;
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
         carrito = []; updateCartUI(); closeAll();
     }
