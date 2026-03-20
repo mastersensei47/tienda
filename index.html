@@ -21,6 +21,7 @@
         }
         body { margin:0; font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); transition: 0.3s; overflow-x: hidden; }
 
+        /* HEADER ESTILO MS47 */
         header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 0 20px; background: var(--card); position: sticky; top: 0; z-index: 1000; 
@@ -33,56 +34,38 @@
         .icon-btn { cursor: pointer; font-size: 20px; position: relative; display: flex; align-items: center; padding: 8px; border-radius: 50%; transition: 0.2s; }
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
 
-        .hero {
-            height: 35vh; min-height: 250px;
-            background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a?q=80&w=1500&auto=format&fit=crop');
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 20px; border-bottom: 2px solid var(--accent);
-        }
-
-        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 15px; max-width: 900px; margin: -40px auto 30px; position: relative; z-index: 10; }
-        .cat-card { background: var(--card); padding: 18px 5px; border-radius: var(--radius); text-align: center; cursor: pointer; border: 1px solid rgba(128,128,128,0.2); transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
-        .cat-card:hover, .cat-card.active { transform: translateY(-8px); border-color: var(--accent); background: var(--accent); color: white; }
-        .cat-card span { font-size: 22px; display: block; margin-bottom: 8px; }
-        .cat-card b { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .search-container { max-width: 600px; margin: 0 auto 30px; padding: 0 15px; }
-        .search-bar { width: 100%; padding: 16px 24px; border-radius: 16px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; font-size: 16px; outline: none; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-
+        /* GRID Y CARDS */
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; max-width: 1200px; margin: auto; }
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; } }
         
-        .product-card { background: var(--card); border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(128,128,128,0.1); transition: 0.4s; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .promo-badge { position: absolute; top: 12px; left: 12px; background: var(--promo); color: #000; font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 8px; z-index: 5; }
-        .stock-tag { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 4px 8px; border-radius: 6px; z-index: 5; }
-        .img-box { background: var(--img-bg); width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
+        .product-card { background: var(--card); border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(128,128,128,0.1); transition: 0.4s; display: flex; flex-direction: column; position: relative; }
+        .promo-badge { position: absolute; top: 10px; left: 10px; background: var(--promo); color: #000; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; z-index: 5; }
+        .img-box { background: var(--img-bg); width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; padding: 10px; }
         .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        .info-box { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        .product-title { margin: 0 0 10px; font-size: 15px; font-weight: 600; line-height: 1.4; height: 42px; overflow: hidden; }
-        .price-val { font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: auto; transition: 0.3s; border-bottom: 3px solid rgba(0,0,0,0.2); }
+        .info-box { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-title { margin: 0 0 8px; font-size: 14px; font-weight: 600; height: 40px; overflow: hidden; }
+        .price-val { font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 12px; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
 
-        .drawer { position: fixed; top: 0; width: 85%; max-width: 380px; height: 100%; background: var(--card); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5000; padding: 30px; box-shadow: 0 0 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; box-sizing: border-box; }
-        #infoDrawer { left: -100%; } #infoDrawer.active { left: 0; }
-        #cartDrawer { right: -100%; } #cartDrawer.active { right: 0; }
+        /* DRAWERS (Paneles Laterales) */
+        .drawer { position: fixed; top: 0; width: 85%; max-width: 350px; height: 100%; background: var(--card); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5000; padding: 25px; box-sizing: border-box; display: flex; flex-direction: column; }
+        #infoDrawer { left: -100%; border-right: 1px solid rgba(255,255,255,0.1); }
+        #infoDrawer.active { left: 0; }
+        #cartDrawer { right: -100%; border-left: 1px solid rgba(255,255,255,0.1); }
+        #cartDrawer.active { right: 0; }
         
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); display: none; z-index: 4000; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; z-index: 4000; }
         .overlay.active { display: block; }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 6000; padding: 20px; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 28px; width: 100%; max-width: 750px; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+        /* MODALES ADMIN */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 6000; padding: 15px; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 24px; width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
 
-        .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 10px; width: fit-content; }
-        .qty-btn { background: var(--accent); color: white; border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .admin-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .qty-btn { background: var(--accent); border: none; color: white; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        .admin-tabs { display: flex; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; overflow-x: auto; }
-        .tab-btn { padding: 10px 20px; border-radius: 10px; background: rgba(255,255,255,0.05); border: none; color: white; cursor: pointer; white-space: nowrap; }
-        .tab-btn.active { background: var(--accent); }
-
-        .admin-item { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 14px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; box-sizing: border-box; outline: none; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; box-sizing: border-box; }
     </style>
 </head>
 <body class="dark">
@@ -96,98 +79,87 @@
         <span class="icon-btn" onclick="toggleTheme()">🌗</span>
         <span class="icon-btn" onclick="abrirModal('loginModal')">👤</span>
         <span class="icon-btn" onclick="verificarAdmin()">⚙️</span>
-        <div class="icon-btn" onclick="toggleCart()">🛒 <b id="cartCount" style="background:var(--danger); font-size:11px; padding:2px 7px; border-radius:12px; position:absolute; top:2px; right:2px;">0</b></div>
+        <div class="icon-btn" onclick="toggleCart()">🛒 <b id="cartCount" style="background:var(--danger); font-size:10px; padding:2px 6px; border-radius:10px; position:absolute; top:0; right:0;">0</b></div>
     </div>
 </header>
 
-<section class="hero">
-    <h1 style="color:white; font-weight:800; font-size:2.5rem; margin:0;">DISTRIBUIDORA ELNEN</h1>
-    <p style="color:rgba(255,255,255,0.8);">Tu aliado comercial en Santa Fe.</p>
-</section>
-
-<div class="cat-grid">
-    <div class="cat-card active" id="cat-all" onclick="setSearch('')"><span>🌐</span><b>Todos</b></div>
-    <div class="cat-card" onclick="setSearch('bebida')"><span>🥤</span><b>Bebidas</b></div>
-    <div class="cat-card" onclick="setSearch('snack')"><span>🍿</span><b>Snacks</b></div>
-    <div class="cat-card" onclick="setSearch('almacen')"><span>🥫</span><b>Almacén</b></div>
-</div>
-
-<div class="search-container">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto..." onkeyup="render()">
+<div class="search-container" style="padding: 20px; max-width: 600px; margin: auto;">
+    <input type="text" id="searchInput" placeholder="Buscar productos..." onkeyup="render()" style="border-radius: 15px; padding: 15px;">
 </div>
 
 <div class="products-grid" id="productsCont"></div>
 
 <div class="overlay" id="mainOverlay" onclick="closeAll()"></div>
 
+<div id="infoDrawer" class="drawer">
+    <h2 style="color:var(--accent)">Distribuidora Elnen</h2>
+    <div id="statusBadge" style="display:none; background:rgba(16,185,129,0.1); color:var(--success); padding:10px; border-radius:10px; font-weight:bold; margin-bottom:20px; text-align:center;">✓ MAYORISTA ACTIVADO</div>
+    <div style="flex-grow:1">
+        <p>📍 Belgrano 7102, Santa Fe</p>
+        <p>📱 Pedidos: 3434508948</p>
+    </div>
+    <button onclick="logout()" style="background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; cursor:pointer;">Cerrar Sesión</button>
+</div>
+
+<div id="cartDrawer" class="drawer">
+    <h2>Tu Pedido</h2>
+    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto"></div>
+    <div id="cartTotal" style="font-size:22px; font-weight:800; color:var(--accent); margin:20px 0">Total: $0</div>
+    <button class="btn-add" style="background:#25d366" onclick="enviarPedido()">FINALIZAR POR WHATSAPP</button>
+</div>
+
 <div class="modal" id="adminModal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
-            <h2>Panel Maestro MS47</h2>
-            <button onclick="closeAll()" style="background:none; border:none; color:white; font-size:24px;">✕</button>
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px">
+            <h2 style="margin:0">Panel Maestro</h2>
+            <button onclick="closeAll()" style="background:none; border:none; color:white; font-size:20px">✕</button>
         </div>
-        <div class="admin-tabs">
-            <button class="tab-btn active" onclick="switchTab('tab-prods')">📦 Productos</button>
-            <button class="tab-btn" onclick="switchTab('tab-users')">👥 Cuentas</button>
-            <button class="tab-btn" onclick="switchTab('tab-orders')">📜 Historial</button>
+        
+        <div style="display:flex; gap:10px; margin-bottom:20px">
+            <button onclick="showTab('tab-p')" class="btn-add" style="flex:1">Productos</button>
+            <button onclick="showTab('tab-u')" class="btn-add" style="flex:1">Usuarios</button>
+            <button onclick="showTab('tab-o')" class="btn-add" style="flex:1">Ventas</button>
         </div>
-        <div id="tab-prods" class="admin-tab-content">
+
+        <div id="tab-p">
             <input type="hidden" id="editId">
             <input id="fNom" placeholder="Nombre">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
-                <input id="fPre" type="number" placeholder="Precio Público">
-                <input id="fPreM" type="number" placeholder="Precio Mayorista">
-            </div>
+            <input id="fPre" type="number" placeholder="Precio Público">
+            <input id="fPreM" type="number" placeholder="Precio Mayorista">
             <input id="fPromo" placeholder="Promo (Ej: 3x10000)">
-            <input id="fCat" placeholder="Categoría">
-            <input id="fStock" type="number" placeholder="Stock">
             <input id="fImg" placeholder="Link Imagen">
-            <button class="btn-add" style="width:100%; background:var(--success)" onclick="guardarProducto()">GUARDAR</button>
-            <div id="adminProdsList" style="margin-top:20px"></div>
+            <button class="btn-add" style="width:100%; background:var(--success)" onclick="guardarProducto()">GUARDAR PRODUCTO</button>
+            <div id="adminProds" style="margin-top:20px"></div>
         </div>
-        <div id="tab-users" class="admin-tab-content" style="display:none">
-            <div id="adminUsersList"></div>
+
+        <div id="tab-u" style="display:none">
+            <div id="adminUsers"></div>
         </div>
-        <div id="tab-orders" class="admin-tab-content" style="display:none">
-            <div id="adminOrdersList"></div>
+
+        <div id="tab-o" style="display:none">
+            <div id="adminOrders"></div>
         </div>
     </div>
 </div>
 
 <div class="modal" id="loginModal">
-    <div class="modal-content" style="max-width:380px">
-        <h2>Ingresar</h2>
-        <input id="userInp" placeholder="Usuario">
-        <input id="passInp" type="password" placeholder="Contraseña">
-        <button class="btn-add" style="width:100%" onclick="checkLogin()">ENTRAR</button>
-        <p style="text-align:center">¿No tenés cuenta? <b style="color:var(--accent); cursor:pointer" onclick="abrirModal('regModal')">Registrate acá</b></p>
+    <div class="modal-content" style="max-width:350px">
+        <h2 style="text-align:center">Acceso</h2>
+        <input id="lUser" placeholder="Usuario">
+        <input id="lPass" type="password" placeholder="Contraseña">
+        <button class="btn-add" style="width:100%" onclick="login()">ENTRAR</button>
+        <p style="text-align:center; font-size:12px; margin-top:15px">¿Sos mayorista? <b onclick="abrirModal('regModal')" style="color:var(--accent); cursor:pointer">Registrate acá</b></p>
     </div>
 </div>
 
 <div class="modal" id="regModal">
-    <div class="modal-content" style="max-width:380px">
-        <h2>Solicitud Mayorista</h2>
-        <input id="regUser" placeholder="Usuario deseado">
-        <input id="regPass" type="password" placeholder="Contraseña">
-        <input id="regTel" placeholder="WhatsApp de contacto">
-        <button class="btn-add" style="width:100%; background:var(--success)" onclick="crearCuenta()">SOLICITAR ALTA</button>
-        <button onclick="abrirModal('loginModal')" style="width:100%; background:none; border:none; color:white; margin-top:10px">Volver</button>
+    <div class="modal-content" style="max-width:350px">
+        <h2>Registro</h2>
+        <input id="rUser" placeholder="Usuario">
+        <input id="rPass" type="password" placeholder="Contraseña">
+        <input id="rTel" placeholder="WhatsApp">
+        <button class="btn-add" style="width:100%; background:var(--success)" onclick="registrar()">ENVIAR SOLICITUD</button>
     </div>
-</div>
-
-<div id="infoDrawer" class="drawer">
-    <h2>Mi Perfil</h2>
-    <div id="userBadge" style="display:none; color:var(--success); font-weight:800; margin-bottom:20px">✓ MODO MAYORISTA ACTIVO</div>
-    <p>Distribuidora Elnen</p>
-    <p>Santa Fe Capital</p>
-    <button onclick="logout()" style="background:var(--danger); color:white; border:none; padding:15px; border-radius:14px; width:100%; margin-top:auto">Cerrar Sesión</button>
-</div>
-
-<div id="cartDrawer" class="drawer">
-    <h2>Mi Carrito</h2>
-    <div id="cartItemsList" style="flex-grow:1; overflow-y:auto"></div>
-    <div id="cartTotalText" style="font-weight:800; font-size:24px; color:var(--accent); margin: 20px 0;">Total: $0</div>
-    <button class="btn-add" style="width:100%; background:#25d366" onclick="finalizarPedido()">PEDIR POR WHATSAPP</button>
 </div>
 
 <script>
@@ -203,124 +175,164 @@
     const db = firebase.firestore();
 
     let productos = [], carrito = [], usuarios = [], pedidos = [];
-    let esMayorista = localStorage.getItem("ms47_may_v2") === "true";
+    let esMay = localStorage.getItem("ms47_session") === "true";
 
-    db.collection("productos").onSnapshot(s => { productos = s.docs.map(d => ({id:d.id, ...d.data()})); render(); renderAdminProds(); });
-    db.collection("usuarios").onSnapshot(s => { usuarios = s.docs.map(d => ({id:d.id, ...d.data()})); renderAdminUsers(); });
-    db.collection("pedidos").orderBy("fecha", "desc").limit(20).onSnapshot(s => { pedidos = s.docs.map(d => ({id:d.id, ...d.data()})); renderAdminOrders(); });
+    // DATA SYNC
+    db.collection("productos").onSnapshot(s => { productos = s.docs.map(d=>({id:d.id, ...d.data()})); render(); renderAdminP(); });
+    db.collection("usuarios").onSnapshot(s => { usuarios = s.docs.map(d=>({id:d.id, ...d.data()})); renderAdminU(); });
+    db.collection("pedidos").orderBy("fecha","desc").onSnapshot(s => { pedidos = s.docs.map(d=>({id:d.id, ...d.data()})); renderAdminO(); });
 
     function render() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
+        const q = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
-        cont.innerHTML = productos.filter(p => p.nombre.toLowerCase().includes(query) || (p.categoria && p.categoria.toLowerCase() === query)).map(p => `
+        cont.innerHTML = productos.filter(p => p.nombre.toLowerCase().includes(q)).map(p => `
             <div class="product-card">
                 ${p.promo ? `<div class="promo-badge">${p.promo}</div>` : ''}
                 <div class="img-box"><img src="${p.imagen}"></div>
                 <div class="info-box">
-                    <h4 class="product-title">${p.nombre}</h4>
-                    <div class="price-val">$${esMayorista ? p.precio_may : p.precio}</div>
-                    <button class="btn-add" onclick="addToCart('${p.id}')">AGREGAR</button>
+                    <div class="product-title">${p.nombre}</div>
+                    <div class="price-val">$${esMay ? p.precio_may : p.precio}</div>
+                    <button class="btn-add" onclick="add('${p.id}')">AGREGAR</button>
                 </div>
-            </div>`).join("");
-        if(esMayorista) document.getElementById("userBadge").style.display = "block";
+            </div>
+        `).join("");
+        document.getElementById("statusBadge").style.display = esMay ? "block" : "none";
     }
 
-    function updateCartUI() {
+    function add(id) {
+        const item = carrito.find(c => c.id === id);
+        if(item) item.qty++; else carrito.push({id, qty:1});
+        updateCart();
+    }
+
+    function updateCart() {
         let total = 0, count = 0;
         const list = document.getElementById("cartItemsList");
-        list.innerHTML = carrito.map(it => {
-            const p = productos.find(x => x.id === it.id);
-            const precioBase = esMayorista ? p.precio_may : p.precio;
-            let sub = precioBase * it.qty;
+        list.innerHTML = carrito.map(c => {
+            const p = productos.find(x => x.id === c.id);
+            const precioBase = esMay ? p.precio_may : p.precio;
+            let sub = precioBase * c.qty;
 
-            // Lógica de Promo: ej "3x10000"
-            if(!esMayorista && p.promo && p.promo.toLowerCase().includes('x')) {
+            if(!esMay && p.promo && p.promo.toLowerCase().includes('x')) {
                 const parts = p.promo.toLowerCase().split('x');
                 const qP = parseInt(parts[0]), vP = parseInt(parts[1]);
-                if(it.qty >= qP) sub = (Math.floor(it.qty / qP) * vP) + ((it.qty % qP) * precioBase);
+                if(c.qty >= qP) sub = (Math.floor(c.qty / qP) * vP) + ((c.qty % qP) * precioBase);
             }
-            total += sub; count += it.qty;
-            return `<div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1)">
-                <b>${p.nombre}</b><br>$${sub} 
-                <div class="qty-controls">
-                    <button class="qty-btn" onclick="changeQty('${it.id}',-1)">-</button>
-                    <span>${it.qty}</span>
-                    <button class="qty-btn" onclick="changeQty('${it.id}',1)">+</button>
-                </div>
-            </div>`;
+            total += sub; count += c.qty;
+            return `
+                <div class="admin-item">
+                    <div><b>${p.nombre}</b><br>$${sub}</div>
+                    <div style="display:flex; gap:8px; align-items:center">
+                        <button class="qty-btn" onclick="changeQty('${c.id}',-1)">-</button>
+                        <span>${c.qty}</span>
+                        <button class="qty-btn" onclick="changeQty('${c.id}',1)">+</button>
+                    </div>
+                </div>`;
         }).join("");
-        document.getElementById("cartTotalText").innerText = "Total: $" + total;
+        document.getElementById("cartTotal").innerText = "Total: $" + total;
         document.getElementById("cartCount").innerText = count;
     }
 
     function changeQty(id, d) {
-        const it = carrito.find(c => c.id === id);
-        if(it) { it.qty += d; if(it.qty <= 0) carrito = carrito.filter(c => c.id !== id); updateCartUI(); }
+        const item = carrito.find(c => c.id === id);
+        if(item) {
+            item.qty += d;
+            if(item.qty <= 0) carrito = carrito.filter(c => c.id !== id);
+            updateCart();
+        }
     }
 
-    async function finalizarPedido() {
+    async function enviarPedido() {
         if(!carrito.length) return;
-        const total = document.getElementById("cartTotalText").innerText;
-        const items = carrito.map(it => ({n: productos.find(p=>p.id===it.id).nombre, q: it.qty}));
+        const total = document.getElementById("cartTotal").innerText;
+        const items = carrito.map(c => ({n: productos.find(x=>x.id===c.id).nombre, q: c.qty}));
         await db.collection("pedidos").add({ items, total, fecha: Date.now() });
         let msg = `*PEDIDO MS47*\n` + items.map(i => `• ${i.n} (x${i.q})`).join("\n") + `\n\n*${total}*`;
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
-        carrito = []; updateCartUI(); closeAll();
+        carrito = []; updateCart(); closeAll();
     }
 
-    // Funciones Admin
-    function switchTab(id) {
-        document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).style.display = 'block';
-        event.target.classList.add('active');
+    // ADMIN LOGIC
+    function showTab(id) {
+        ["tab-p","tab-u","tab-o"].forEach(t => document.getElementById(t).style.display = t === id ? "block" : "none");
     }
+
     async function guardarProducto() {
         const id = document.getElementById("editId").value;
-        const d = { nombre: document.getElementById("fNom").value, precio: Number(document.getElementById("fPre").value), precio_may: Number(document.getElementById("fPreM").value), promo: document.getElementById("fPromo").value, categoria: document.getElementById("fCat").value.toLowerCase(), stock: Number(document.getElementById("fStock").value), imagen: document.getElementById("fImg").value };
+        const d = { 
+            nombre: document.getElementById("fNom").value, 
+            precio: Number(document.getElementById("fPre").value), 
+            precio_may: Number(document.getElementById("fPreM").value), 
+            promo: document.getElementById("fPromo").value, 
+            imagen: document.getElementById("fImg").value 
+        };
         id ? await db.collection("productos").doc(id).update(d) : await db.collection("productos").add(d);
-        alert("Guardado");
+        document.getElementById("editId").value = "";
+        alert("¡Listo!");
     }
-    function renderAdminProds() {
-        document.getElementById("adminProdsList").innerHTML = productos.map(p => `<div class="admin-item"><b>${p.nombre}</b> <button onclick="editP('${p.id}')">✏️</button></div>`).join("");
+
+    function renderAdminP() {
+        document.getElementById("adminProds").innerHTML = productos.map(p => `
+            <div class="admin-item">
+                <span>${p.nombre}</span>
+                <div>
+                    <button onclick="editP('${p.id}')">✏️</button>
+                    <button onclick="borrarDoc('productos','${p.id}')">🗑️</button>
+                </div>
+            </div>
+        `).join("");
     }
+
     function editP(id) {
         const p = productos.find(x => x.id === id);
         document.getElementById("editId").value = p.id;
-        document.getElementById("fNom").value = p.nombre; document.getElementById("fPre").value = p.precio;
-        document.getElementById("fPreM").value = p.precio_may; document.getElementById("fPromo").value = p.promo || "";
-        document.getElementById("fCat").value = p.categoria || ""; document.getElementById("fStock").value = p.stock;
+        document.getElementById("fNom").value = p.nombre;
+        document.getElementById("fPre").value = p.precio;
+        document.getElementById("fPreM").value = p.precio_may;
+        document.getElementById("fPromo").value = p.promo || "";
         document.getElementById("fImg").value = p.imagen;
     }
-    function renderAdminUsers() {
-        document.getElementById("adminUsersList").innerHTML = usuarios.map(u => `<div class="admin-item">${u.user} - ${u.activo ? '✅' : `<button onclick="aprobarUser('${u.id}')">Aprobar</button>`}</div>`).join("");
-    }
-    function renderAdminOrders() {
-        document.getElementById("adminOrdersList").innerHTML = pedidos.map(o => `<div class="admin-item"><b>${o.total}</b> - ${new Date(o.fecha).toLocaleDateString()}</div>`).join("");
-    }
-    async function aprobarUser(id) { await db.collection("usuarios").doc(id).update({activo: true}); }
 
-    // Auth
-    async function crearCuenta() {
-        const u = document.getElementById("regUser").value, p = document.getElementById("regPass").value, t = document.getElementById("regTel").value;
-        await db.collection("usuarios").add({ user: u, pass: p, tel: t, activo: false });
-        alert("Solicitud enviada"); closeAll();
+    function renderAdminU() {
+        document.getElementById("adminUsers").innerHTML = usuarios.map(u => `
+            <div class="admin-item">
+                <span>${u.user} (${u.tel})</span>
+                ${u.activo ? '✅' : `<button onclick="activarU('${u.id}')">Activar</button>`}
+            </div>
+        `).join("");
     }
-    async function checkLogin() {
-        const u = document.getElementById("userInp").value, p = document.getElementById("passInp").value;
+
+    function renderAdminO() {
+        document.getElementById("adminOrders").innerHTML = pedidos.map(o => `
+            <div class="admin-item" style="font-size:12px">
+                <span>${new Date(o.fecha).toLocaleDateString()} - ${o.total}</span>
+            </div>
+        `).join("");
+    }
+
+    async function activarU(id) { await db.collection("usuarios").doc(id).update({activo: true}); }
+    async function borrarDoc(c, id) { if(confirm("¿Borrar?")) await db.collection(c).doc(id).delete(); }
+
+    // AUTH
+    async function login() {
+        const u = document.getElementById("lUser").value, p = document.getElementById("lPass").value;
         if(u === "admin" && p === "admin") return abrirModal("adminModal");
         const user = usuarios.find(x => x.user === u && x.pass === p);
-        if(user && user.activo) { localStorage.setItem("ms47_may_v2", "true"); location.reload(); } else alert("Error o No aprobado");
+        if(user && user.activo) { localStorage.setItem("ms47_session", "true"); location.reload(); }
+        else alert("Error o falta aprobación");
     }
 
-    // Aux
-    function addToCart(id) { const ex = carrito.find(c => c.id === id); if(ex) ex.qty++; else carrito.push({id, qty:1}); updateCartUI(); }
-    function setSearch(v) { document.getElementById("searchInput").value = v; render(); }
-    function closeAll() { document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); document.querySelectorAll(".drawer").forEach(d => d.classList.remove("active")); document.getElementById("mainOverlay").classList.remove("active"); }
-    function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
-    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
+    async function registrar() {
+        await db.collection("usuarios").add({ user: document.getElementById("rUser").value, pass: document.getElementById("rPass").value, tel: document.getElementById("rTel").value, activo: false });
+        alert("Solicitud enviada"); closeAll();
+    }
+
+    function logout() { localStorage.removeItem("ms47_session"); location.reload(); }
     function toggleInfo() { document.getElementById("infoDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
-    function verificarAdmin() { let p = prompt("Clave:"); if(p==="admin") abrirModal("adminModal"); }
+    function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("mainOverlay").classList.toggle("active"); }
+    function closeAll() { document.querySelectorAll(".drawer, .modal, .overlay").forEach(e => e.classList.remove("active")); document.querySelectorAll(".modal").forEach(e => e.style.display="none"); }
+    function abrirModal(id) { closeAll(); document.getElementById(id).style.display = "flex"; }
+    function verificarAdmin() { if(prompt("Clave:") === "admin") abrirModal("adminModal"); }
     function toggleTheme() { document.body.classList.toggle("light"); }
 </script>
 </body>
