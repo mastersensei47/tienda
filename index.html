@@ -1,251 +1,273 @@
-<script>
-/* -----------------------------------------------------------
-   CONFIGURACIÓN FIREBASE
------------------------------------------------------------ */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MS47 - SISTEMA</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:#0f172a;
+color:#fff;
+}
+
+/* mejoras animación */
+.btn-add{
+position:relative;
+overflow:hidden;
+}
+.btn-add::after{
+content:"";
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:rgba(255,255,255,0.2);
+transition:.4s;
+}
+.btn-add:active::after{
+left:100%;
+}
+</style>
+</head>
+
+<body>
+   <!-- TU HTML ORIGINAL VA ACÁ SIN CAMBIOS -->
+
+<!-- SOLO CAMBIAR ESTO EN CATEGORÍAS -->
+<!-- ANTES -->
+<!-- onclick="setCat('bebida')" -->
+
+<!-- AHORA -->
+<!-- onclick="setCat('bebida', this)" -->
+   <script>
+
+/* ---------------- FIREBASE ---------------- */
 const firebaseConfig = {
-    apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
-    authDomain: "tienda-online-baaf6.firebaseapp.com",
-    projectId: "tienda-online-baaf6",
-    storageBucket: "tienda-online-baaf6.firebasestorage.app",
-    messagingSenderId: "121093097347",
-    appId: "1:121093097347:web:ca8ea54b592cb20f5098b6"
+apiKey:"AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
+authDomain:"tienda-online-baaf6.firebaseapp.com",
+projectId:"tienda-online-baaf6"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 /* VARIABLES */
-let prods = [];
-let cart = [];
-let users = [];
-let orders = [];
-let isMay = false;
-let usuarioLogueado = null;
-let filterCat = "";
+let prods=[],cart=[],users=[],orders=[];
+let isMay=false,usuarioLogueado=null,filterCat="";
 
-/* ---------------- STORAGE ---------------- */
-function saveCart() {
-    localStorage.setItem("ms47_cart", JSON.stringify(cart));
+/* ================= MEJORAS ================= */
+
+// carrito persistente
+function saveCart(){
+localStorage.setItem("ms47_cart",JSON.stringify(cart));
 }
-function loadCart() {
-    const saved = localStorage.getItem("ms47_cart");
-    if(saved) cart = JSON.parse(saved);
+function loadCart(){
+let c=localStorage.getItem("ms47_cart");
+if(c)cart=JSON.parse(c);
 }
 
-function saveUserSession(user) {
-    localStorage.setItem("ms47_user", JSON.stringify(user));
+// usuario persistente
+function saveUserSession(u){
+localStorage.setItem("ms47_user",JSON.stringify(u));
 }
-function loadUserSession() {
-    const u = localStorage.getItem("ms47_user");
-    if(u) {
-        usuarioLogueado = JSON.parse(u);
-        isMay = true;
-        llenarPerfil(usuarioLogueado);
-    }
+function loadUserSession(){
+let u=localStorage.getItem("ms47_user");
+if(u){
+usuarioLogueado=JSON.parse(u);
+isMay=true;
+llenarPerfil(usuarioLogueado);
+}
 }
 
 /* ---------------- INIT ---------------- */
-function init() {
+function init(){
 
-    db.collection("productos").onSnapshot(snap => {
-        prods = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        render();
-        renderAdmP();
-    });
+db.collection("productos").onSnapshot(s=>{
+prods=s.docs.map(d=>({id:d.id,...d.data()}));
+render();
+});
 
-    db.collection("usuarios").onSnapshot(snap => {
-        users = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderAdmU();
-    });
+db.collection("usuarios").onSnapshot(s=>{
+users=s.docs.map(d=>({id:d.id,...d.data()}));
+});
 
-    db.collection("pedidos").orderBy("fecha", "desc").onSnapshot(snap => {
-        orders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderAdmO();
-    });
+db.collection("pedidos").onSnapshot(s=>{
+orders=s.docs.map(d=>({id:d.id,...d.data()}));
+});
 
-    loadCart();
-    loadUserSession();
-    updateCartUI();
+// mejoras
+loadCart();
+loadUserSession();
+updateCartUI();
 }
 
 /* ---------------- RENDER ---------------- */
-function render() {
-    const query = document.getElementById("searchInput").value.toLowerCase();
-    const cont = document.getElementById("productsCont");
+function render(){
+let q=document.getElementById("searchInput").value.toLowerCase();
 
-    const filtered = prods.filter(p => 
-        p.nombre.toLowerCase().includes(query) && 
-        (filterCat === "" || p.categoria === filterCat)
-    );
+let f=prods.filter(p=>
+p.nombre.toLowerCase().includes(q) &&
+(filterCat==""||p.categoria==filterCat)
+);
 
-    if(filtered.length === 0) {
-        cont.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;opacity:0.5;">No se encontraron productos...</div>`;
-        return;
-    }
+document.getElementById("productsCont").innerHTML=f.map(p=>{
+let precio=isMay?(p.precio_may||p.precio):p.precio;
 
-    cont.innerHTML = filtered.map(p => {
-        const precioActual = isMay ? (p.precio_may || p.precio) : p.precio;
-        return `
-        <div class="product-card">
-            ${p.promo ? `<div class="promo-badge">${p.promo}</div>` : ''}
-            <div class="img-box">
-                <img src="${p.imagen || 'https://via.placeholder.com/200'}">
-            </div>
-            <div class="info-box">
-                <div class="prod-title">${p.nombre}</div>
-                <div class="price-val">$${precioActual}</div>
-                <button class="btn-add" onclick="addToCart('${p.id}')">🛒 Agregar</button>
-            </div>
-        </div>`;
-    }).join("");
+return `
+<div class="product-card">
+${p.promo?`<div class="promo-badge">${p.promo}</div>`:""}
+<div class="img-box">
+<img src="${p.imagen||''}">
+</div>
+<div class="info-box">
+<div class="prod-title">${p.nombre}</div>
+<div class="price-val">$${precio}</div>
+<button class="btn-add" onclick="addToCart('${p.id}')">🛒</button>
+</div>
+</div>
+`;
+}).join("");
 }
 
 /* ---------------- CARRITO ---------------- */
-function addToCart(id) {
-    const exist = cart.find(i => i.id === id);
-    if(exist) exist.qty++;
-    else cart.push({id, qty:1});
+function addToCart(id){
+let e=cart.find(i=>i.id==id);
+if(e)e.qty++;else cart.push({id,qty:1});
 
-    saveCart();
-    updateCartUI();
+saveCart();
+updateCartUI();
 
-    const el = document.getElementById("cartCount");
-    el.style.transform = "scale(1.4)";
-    setTimeout(() => el.style.transform = "scale(1)", 200);
+// animación
+let el=document.getElementById("cartCount");
+if(el){
+el.style.transform="scale(1.4)";
+setTimeout(()=>el.style.transform="scale(1)",200);
+}
 }
 
-function changeQty(id, delta) {
-    const item = cart.find(i => i.id === id);
-    if(item) {
-        item.qty += delta;
-        if(item.qty <= 0) {
-            cart = cart.filter(i => i.id !== id);
-        }
-    }
-    saveCart();
-    updateCartUI();
+function changeQty(id,d){
+let i=cart.find(x=>x.id==id);
+if(i){
+i.qty+=d;
+if(i.qty<=0)cart=cart.filter(x=>x.id!=id);
+}
+saveCart();
+updateCartUI();
 }
 
-function updateCartUI() {
-    let total = 0;
-    let count = 0;
-    const list = document.getElementById("cartItems");
+function updateCartUI(){
+let total=0,count=0;
 
-    list.innerHTML = cart.map(item => {
-        const p = prods.find(x => x.id === item.id);
-        if(!p) return "";
-        const precio = isMay ? (p.precio_may || p.precio) : p.precio;
-        const sub = precio * item.qty;
-        total += sub;
-        count += item.qty;
+let list=document.getElementById("cartItems");
 
-        return `
-        <div style="padding:10px 0;display:flex;justify-content:space-between;">
-            <div>${p.nombre}</div>
-            <div>
-                <button onclick="changeQty('${item.id}',-1)">-</button>
-                ${item.qty}
-                <button onclick="changeQty('${item.id}',1)">+</button>
-            </div>
-        </div>`;
-    }).join("");
+if(!list)return;
 
-    document.getElementById("cartTotal").innerText = "$" + total;
-    document.getElementById("cartCount").innerText = count;
+list.innerHTML=cart.map(i=>{
+let p=prods.find(x=>x.id==i.id);
+if(!p)return "";
+
+let pr=isMay?(p.precio_may||p.precio):p.precio;
+
+total+=pr*i.qty;
+count+=i.qty;
+
+return `
+<div>
+${p.nombre} x${i.qty}
+<button onclick="changeQty('${i.id}',-1)">-</button>
+<button onclick="changeQty('${i.id}',1)">+</button>
+</div>`;
+}).join("");
+
+document.getElementById("cartTotal").innerText="$"+total;
+document.getElementById("cartCount").innerText=count;
 }
 
 /* ---------------- LOGIN ---------------- */
-function doLogin() {
-    const u = uInp.value.trim();
-    const p = pInp.value.trim();
+function doLogin(){
+let u=uInp.value.trim();
+let p=pInp.value.trim();
 
-    if(u === "admin" && p === "admin") {
-        openModal("adminModal");
-        return;
-    }
+if(u==="admin"&&p==="admin"){
+openModal("adminModal");
+return;
+}
 
-    const userFound = users.find(x => x.user === u && x.pass === p);
+let user=users.find(x=>x.user==u&&x.pass==p);
 
-    if(userFound) {
-        if(userFound.activo) {
-            isMay = true;
-            usuarioLogueado = userFound;
-            saveUserSession(userFound);
-            llenarPerfil(userFound);
-            render();
-            alert("Bienvenido " + userFound.user);
-            closeAll();
-        } else {
-            alert("Cuenta en revisión");
-        }
-    } else {
-        alert("Datos incorrectos");
-    }
+if(user){
+if(user.activo){
+usuarioLogueado=user;
+isMay=true;
+saveUserSession(user);
+llenarPerfil(user);
+render();
+closeAll();
+}else alert("En revisión");
+}else alert("Error login");
 }
 
 /* ---------------- PERFIL ---------------- */
-function llenarPerfil(data) {
-    document.getElementById("perfilContenido").style.display = "block";
-    document.getElementById("perfilVacio").style.display = "none";
-    document.getElementById("logoutBtn").style.display = "block";
-
-    document.getElementById("p-user").innerText = data.user;
-    document.getElementById("p-tel").innerText = data.tel;
-    document.getElementById("p-dir").innerText = data.dir;
+function llenarPerfil(u){
+document.getElementById("p-user").innerText=u.user;
+document.getElementById("p-tel").innerText=u.tel;
+document.getElementById("p-dir").innerText=u.dir;
 }
 
 /* ---------------- LOGOUT ---------------- */
-function logout() {
-    if(confirm("¿Cerrar sesión?")) {
-        localStorage.removeItem("ms47_user");
-        location.reload();
-    }
+function logout(){
+if(confirm("Cerrar sesión")){
+localStorage.removeItem("ms47_user");
+location.reload();
+}
 }
 
 /* ---------------- CATEGORÍAS FIX ---------------- */
-function setCat(c, el) {
-    filterCat = c;
-    document.querySelectorAll(".cat-card").forEach(card => card.classList.remove("active"));
-    if(el) el.classList.add("active");
-    render();
+function setCat(c,el){
+filterCat=c;
+document.querySelectorAll(".cat-card").forEach(x=>x.classList.remove("active"));
+if(el)el.classList.add("active");
+render();
 }
 
 /* ---------------- PEDIDO ---------------- */
-async function finalizarYEnviar() {
-    if(cart.length === 0) return alert("Carrito vacío");
+async function finalizarYEnviar(){
 
-    let textoPedido = "*📦 PEDIDO MS47*\n";
-    textoPedido += `📅 ${new Date().toLocaleString()}\n`;
+if(cart.length==0)return alert("Carrito vacío");
 
-    if(usuarioLogueado) {
-        textoPedido += `Cliente: ${usuarioLogueado.user}\n`;
-        textoPedido += `Tel: ${usuarioLogueado.tel}\n`;
-        textoPedido += `Dir: ${usuarioLogueado.dir}\n`;
-    }
+let txt="📦 PEDIDO MS47\n";
+txt+=new Date().toLocaleString()+"\n";
 
-    textoPedido += "------------------\n";
+cart.forEach(i=>{
+let p=prods.find(x=>x.id==i.id);
+if(p)txt+=p.nombre+" x"+i.qty+"\n";
+});
 
-    cart.forEach(item => {
-        const p = prods.find(x => x.id === item.id);
-        if(p) textoPedido += `• ${p.nombre} x${item.qty}\n`;
-    });
+await db.collection("pedidos").add({
+detalle:txt,
+fecha:Date.now()
+});
 
-    textoPedido += "------------------\n";
-    textoPedido += document.getElementById("cartTotal").innerText;
+window.open("https://wa.me/5493434508948?text="+encodeURIComponent(txt));
 
-    await db.collection("pedidos").add({
-        detalle: textoPedido,
-        total: document.getElementById("cartTotal").innerText,
-        fecha: Date.now()
-    });
-
-    window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(textoPedido)}`);
-
-    cart = [];
-    saveCart();
-    updateCartUI();
+cart=[];
+saveCart();
+updateCartUI();
 }
 
-/* ---------------- START ---------------- */
+/* START */
 init();
+
 </script>
+
+</body>
+</html>
