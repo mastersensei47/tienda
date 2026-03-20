@@ -203,9 +203,9 @@
         /* ESTILOS NUEVOS PERFIL */
         .perfil-section { margin-bottom: 20px; }
         .perfil-section h3 { font-size: 14px; margin-bottom: 10px; opacity: 0.7; border-left: 3px solid var(--accent); padding-left: 8px; }
-        .map-box { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 120px; margin-top: 5px; }
+        .map-box { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 220px; margin-top: 5px; }
         .soporte-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; }
-        .perfil-logo { width: 60px; margin: 20px auto; display: block; opacity: 0.5; }
+        .perfil-logo { width: 100px; margin: 20px auto; display: block; }
     </style>
 </head>
 <body>
@@ -312,7 +312,7 @@
         <p style="font-size:13px; margin:5px 0;">Calle Falsa 123, Santa Fe Capital</p>
         <div class="map-box">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13600.000000000002!2d-60.700000!3d-31.633333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sar!4v1700000000000" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d108851.0261314946!2d-60.7711467!3d-31.6335198!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95b5a9a4dbca691b%3A0x8a63749444f2452!2sSanta%20Fe%20de%20la%20Vera%20Cruz%2C%20Santa%20Fe!5e0!3m2!1ses!2sar!4v1700000000000!5m2!1ses!2sar" 
                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
             </iframe>
         </div>
@@ -327,7 +327,7 @@
 
     <img src="logoo.png" class="perfil-logo">
     
-    <button onclick="logout()" style="background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; cursor:pointer; margin-top:auto; font-weight:700;">Cerrar Sesión</button>
+    <button id="logoutBtn" onclick="logout()" style="display:none; background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; cursor:pointer; margin-top:auto; font-weight:700;">Cerrar Sesión</button>
 </div>
 
 <div id="cartDrawer" class="drawer">
@@ -394,6 +394,8 @@
         if(isMay) {
             const badge = document.getElementById("mayBadge");
             if(badge) badge.style.display = "block";
+            const btnOut = document.getElementById("logoutBtn");
+            if(btnOut) btnOut.style.display = "block";
         }
     }
 
@@ -461,21 +463,13 @@
 
     /** FUNCIONES DEL PANEL DE ADMINISTRACIÓN **/
     
-    // Función para Limpiar el Formulario de Productos (CORREGIDA)
     function limpiarFormP() {
-        console.log("Limpiando formulario de productos...");
-        
-        // Vaciamos el ID oculto para que deje de estar en "Modo Edición"
         const fId = document.getElementById("fId");
         if(fId) fId.value = ""; 
 
-        // Limpiamos todos los campos de texto del formulario t-prod
         const inputs = document.querySelectorAll("#t-prod input");
-        inputs.forEach(input => {
-            input.value = "";
-        });
+        inputs.forEach(input => { input.value = ""; });
 
-        // Restablecemos el estilo del botón de Guardar
         const btnSave = document.getElementById("btnSave");
         if(btnSave) {
             btnSave.innerText = "GUARDAR PRODUCTO";
@@ -502,7 +496,7 @@
             alert("Producto Creado");
         }
         
-        limpiarFormP(); // Limpiamos después de guardar
+        limpiarFormP();
     }
 
     function editP(id) {
@@ -517,7 +511,6 @@
         document.getElementById("fCat").value = p.categoria;
         document.getElementById("fImg").value = p.imagen;
         
-        // Cambiamos el botón para avisar que estamos editando
         const btn = document.getElementById("btnSave");
         btn.innerText = "ACTUALIZAR DATOS";
         btn.style.background = "#3b82f6";
