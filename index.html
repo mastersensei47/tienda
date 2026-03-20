@@ -1,5 +1,7 @@
 <script>
-/* ---------------- FIREBASE ---------------- */
+/* -----------------------------------------------------------
+   CONFIGURACIÓN FIREBASE
+----------------------------------------------------------- */
 const firebaseConfig = {
     apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
     authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -12,7 +14,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ---------------- VARIABLES ---------------- */
+/* VARIABLES */
 let prods = [];
 let cart = [];
 let users = [];
@@ -71,19 +73,18 @@ function render() {
     const query = document.getElementById("searchInput").value.toLowerCase();
     const cont = document.getElementById("productsCont");
 
-    const filtered = prods.filter(p =>
-        p.nombre.toLowerCase().includes(query) &&
+    const filtered = prods.filter(p => 
+        p.nombre.toLowerCase().includes(query) && 
         (filterCat === "" || p.categoria === filterCat)
     );
 
-    if(filtered.length === 0){
-        cont.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;opacity:0.5;">No hay productos...</div>`;
+    if(filtered.length === 0) {
+        cont.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;opacity:0.5;">No se encontraron productos...</div>`;
         return;
     }
 
     cont.innerHTML = filtered.map(p => {
         const precioActual = isMay ? (p.precio_may || p.precio) : p.precio;
-
         return `
         <div class="product-card">
             ${p.promo ? `<div class="promo-badge">${p.promo}</div>` : ''}
@@ -95,13 +96,12 @@ function render() {
                 <div class="price-val">$${precioActual}</div>
                 <button class="btn-add" onclick="addToCart('${p.id}')">🛒 Agregar</button>
             </div>
-        </div>
-        `;
+        </div>`;
     }).join("");
 }
 
 /* ---------------- CARRITO ---------------- */
-function addToCart(id){
+function addToCart(id) {
     const exist = cart.find(i => i.id === id);
     if(exist) exist.qty++;
     else cart.push({id, qty:1});
@@ -111,34 +111,36 @@ function addToCart(id){
 
     const el = document.getElementById("cartCount");
     el.style.transform = "scale(1.4)";
-    setTimeout(()=> el.style.transform="scale(1)",200);
+    setTimeout(() => el.style.transform = "scale(1)", 200);
 }
 
-function changeQty(id, delta){
+function changeQty(id, delta) {
     const item = cart.find(i => i.id === id);
-    if(item){
+    if(item) {
         item.qty += delta;
-        if(item.qty <= 0) cart = cart.filter(i => i.id !== id);
+        if(item.qty <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
     }
     saveCart();
     updateCartUI();
 }
 
-function updateCartUI(){
-    let total = 0, count = 0;
+function updateCartUI() {
+    let total = 0;
+    let count = 0;
     const list = document.getElementById("cartItems");
 
-    list.innerHTML = cart.map(item=>{
-        const p = prods.find(x=>x.id===item.id);
+    list.innerHTML = cart.map(item => {
+        const p = prods.find(x => x.id === item.id);
         if(!p) return "";
-
         const precio = isMay ? (p.precio_may || p.precio) : p.precio;
         const sub = precio * item.qty;
         total += sub;
         count += item.qty;
 
         return `
-        <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
+        <div style="padding:10px 0;display:flex;justify-content:space-between;">
             <div>${p.nombre}</div>
             <div>
                 <button onclick="changeQty('${item.id}',-1)">-</button>
@@ -148,93 +150,98 @@ function updateCartUI(){
         </div>`;
     }).join("");
 
-    document.getElementById("cartTotal").innerText = "$"+total;
+    document.getElementById("cartTotal").innerText = "$" + total;
     document.getElementById("cartCount").innerText = count;
 }
 
 /* ---------------- LOGIN ---------------- */
-function doLogin(){
+function doLogin() {
     const u = uInp.value.trim();
     const p = pInp.value.trim();
 
-    if(u==="admin" && p==="admin"){
+    if(u === "admin" && p === "admin") {
         openModal("adminModal");
         return;
     }
 
-    const user = users.find(x=>x.user===u && x.pass===p);
+    const userFound = users.find(x => x.user === u && x.pass === p);
 
-    if(user){
-        if(user.activo){
+    if(userFound) {
+        if(userFound.activo) {
             isMay = true;
-            usuarioLogueado = user;
-            saveUserSession(user);
-            llenarPerfil(user);
+            usuarioLogueado = userFound;
+            saveUserSession(userFound);
+            llenarPerfil(userFound);
             render();
+            alert("Bienvenido " + userFound.user);
             closeAll();
-            alert("Bienvenido "+user.user);
-        } else alert("Cuenta en revisión");
-    } else alert("Datos incorrectos");
+        } else {
+            alert("Cuenta en revisión");
+        }
+    } else {
+        alert("Datos incorrectos");
+    }
 }
 
-function llenarPerfil(u){
-    perfilContenido.style.display="block";
-    perfilVacio.style.display="none";
-    logoutBtn.style.display="block";
+/* ---------------- PERFIL ---------------- */
+function llenarPerfil(data) {
+    document.getElementById("perfilContenido").style.display = "block";
+    document.getElementById("perfilVacio").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "block";
 
-    p_user.innerText = u.user;
-    p_tel.innerText = u.tel;
-    p_dir.innerText = u.dir;
+    document.getElementById("p-user").innerText = data.user;
+    document.getElementById("p-tel").innerText = data.tel;
+    document.getElementById("p-dir").innerText = data.dir;
 }
 
 /* ---------------- LOGOUT ---------------- */
-function logout(){
-    if(confirm("Cerrar sesión?")){
+function logout() {
+    if(confirm("¿Cerrar sesión?")) {
         localStorage.removeItem("ms47_user");
         location.reload();
     }
 }
 
 /* ---------------- CATEGORÍAS FIX ---------------- */
-function setCat(c, el){
+function setCat(c, el) {
     filterCat = c;
-    document.querySelectorAll(".cat-card").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".cat-card").forEach(card => card.classList.remove("active"));
     if(el) el.classList.add("active");
     render();
 }
 
 /* ---------------- PEDIDO ---------------- */
-async function finalizarYEnviar(){
-    if(cart.length===0) return alert("Carrito vacío");
+async function finalizarYEnviar() {
+    if(cart.length === 0) return alert("Carrito vacío");
 
-    let txt = "*📦 PEDIDO MS47*\n";
-    txt += `📅 ${new Date().toLocaleString()}\n`;
+    let textoPedido = "*📦 PEDIDO MS47*\n";
+    textoPedido += `📅 ${new Date().toLocaleString()}\n`;
 
-    if(usuarioLogueado){
-        txt += `Cliente: ${usuarioLogueado.user}\n`;
-        txt += `Tel: ${usuarioLogueado.tel}\n`;
-        txt += `Dir: ${usuarioLogueado.dir}\n`;
+    if(usuarioLogueado) {
+        textoPedido += `Cliente: ${usuarioLogueado.user}\n`;
+        textoPedido += `Tel: ${usuarioLogueado.tel}\n`;
+        textoPedido += `Dir: ${usuarioLogueado.dir}\n`;
     }
 
-    txt += "-----------------\n";
+    textoPedido += "------------------\n";
 
-    cart.forEach(i=>{
-        const p = prods.find(x=>x.id===i.id);
-        if(p) txt += `• ${p.nombre} x${i.qty}\n`;
+    cart.forEach(item => {
+        const p = prods.find(x => x.id === item.id);
+        if(p) textoPedido += `• ${p.nombre} x${item.qty}\n`;
     });
 
-    txt += "-----------------\n";
-    txt += document.getElementById("cartTotal").innerText;
+    textoPedido += "------------------\n";
+    textoPedido += document.getElementById("cartTotal").innerText;
 
     await db.collection("pedidos").add({
-        detalle: txt,
+        detalle: textoPedido,
         total: document.getElementById("cartTotal").innerText,
         fecha: Date.now()
     });
 
-    window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(txt)}`);
+    window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(textoPedido)}`);
 
-    cart=[];
+    cart = [];
     saveCart();
     updateCartUI();
 }
