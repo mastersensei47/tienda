@@ -297,13 +297,33 @@
     }
     async function updU(id) { await db.collection("usuarios").doc(id).update({activo:true}); }
 
-    function renderAdmO() {
-        document.getElementById("admListO").innerHTML = orders.map(o => `
-            <div class="admin-item" style="flex-direction:column; align-items:flex-start;">
-                <b>${o.total} - ${new Date(o.fecha).toLocaleDateString()}</b>
-                <small>${o.items.map(i => i.n + " (x"+i.q+")").join(", ")}</small>
-            </div>`).join("");
-    }
+function renderAdmO() {
+    const cont = document.getElementById("admListO");
+    // Botón para vaciar todo al principio
+    let html = `
+        <button onclick="vaciarPedidos()" style="width:100%; background:var(--danger); color:white; border:none; padding:10px; border-radius:10px; margin-bottom:15px; font-weight:700; cursor:pointer;">
+            🗑️ VACIAR TODO EL HISTORIAL
+        </button>
+    `;
+    
+    html += orders.map(o => {
+        const fecha = new Date(o.fecha);
+        const horaFormateada = fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const fechaFormateada = fecha.toLocaleDateString();
+
+        return `
+            <div class="admin-item" style="flex-direction:column; align-items:flex-start; position:relative;">
+                <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+                    <b style="color:var(--accent);">${o.total}</b>
+                    <button onclick="del('pedidos','${o.id}')" style="background:none; border:none; cursor:pointer; font-size:16px;">❌</button>
+                </div>
+                <small style="color:#94a3b8;">${fechaFormateada} - ${horaFormateada} hs</small>
+                <small style="margin-top:5px;">${o.items.map(i => i.n + " (x"+i.q+")").join(", ")}</small>
+            </div>`;
+    }).join("");
+    
+    cont.innerHTML = html;
+}
 
     async function doLogin() {
         const u = document.getElementById("uInp").value, p = document.getElementById("pInp").value;
