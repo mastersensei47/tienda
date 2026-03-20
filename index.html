@@ -3,137 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MS47 - SISTEMA INTEGRADO</title>
+    <title>MS47 - SISTEMA INTEGRADO DE VENTAS</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a; --card: #1e293b; --accent: #3b82f6;
-            --text: #f1f5f9; --success: #10b981; --danger: #ef4444;
+            --bg: #060912;
+            --card: #111827;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: rgba(255, 255, 255, 0.08);
+            --grad: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
-        .nav { background: var(--card); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .search-bar { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 15px; color: white; width: 100%; max-width: 400px; }
-        
-        .cats { display: flex; gap: 10px; padding: 20px; overflow-x: auto; scrollbar-width: none; }
-        .cat-card { background: var(--card); padding: 10px 20px; border-radius: 12px; cursor: pointer; white-space: nowrap; border: 1px solid rgba(255,255,255,0.05); }
-        .cat-card.active { background: var(--accent); font-weight: bold; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 0 20px; }
-        .product-card { background: var(--card); border-radius: 20px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .img-box { height: 160px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 10px; }
-        .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .info-box { padding: 15px; }
-        .prod-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; height: 35px; overflow: hidden; }
-        .price-val { color: var(--accent); font-size: 18px; font-weight: 800; }
-        .promo-badge { position: absolute; top: 10px; left: 10px; background: var(--danger); font-size: 10px; padding: 4px 8px; border-radius: 5px; font-weight: 800; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 25px; width: 100%; max-width: 600px; position: relative; max-height: 90vh; overflow-y: auto; }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.5;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
+
+        /* --- BACKGROUND EFFECTS --- */
+        .bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% -20%, #1e293b 0%, #060912 100%);
+            z-index: -1;
+        }
+
+        /* --- NAVIGATION --- */
+        .nav {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-text { font-weight: 800; font-size: 24px; letter-spacing: -1px; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .search-container { flex-grow: 1; max-width: 600px; margin: 0 20px; position: relative; }
+        .search-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 12px 20px 12px 45px;
+            border-radius: 16px;
+            color: white;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        .search-bar:focus { outline: none; border-color: var(--accent); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 0 4px var(--accent-glow); }
+        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); opacity: 0.4; }
+
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            width: 45px; height: 45px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s;
+            position: relative;
+        }
+        .icon-btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 8px; border: 2px solid var(--bg); }
+
+        /* --- CATEGORIES --- */
+        .categories-wrapper { padding: 20px 0; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
+        .categories-wrapper::-webkit-scrollbar { display: none; }
+        .categories-container { display: flex; gap: 12px; padding: 0 25px; }
+        .cat-item {
+            background: var(--card);
+            padding: 10px 22px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            color: var(--text-dim);
+        }
+        .cat-item.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 8px 20px var(--accent-glow); }
+
+        /* --- PRODUCT GRID --- */
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 0 25px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; opacity: 0.6; margin-bottom: 5px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; color: white; box-sizing: border-box; }
+        .product-card {
+            background: var(--card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .product-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         
-        .btn-add { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .image-container {
+            width: 100%; height: 200px;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; position: relative;
+        }
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        .drawer { position: fixed; right: -100%; top: 0; width: 100%; max-width: 400px; height: 100%; background: var(--card); z-index: 1100; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .drawer.active { right: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1050; }
+        .promo-tag {
+            position: absolute; top: 12px; left: 12px;
+            background: var(--danger);
+            color: white; font-size: 10px; font-weight: 800;
+            padding: 5px 10px; border-radius: 8px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            z-index: 5;
+        }
+
+        .product-info { padding: 18px; }
+        .product-name { font-weight: 700; font-size: 15px; margin-bottom: 6px; height: 42px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .product-price { font-weight: 800; font-size: 22px; color: var(--accent); margin-bottom: 15px; }
+        .add-btn {
+            width: 100%; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            padding: 12px; border-radius: 14px;
+            color: white; font-weight: 700; cursor: pointer;
+            transition: 0.3s;
+        }
+        .add-btn:hover { background: var(--accent); border-color: var(--accent); box-shadow: 0 4px 15px var(--accent-glow); }
+
+        /* --- MODALS --- */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; padding: 20px;
+        }
+        .modal-content {
+            background: var(--card);
+            width: 100%; max-width: 500px;
+            padding: 40px; border-radius: 32px;
+            border: 1px solid var(--border);
+            position: relative;
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        /* --- DRAWERS --- */
+        .drawer {
+            position: fixed; top: 0; right: -100%; width: 100%; max-width: 450px;
+            height: 100%; background: var(--card); z-index: 1500;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            padding: 40px;
+        }
+        .drawer.active { right: 0; box-shadow: -20px 0 60px rgba(0,0,0,0.6); }
+
+        /* --- ADMIN PANEL SPECIFICS --- */
+        .tab-system { display: flex; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 16px; margin-bottom: 30px; }
+        .tab-trigger { flex: 1; padding: 12px; border: none; background: none; color: var(--text-dim); font-weight: 700; cursor: pointer; border-radius: 12px; }
+        .tab-trigger.active { background: var(--accent); color: white; }
+
+        .admin-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 20px; border-radius: 20px;
+            margin-bottom: 15px; display: flex; align-items: center; gap: 15px;
+        }
+        .admin-img { width: 50px; height: 50px; border-radius: 12px; background: #fff; object-fit: contain; }
+
+        .order-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 25px; border-radius: 24px; margin-bottom: 20px;
+        }
+        .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; }
+        .order-photos { display: flex; gap: 8px; margin: 15px 0; overflow-x: auto; padding-bottom: 10px; }
+        .order-img { width: 60px; height: 60px; border-radius: 12px; background: #fff; object-fit: contain; flex-shrink: 0; border: 2px solid var(--border); }
+
+        /* --- FORMS --- */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+            padding: 15px; border-radius: 16px; color: white; font-family: inherit;
+        }
+
+        .primary-btn {
+            background: var(--grad); color: white; border: none;
+            padding: 18px; border-radius: 18px; width: 100%;
+            font-weight: 800; font-size: 16px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px var(--accent-glow); }
+
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; z-index: 1400; }
         .overlay.active { display: block; }
 
-        .admin-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .admin-item-img { width: 50px; height: 50px; border-radius: 10px; object-fit: contain; background: white; }
-        
-        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 15px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: none; color: white; cursor: pointer; border-radius: 10px; }
-        .tab-btn.active { background: var(--accent); font-weight: 800; }
-
-        .qty-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: none; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="nav">
-    <div style="font-weight: 900; letter-spacing: -1px; font-size: 20px;" onclick="verificarAdmin()">MS47</div>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar productos..." oninput="render()">
-    <div style="display:flex; gap:15px; align-items:center;">
-        <div onclick="toggleInfo()" style="cursor:pointer; font-size:20px;">👤</div>
-        <div onclick="toggleCart()" style="cursor:pointer; position:relative; font-size:20px;">
-            🛒 <span id="cartCount" style="position:absolute; top:-5px; right:-8px; background:var(--danger); font-size:10px; padding:2px 6px; border-radius:10px;">0</span>
+<div class="bg-glow"></div>
+
+<nav class="nav">
+    <div class="logo-area" onclick="verificarAdmin()">
+        <div class="logo-text">MS47</div>
+    </div>
+    
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-bar" placeholder="Busca productos, marcas o categorías..." oninput="render()">
+    </div>
+
+    <div class="nav-actions">
+        <div class="icon-btn" onclick="toggleInfo()">👤</div>
+        <div class="icon-btn" onclick="toggleCart()">
+            🛒 <span id="cartCount" class="badge">0</span>
         </div>
+    </div>
+</nav>
+
+<div class="categories-wrapper">
+    <div class="categories-container" id="catBar">
+        <div class="cat-item active" onclick="setCat('')">Todos los productos</div>
+        <div class="cat-item" onclick="setCat('bebida')">Bebidas</div>
+        <div class="cat-item" onclick="setCat('snack')">Snacks & Salados</div>
+        <div class="cat-item" onclick="setCat('almacen')">Almacén</div>
+        <div class="cat-item" onclick="setCat('masita')">Masitas & Dulces</div>
     </div>
 </div>
 
-<div class="cats" id="catBar">
-    <div class="cat-card active" onclick="setCat('')">Todos</div>
-    <div class="cat-card" onclick="setCat('bebida')">Bebidas</div>
-    <div class="cat-card" onclick="setCat('snack')">Snacks</div>
-    <div class="cat-card" onclick="setCat('almacen')">Almacén</div>
-    <div class="cat-card" onclick="setCat('masita')">Masitas</div>
-</div>
-
-<div class="grid" id="productsCont"></div>
+<main class="main-container">
+    <div class="grid" id="productsCont"></div>
+</main>
 
 <div class="modal" id="loginModal" style="display: flex;">
-    <div class="modal-content" style="max-width:400px; text-align:center;">
-        <h2 style="margin-bottom:5px;">Bienvenido</h2>
-        <p style="opacity:0.6; font-size:14px; margin-bottom:25px;">Ingresá tus credenciales mayoristas</p>
-        <div class="form-group"><input id="uInp" placeholder="Usuario"></div>
-        <div class="form-group"><input id="pInp" type="password" placeholder="Contraseña"></div>
-        <button class="btn-add" onclick="doLogin()">INICIAR SESIÓN</button>
-        <p style="margin-top:25px; font-size:13px;">¿No tenés cuenta? <span onclick="openModal('regModal')" style="color:var(--accent); cursor:pointer; font-weight:700;">Registrate acá</span></p>
-        <button onclick="closeAll()" style="background:none; border:none; color:rgba(255,255,255,0.3); margin-top:15px; cursor:pointer;">Entrar como invitado</button>
+    <div class="modal-content">
+        <div style="text-align:center; margin-bottom:30px;">
+            <h2 style="font-size:28px; font-weight:800;">Bienvenido</h2>
+            <p style="color:var(--text-dim);">Accedé a precios mayoristas exclusivos</p>
+        </div>
+        <div class="form-group">
+            <label>Nombre de Usuario</label>
+            <input type="text" id="uInp" placeholder="Tu usuario registrado">
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="pInp" placeholder="••••••••">
+        </div>
+        <button class="primary-btn" onclick="doLogin()">ENTRAR AL SISTEMA</button>
+        <p style="text-align:center; margin-top:25px; font-size:14px; color:var(--text-dim);">
+            ¿No sos cliente? <span onclick="openModal('regModal')" style="color:var(--accent); cursor:pointer; font-weight:700;">Solicitá tu cuenta</span>
+        </p>
+        <button onclick="closeAll()" style="width:100%; background:none; border:none; color:var(--text-dim); margin-top:15px; cursor:pointer; font-size:13px;">Continuar como invitado</button>
     </div>
 </div>
 
 <div class="modal" id="regModal">
-    <div class="modal-content" style="max-width:450px;">
-        <h2 style="text-align:center;">Solicitud de Cuenta</h2>
-        <div class="form-group"><label>Usuario deseado</label><input id="rU" placeholder="Ej: Minisuper_Juan"></div>
+    <div class="modal-content">
+        <h2 style="margin-bottom:10px;">Solicitar Alta</h2>
+        <p style="color:var(--text-dim); margin-bottom:30px;">Completá los datos de tu comercio.</p>
+        <div class="form-group"><label>Usuario</label><input id="rU" placeholder="Ej: Kiosco_Gomez"></div>
         <div class="form-group"><label>Contraseña</label><input id="rP" type="password" placeholder="Mínimo 6 caracteres"></div>
-        <div class="form-group"><label>WhatsApp</label><input id="rT" placeholder="Ej: 342XXXXXXX"></div>
-        <div class="form-group"><label>Datos del Local (Nombre y Dirección)</label><textarea id="rD" placeholder="Calle, Altura y nombre del comercio..."></textarea></div>
-        <button class="btn-add" style="background:var(--success); margin-top:10px;" onclick="regU()">ENVIAR PARA REVISIÓN</button>
-        <button class="btn-add" style="background:none; color:white; margin-top:10px;" onclick="closeAll()">Cancelar</button>
+        <div class="form-group"><label>WhatsApp de contacto</label><input id="rT" placeholder="3424000000"></div>
+        <div class="form-group"><label>Nombre del Local y Dirección</label><textarea id="rD" rows="3" placeholder="Ej: Kiosco Central - Av. Galicia 1234"></textarea></div>
+        <button class="primary-btn" onclick="regU()">ENVIAR SOLICITUD</button>
+        <button onclick="closeAll()" style="width:100%; background:none; border:none; color:var(--text-dim); margin-top:15px; cursor:pointer;">Cancelar</button>
     </div>
 </div>
 
 <div class="modal" id="adminModal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2>Gestión Maestra</h2>
-            <button onclick="closeAll()" style="background:none; border:none; color:white; font-size:24px;">✕</button>
+    <div class="modal-content" style="max-width:850px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <h2 style="font-weight:800;">Panel de Control MS47</h2>
+            <span onclick="closeAll()" style="cursor:pointer; font-size:24px;">✕</span>
         </div>
-        <div class="tab-nav">
-            <button class="tab-btn active" onclick="tab('t-prod', event)">Artículos</button>
-            <button class="tab-btn" onclick="tab('t-user', event)">Clientes</button>
-            <button class="tab-btn" onclick="tab('t-order', event)">Pedidos</button>
+        
+        <div class="tab-system">
+            <button class="tab-trigger active" onclick="tab('t-prod', event)">Artículos</button>
+            <button class="tab-trigger" onclick="tab('t-user', event)">Clientes</button>
+            <button class="tab-trigger" onclick="tab('t-order', event)">Pedidos</button>
         </div>
 
         <div id="t-prod">
-            <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:20px; margin-bottom:20px;">
+            <div style="background:rgba(0,0,0,0.2); padding:25px; border-radius:24px; margin-bottom:30px; border:1px solid var(--border);">
                 <input type="hidden" id="fId">
-                <div class="grid" style="grid-template-columns: 1fr 1fr; padding:0; gap:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                     <div class="form-group"><label>Nombre</label><input id="fNom"></div>
-                    <div class="form-group"><label>Categoría</label><input id="fCat"></div>
+                    <div class="form-group"><label>Categoría</label><input id="fCat" placeholder="bebida, snack, almacen, masita"></div>
                     <div class="form-group"><label>Precio Público</label><input type="number" id="fPre"></div>
                     <div class="form-group"><label>Precio Mayorista</label><input type="number" id="fPreM"></div>
-                    <div class="form-group"><label>Promo (Opcional)</label><input id="fPro"></div>
-                    <div class="form-group"><label>URL Imagen</label><input id="fImg"></div>
+                    <div class="form-group"><label>Etiqueta Promo</label><input id="fPro" placeholder="Ej: 2x1 o 20% OFF"></div>
+                    <div class="form-group"><label>Link Imagen</label><input id="fImg"></div>
                 </div>
-                <button class="btn-add" onclick="saveP()">GUARDAR CAMBIOS</button>
-                <button onclick="limpiarP()" style="width:100%; background:none; border:none; color:white; opacity:0.5; margin-top:10px; cursor:pointer;">Limpiar Formulario</button>
+                <button class="primary-btn" onclick="saveP()">GUARDAR CAMBIOS</button>
             </div>
             <div id="admListP"></div>
         </div>
 
-        <div id="t-user" style="display:none;">
-            <div id="admListU"></div>
-        </div>
+        <div id="t-user" style="display:none;"><div id="admListU"></div></div>
 
         <div id="t-order" style="display:none;">
-            <button class="btn-add" style="background:var(--danger); margin-bottom:20px;" onclick="borrarTodoHistorial()">BORRAR TODO EL HISTORIAL</button>
+            <button onclick="borrarTodoHistorial()" style="background:none; border:1px solid var(--danger); color:var(--danger); padding:10px 20px; border-radius:12px; margin-bottom:20px; cursor:pointer; font-weight:700;">Limpiar historial de pedidos</button>
             <div id="admListO"></div>
         </div>
     </div>
@@ -141,54 +327,37 @@
 
 <div class="overlay" id="ov" onclick="closeAll()"></div>
 
-<div id="infoDrawer" class="drawer">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-        <h2 style="margin:0; color:var(--accent);">Mi Perfil</h2>
-        <span onclick="closeAll()" style="cursor:pointer; font-size:26px; opacity:0.5;">✕</span>
-    </div>
-    <div id="perfilContenido" style="display:none;">
-        <div style="background:rgba(255,255,255,0.03); padding:25px; border-radius:25px; border:1px solid rgba(255,255,255,0.05); margin-bottom:25px;">
-            <div style="margin-bottom:15px;">
-                <small style="opacity:0.5; text-transform:uppercase; font-size:10px;">Cliente</small>
-                <div id="p-user" style="font-size:20px; font-weight:800; color:var(--accent);">--</div>
-            </div>
-            <div style="margin-bottom:15px;">
-                <small style="opacity:0.5; text-transform:uppercase; font-size:10px;">WhatsApp</small>
-                <div id="p-tel" style="font-size:16px; font-weight:600;">--</div>
-            </div>
-            <div>
-                <small style="opacity:0.5; text-transform:uppercase; font-size:10px;">Datos del Local</small>
-                <div id="p-dir" style="font-size:14px; opacity:0.8; line-height:1.5;">--</div>
-            </div>
-        </div>
-        <div style="padding:12px; background:rgba(16,185,129,0.1); border-radius:14px; color:var(--success); font-weight:800; border:1px solid rgba(16,185,129,0.2); text-align:center; font-size:12px; margin-bottom:25px;">
-            ✓ PRECIOS MAYORISTAS ACTIVOS
-        </div>
-    </div>
-    <div id="perfilVacio" style="text-align:center; padding:50px 0; opacity:0.4;"><p>Iniciá sesión para ver tus datos</p></div>
-    <div style="flex-grow:1;"></div>
-    <button id="logoutBtn" onclick="logout()" style="display:none; width:100%; background:var(--danger); color:white; border:none; padding:18px; border-radius:18px; font-weight:800; cursor:pointer;">CERRAR SESIÓN</button>
-</div>
-
 <div id="cartDrawer" class="drawer">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-        <h2 style="margin:0;">Tu Carrito</h2>
-        <span onclick="closeAll()" style="cursor:pointer; font-size:26px; opacity:0.5;">✕</span>
-    </div>
+    <h2 style="font-weight:800; margin-bottom:30px; display:flex; justify-content:space-between;">
+        Mi Carrito <span onclick="closeAll()" style="cursor:pointer; opacity:0.4;">✕</span>
+    </h2>
     <div id="cartItems" style="flex-grow:1; overflow-y:auto;"></div>
-    <div style="padding-top:25px; border-top:1px solid rgba(255,255,255,0.1); margin-top:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <span style="font-size:18px; opacity:0.7;">Total:</span>
+    <div style="padding-top:30px; border-top:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <span style="color:var(--text-dim); font-size:18px;">Total Compra:</span>
             <span id="cartTotal" style="font-size:32px; font-weight:800; color:var(--accent);">$0</span>
         </div>
-        <button class="btn-add" style="background:#25d366; padding:22px;" onclick="sendOrder()">
-            ENVIAR PEDIDO POR WHATSAPP 🚀
-        </button>
+        <button class="primary-btn" style="background:#25d366;" onclick="sendOrder()">PEDIR POR WHATSAPP 🚀</button>
+    </div>
+</div>
+
+<div id="infoDrawer" class="drawer">
+    <h2 style="font-weight:800; margin-bottom:30px;">Mi Cuenta</h2>
+    <div id="perfilContenido" style="display:none;">
+        <div class="order-card" style="background:var(--grad);">
+            <p style="font-size:12px; opacity:0.8; text-transform:uppercase;">Cliente Activo</p>
+            <h3 id="p-user" style="font-size:24px; font-weight:800; margin-bottom:15px;">--</h3>
+            <p id="p-tel" style="font-weight:600;">--</p>
+            <p id="p-dir" style="opacity:0.9; font-size:14px; margin-top:5px;">--</p>
+        </div>
+        <button onclick="logout()" style="width:100%; background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid var(--danger); padding:15px; border-radius:16px; font-weight:800; cursor:pointer; margin-top:20px;">CERRAR SESIÓN</button>
+    </div>
+    <div id="perfilVacio" style="text-align:center; padding:50px 0; opacity:0.5;">
+        <p>Iniciá sesión para ver tus datos.</p>
     </div>
 </div>
 
 <script>
-    // --- CONFIG FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -220,21 +389,20 @@
         });
     }
 
-    // --- FUNCIONES UI ---
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeAll() {
         document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         document.querySelectorAll('.drawer').forEach(d => d.classList.remove('active'));
         document.getElementById('ov').classList.remove('active');
     }
-    function toggleCart() { document.getElementById('cartDrawer').classList.toggle('active'); document.getElementById('ov').classList.toggle('active'); }
-    function toggleInfo() { document.getElementById('infoDrawer').classList.toggle('active'); document.getElementById('ov').classList.toggle('active'); }
-    
+    function toggleCart() { document.getElementById('cartDrawer').classList.add('active'); document.getElementById('ov').classList.add('active'); }
+    function toggleInfo() { document.getElementById('infoDrawer').classList.add('active'); document.getElementById('ov').classList.add('active'); }
+
     function setCat(c) {
         filterCat = c;
-        document.querySelectorAll('.cat-card').forEach(card => {
-            card.classList.remove('active');
-            if(card.innerText.toLowerCase() === c || (c === '' && card.innerText === 'Todos')) card.classList.add('active');
+        document.querySelectorAll('.cat-item').forEach(item => {
+            item.classList.remove('active');
+            if(item.textContent.toLowerCase().includes(c) || (c === '' && item.textContent.includes('Todos'))) item.classList.add('active');
         });
         render();
     }
@@ -242,24 +410,25 @@
     function tab(id, e) {
         ['t-prod','t-user','t-order'].forEach(t => document.getElementById(t).style.display = 'none');
         document.getElementById(id).style.display = 'block';
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
     }
 
-    function verificarAdmin() { if(prompt("Contraseña de Admin:") === "admin47") openModal('adminModal'); }
+    function verificarAdmin() { if(prompt("Contraseña de Administrador:") === "admin47") openModal('adminModal'); }
 
-    // --- TIENDA ---
     function render() {
         const query = document.getElementById("searchInput").value.toLowerCase();
+        const container = document.getElementById("productsCont");
         const filtered = prods.filter(p => p.nombre.toLowerCase().includes(query) && (filterCat === "" || p.categoria === filterCat));
-        document.getElementById("productsCont").innerHTML = filtered.map(p => `
+        
+        container.innerHTML = filtered.map(p => `
             <div class="product-card">
-                ${p.promo ? `<div class="promo-badge">${p.promo}</div>` : ''}
-                <div class="img-box"><img src="${p.imagen || 'https://via.placeholder.com/200'}"></div>
-                <div class="info-box">
-                    <div class="prod-title">${p.nombre}</div>
-                    <div class="price-val">$${isMay ? (p.precio_may || p.precio) : p.precio}</div>
-                    <button class="btn-add" onclick="addToCart('${p.id}')">Agregar</button>
+                ${p.promo ? `<div class="promo-tag">${p.promo}</div>` : ''}
+                <div class="image-container"><img src="${p.imagen || 'https://via.placeholder.com/200'}"></div>
+                <div class="product-info">
+                    <div class="product-name">${p.nombre}</div>
+                    <div class="product-price">$${isMay ? (p.precio_may || p.precio) : p.precio}</div>
+                    <button class="add-btn" onclick="addToCart('${p.id}')">Agregar al carrito</button>
                 </div>
             </div>
         `).join("");
@@ -273,18 +442,24 @@
 
     function updateCartUI() {
         let total = 0, count = 0;
-        document.getElementById("cartItems").innerHTML = cart.map(item => {
+        const container = document.getElementById("cartItems");
+        container.innerHTML = cart.map(item => {
             const p = prods.find(x => x.id === item.id);
             const precio = isMay ? (p.precio_may || p.precio) : p.precio;
             total += precio * item.qty; count += item.qty;
-            return `<div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
-                <div style="flex:1;"><b>${p.nombre}</b><br><span style="color:var(--accent)">$${precio * item.qty}</span></div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="qty-btn" onclick="changeQty('${item.id}',-1)">-</button>
-                    <b>${item.qty}</b>
-                    <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+            return `
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
+                    <div style="flex:1">
+                        <div style="font-weight:700; font-size:14px;">${p.nombre}</div>
+                        <div style="color:var(--accent); font-weight:800;">$${precio * item.qty}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button onclick="changeQty('${item.id}',-1)" style="width:25px; background:none; border:1px solid var(--border); color:white; border-radius:5px;">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="changeQty('${item.id}',1)" style="width:25px; background:none; border:1px solid var(--border); color:white; border-radius:5px;">+</button>
+                    </div>
                 </div>
-            </div>`;
+            `;
         }).join("");
         document.getElementById("cartTotal").innerText = "$" + total;
         document.getElementById("cartCount").innerText = count;
@@ -299,12 +474,13 @@
     async function sendOrder() {
         if(cart.length === 0) return;
         let txt = `*NUEVO PEDIDO - MS47*\n--------------------------\n`;
-        if(usuarioLogueado) txt += `*Cliente:* ${usuarioLogueado.user}\n*WhatsApp:* ${usuarioLogueado.tel}\n--------------------------\n`;
+        if(usuarioLogueado) txt += `*Cliente:* ${usuarioLogueado.user}\n*WhatsApp:* ${usuarioLogueado.tel || usuarioLogueado.whatsapp}\n--------------------------\n`;
         
         let fotos = [];
         cart.forEach(i => {
             const p = prods.find(x => x.id === i.id);
-            txt += `• ${p.nombre} x${i.qty} ($${(isMay ? p.precio_may : p.precio) * i.qty})\n`;
+            const precioActual = isMay ? (p.precio_may || p.precio) : p.precio;
+            txt += `• ${p.nombre} x${i.qty} ($${precioActual * i.qty})\n`;
             if(p.imagen) fotos.push(p.imagen);
         });
         
@@ -323,116 +499,99 @@
         cart = []; updateCartUI(); closeAll();
     }
 
-    // --- USUARIOS ---
     function doLogin() {
-        const u = document.getElementById("uInp").value, p = document.getElementById("pInp").value;
+        const u = document.getElementById("uInp").value;
+        const p = document.getElementById("pInp").value;
         const found = users.find(x => x.user === u && x.pass === p);
         if(found) {
             if(found.activo) {
                 isMay = true; usuarioLogueado = found;
                 document.getElementById("p-user").innerText = found.user;
-                document.getElementById("p-tel").innerText = found.tel || "No registrado";
-                document.getElementById("p-dir").innerText = found.dir || "No registrada";
+                document.getElementById("p-tel").innerText = found.tel || found.whatsapp || "Sin teléfono";
+                document.getElementById("p-dir").innerText = found.dir || "Sin dirección";
                 document.getElementById("perfilContenido").style.display = "block";
                 document.getElementById("perfilVacio").style.display = "none";
-                document.getElementById("logoutBtn").style.display = "block";
                 render(); closeAll();
-            } else { alert("Tu cuenta está pendiente de aprobación."); }
-        } else { alert("Usuario o contraseña incorrectos."); }
+            } else alert("Tu cuenta está en proceso de revisión.");
+        } else alert("Usuario o contraseña incorrectos.");
     }
 
     async function regU() {
-        const u = document.getElementById("rU").value;
-        const p = document.getElementById("rP").value;
-        const t = document.getElementById("rT").value;
-        const d = document.getElementById("rD").value;
-        if(!u || !p) return alert("Completá usuario y contraseña");
-        
+        const u = document.getElementById("rU").value, p = document.getElementById("rP").value, t = document.getElementById("rT").value, d = document.getElementById("rD").value;
+        if(!u || !p) return alert("Completá los campos básicos.");
         await db.collection("usuarios").add({ user: u, pass: p, tel: t, dir: d, activo: false, fecha: Date.now() });
-        alert("Solicitud enviada con éxito. Aguardá la aprobación."); 
-        closeAll();
+        alert("Solicitud enviada con éxito."); closeAll();
     }
 
     function logout() { location.reload(); }
 
-    // --- ADMIN ---
     function renderAdmP() {
         document.getElementById("admListP").innerHTML = prods.map(p => `
-            <div class="admin-item">
-                <img src="${p.imagen || ''}" class="admin-item-img">
-                <div style="flex:1;"><b>${p.nombre}</b><br><small>$${p.precio} | $${p.precio_may}</small></div>
+            <div class="admin-card">
+                <img src="${p.imagen}" class="admin-img">
+                <div style="flex:1"><b>${p.nombre}</b><br><small>$${p.precio} | M: $${p.precio_may}</small></div>
                 <button onclick="editP('${p.id}')" style="background:none; border:none; cursor:pointer;">✏️</button>
                 <button onclick="del('productos','${p.id}')" style="background:none; border:none; cursor:pointer;">🗑️</button>
-            </div>`).join("");
+            </div>
+        `).join("");
     }
 
     function renderAdmU() {
-        const pen = users.filter(u => !u.activo);
-        const act = users.filter(u => u.activo);
-        
-        let html = `<h4 style="color:orange;">Pendientes (${pen.length})</h4>`;
-        html += pen.map(u => `
-            <div class="admin-item" style="flex-direction:column; align-items:flex-start;">
-                <div style="display:flex; justify-content:space-between; width:100%;">
-                    <b>${u.user}</b>
-                    <button onclick="db.collection('usuarios').doc('${u.id}').update({activo:true})" style="background:var(--success); color:white; border:none; border-radius:5px; padding:5px 10px;">Aprobar</button>
-                </div>
-                <div style="font-size:12px; opacity:0.7;">Tel: ${u.tel} | Local: ${u.dir}</div>
-            </div>`).join("");
-
-        html += `<h4 style="color:var(--success); margin-top:20px;">Activos (${act.length})</h4>`;
-        html += act.map(u => `
-            <div class="admin-item">
-                <div style="flex:1;"><b>${u.user}</b><br><small>${u.tel || '-'}</small></div>
+        const pendientes = users.filter(u => !u.activo);
+        const activos = users.filter(u => u.activo);
+        let html = `<h3 style="margin-bottom:15px; color:#fbbf24;">Solicitudes Pendientes</h3>`;
+        html += pendientes.map(u => `
+            <div class="admin-card">
+                <div style="flex:1"><b>${u.user}</b><br><small>${u.tel || u.whatsapp}</small></div>
+                <button onclick="db.collection('usuarios').doc('${u.id}').update({activo:true})" style="background:var(--success); color:white; border:none; padding:8px 15px; border-radius:10px; cursor:pointer;">Aprobar</button>
+            </div>
+        `).join("");
+        html += `<h3 style="margin:30px 0 15px; color:var(--success);">Clientes Activos</h3>`;
+        html += activos.map(u => `
+            <div class="admin-card">
+                <div style="flex:1"><b>${u.user}</b></div>
                 <button onclick="del('usuarios','${u.id}')" style="background:none; border:none; cursor:pointer;">🗑️</button>
-            </div>`).join("");
-        
+            </div>
+        `).join("");
         document.getElementById("admListU").innerHTML = html;
     }
 
     function renderAdmO() {
-        document.getElementById("admListO").innerHTML = orders.map(o => {
-            const fecha = o.fecha ? new Date(o.fecha).toLocaleString() : "Sin fecha";
-            return `
-            <div class="admin-item" style="flex-direction:column; align-items:flex-start;">
-                <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:10px;">
-                    <div><b style="color:var(--accent); font-size:18px;">${o.total}</b><br><small>${fecha}</small></div>
-                    <button onclick="del('pedidos','${o.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
+        document.getElementById("admListO").innerHTML = orders.map(o => `
+            <div class="order-card">
+                <div class="order-header">
+                    <div><b>${o.cliente || 'Invitado'}</b><br><small>${new Date(o.fecha).toLocaleString()}</small></div>
+                    <div style="text-align:right;"><b style="color:var(--accent); font-size:20px;">${o.total}</b><br><button onclick="del('pedidos','${o.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">Borrar</button></div>
                 </div>
-                <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">
-                    ${o.items ? o.items.map(img => `<img src="${img}" style="width:40px; height:40px; border-radius:8px; background:white; object-fit:contain; border:1px solid rgba(255,255,255,0.1);">`).join("") : ""}
+                <div class="order-photos">
+                    ${o.items ? o.items.map(img => `<img src="${img}" class="order-img">`).join("") : ""}
                 </div>
-                <div style="font-size:12px; opacity:0.8; white-space:pre-wrap; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px; width:100%; box-sizing:border-box;">${o.detalle || "Sin detalles"}</div>
-            </div>`;
-        }).join("");
+                <div style="white-space:pre-wrap; font-size:13px; opacity:0.8; background:rgba(0,0,0,0.2); padding:15px; border-radius:15px;">${o.detalle}</div>
+            </div>
+        `).join("");
     }
 
-    async function del(c, i) { if(confirm("¿Estás seguro de borrar este registro?")) await db.collection(c).doc(i).delete(); }
+    async function del(c, i) { if(confirm("¿Seguro que querés eliminar esto?")) await db.collection(c).doc(i).delete(); }
 
     async function borrarTodoHistorial() {
-        if(confirm("¿BORRAR TODO EL HISTORIAL DE PEDIDOS? Esta acción no se puede deshacer.")) {
+        if(confirm("¿Deseas vaciar TODO el historial de pedidos?")) {
             const snap = await db.collection("pedidos").get();
-            const batch = db.batch();
-            snap.docs.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-            alert("Historial vaciado.");
+            const batch = db.batch(); snap.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit(); alert("Historial vaciado.");
         }
     }
-    
+
     async function saveP() {
         const id = document.getElementById("fId").value;
-        const data = { 
-            nombre: document.getElementById("fNom").value, 
-            precio: Number(document.getElementById("fPre").value), 
-            precio_may: Number(document.getElementById("fPreM").value), 
-            promo: document.getElementById("fPro").value, 
-            categoria: document.getElementById("fCat").value.toLowerCase(), 
-            imagen: document.getElementById("fImg").value 
+        const data = {
+            nombre: document.getElementById("fNom").value,
+            precio: Number(document.getElementById("fPre").value),
+            precio_may: Number(document.getElementById("fPreM").value),
+            promo: document.getElementById("fPro").value,
+            categoria: document.getElementById("fCat").value.toLowerCase(),
+            imagen: document.getElementById("fImg").value
         };
-        if(!data.nombre || !data.precio) return alert("Nombre y Precio son obligatorios.");
-        
-        if(id) await db.collection("productos").doc(id).update(data); 
-        else await db.collection("productos").add(data);
+        if(id) await db.collection("productos").doc(id).update(data); else await db.collection("productos").add(data);
         limpiarP();
     }
 
@@ -441,16 +600,14 @@
         document.getElementById("fId").value = p.id;
         document.getElementById("fNom").value = p.nombre;
         document.getElementById("fPre").value = p.precio;
-        document.getElementById("fPreM").value = p.precio_may || 0;
+        document.getElementById("fPreM").value = p.precio_may;
         document.getElementById("fPro").value = p.promo || "";
         document.getElementById("fCat").value = p.categoria;
-        document.getElementById("fImg").value = p.imagen || "";
+        document.getElementById("fImg").value = p.imagen;
         window.scrollTo(0,0);
     }
 
-    function limpiarP() { 
-        ["fId","fNom","fPre","fPreM","fPro","fCat","fImg"].forEach(i => document.getElementById(i).value = ""); 
-    }
+    function limpiarP() { ["fId","fNom","fPre","fPreM","fPro","fCat","fImg"].forEach(i => document.getElementById(i).value = ""); }
 
     init();
 </script>
