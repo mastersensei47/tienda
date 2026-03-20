@@ -24,7 +24,6 @@
             --img-bg: #ffffff;
         }
 
-        /* Modo Claro */
         body.light {
             --bg: #f8fafc; 
             --card: #ffffff; 
@@ -34,7 +33,6 @@
             --img-bg: #ffffff;
         }
 
-        /* Estilos Base del Cuerpo */
         body { 
             margin:0; 
             font-family: 'Inter', sans-serif; 
@@ -44,7 +42,6 @@
             overflow-x: hidden; 
         }
 
-        /* SECCIÓN HEADER */
         header { 
             display: flex; 
             justify-content: space-between; 
@@ -63,7 +60,6 @@
         .icon-btn { cursor: pointer; font-size: 20px; position: relative; padding: 8px; border-radius: 50%; transition: 0.2s; color: var(--text); }
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
 
-        /* SECCIÓN HERO Y CATEGORÍAS */
         .hero {
             height: 250px; 
             background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a?q=80&w=1500&auto=format&fit=crop');
@@ -76,7 +72,6 @@
             text-align: center;
         }
 
-        /* Grilla de Categorías */
         .cat-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -100,11 +95,9 @@
         .cat-card span { display: block; font-size: 20px; }
         .cat-card b { font-size: 10px; text-transform: uppercase; }
 
-        /* BÚSQUEDA Y PRODUCTOS */
         .search-container { max-width: 600px; margin: 0 auto 20px; padding: 0 15px; }
         .search-bar { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(128,128,128,0.2); background: var(--input-bg); color: inherit; }
         
-        /* Grilla Principal */
         .products-grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
@@ -115,7 +108,6 @@
         }
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
 
-        /* Tarjeta de Producto */
         .product-card { 
             background: var(--card); 
             border-radius: var(--radius); 
@@ -143,7 +135,6 @@
         .price-val { font-size: 20px; font-weight: 800; color: var(--accent); margin: 10px 0; }
         .btn-add { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
-        /* MODALES Y ELEMENTOS EMERGENTES */
         .modal { 
             position: fixed; 
             inset: 0; 
@@ -165,7 +156,6 @@
             overflow-y: auto; 
         }
 
-        /* Drawers Lateral */
         .drawer { 
             position: fixed; 
             top: 0; 
@@ -188,7 +178,6 @@
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 4000; }
         .overlay.active { display: block; }
 
-        /* PESTAÑAS DEL ADMINISTRADOR */
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; }
         .tab-btn { padding: 10px 20px; border-radius: 10px; background: rgba(255,255,255,0.05); color: white; border: none; cursor: pointer; white-space: nowrap; }
         .tab-btn.active { background: var(--accent); }
@@ -214,10 +203,12 @@
         .map-box { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 220px; margin-top: 5px; }
         .soporte-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; }
         
+        /* CORRECCIÓN: El logo ya no tiene margin-top: auto, ahora se ubica normalmente */
         .perfil-logo { 
-            width: 180px; 
-            margin: 20px auto; 
+            width: 140px; 
+            margin: 30px auto 10px; 
             display: block; 
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -325,7 +316,7 @@
         <p style="font-size:13px; margin:5px 0;">Calle Falsa 123, Santa Fe Capital</p>
         <div class="map-box">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3396.657597148564!2d-60.7061!3d-31.6333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM4JzAwLjAiUyA2MMKwNDInMjIuMCJX!5e0!3m2!1ses!2sar!4v1646850000000!5m2!1ses!2sar" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13586.602521191068!2d-60.71830235336336!3d-31.6311025700735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95b045842188295b%3A0x64369e54d8966874!2sSanta%20Fe%20de%20la%20Vera%20Cruz%2C%20Santa%20Fe!5e0!3m2!1ses-419!2sar!4v1711200000000!5m2!1ses-419!2sar" 
                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
             </iframe>
         </div>
@@ -353,7 +344,6 @@
 </div>
 
 <script>
-    /* CONFIGURACIÓN DE FIREBASE MS47 */
     const firebaseConfig = {
         apiKey: "AIzaSyDAqlchDsLHIMMbv6YL2ipggaShXlFqiW8",
         authDomain: "tienda-online-baaf6.firebaseapp.com",
@@ -365,12 +355,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    /* VARIABLES DE ESTADO GLOBAL */
     let prods = [], cart = [], users = [], orders = [];
     let isMay = localStorage.getItem("ms47_may") === "true";
     let filterCat = "";
 
-    /* SINCRONIZACIÓN EN TIEMPO REAL CON FIREBASE */
     db.collection("productos").onSnapshot(s => { 
         prods = s.docs.map(d => ({id:d.id, ...d.data()})); 
         render(); 
@@ -387,7 +375,6 @@
         renderAdmO(); 
     });
 
-    /** RENDERIZADO DE PRODUCTOS EN LA TIENDA **/
     function render() {
         const q = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
@@ -412,7 +399,6 @@
         }
     }
 
-    /** LÓGICA DEL CARRITO DE COMPRAS **/
     function add(id) {
         const ex = cart.find(c => c.id === id);
         if(ex) ex.qty++; else cart.push({id, qty:1});
@@ -436,8 +422,6 @@
             const p = prods.find(x => x.id === it.id);
             const price = isMay ? p.precio_may : p.precio;
             let sub = price * it.qty;
-            
-            // Procesamiento de Promociones Minoristas
             if(!isMay && p.promo && p.promo.toLowerCase().includes('x')) {
                 const parts = p.promo.toLowerCase().replace('$', '').split('x');
                 const cant = parseInt(parts[0]), val = parseInt(parts[1]);
@@ -447,7 +431,6 @@
             }
             total += sub; 
             itemsCount += it.qty;
-            
             return `<div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between;">
                 <div><b>${p.nombre}</b><br><div class="qty-controls">
                 <button class="qty-btn" onclick="modQ('${it.id}',-1)">-</button><span>${it.qty}</span><button class="qty-btn" onclick="modQ('${it.id}',1)">+</button></div></div>
@@ -458,36 +441,22 @@
         document.getElementById("cartCount").innerText = itemsCount;
     }
 
-    /** ENVÍO DE PEDIDO Y REGISTRO EN BASE **/
     async function sendOrder() {
         if(cart.length === 0) return;
         const total = document.getElementById("cartTotal").innerText;
         const items = cart.map(it => ({n: prods.find(p=>p.id===it.id).nombre, q: it.qty}));
-        
         await db.collection("pedidos").add({ items, total, fecha: Date.now() });
-        
         let msg = `*PEDIDO MS47*\n` + items.map(i => `• ${i.n} (x${i.q})`).join("\n") + `\n\n*${total}*`;
         window.open(`https://wa.me/5493434508948?text=${encodeURIComponent(msg)}`);
-        
-        cart = []; 
-        updateCartUI(); 
-        closeAll();
+        cart = []; updateCartUI(); closeAll();
     }
 
-    /** FUNCIONES DEL PANEL DE ADMINISTRACIÓN **/
-    
     function limpiarFormP() {
-        const fId = document.getElementById("fId");
-        if(fId) fId.value = ""; 
-
-        const inputs = document.querySelectorAll("#t-prod input");
-        inputs.forEach(input => { input.value = ""; });
-
+        document.getElementById("fId").value = ""; 
+        document.querySelectorAll("#t-prod input").forEach(input => { input.value = ""; });
         const btnSave = document.getElementById("btnSave");
-        if(btnSave) {
-            btnSave.innerText = "GUARDAR PRODUCTO";
-            btnSave.style.background = "var(--success)";
-        }
+        btnSave.innerText = "GUARDAR PRODUCTO";
+        btnSave.style.background = "var(--success)";
     }
 
     async function saveP() {
@@ -500,22 +469,13 @@
             categoria: document.getElementById("fCat").value.toLowerCase(), 
             imagen: document.getElementById("fImg").value 
         };
-        
-        if(id) {
-            await db.collection("productos").doc(id).update(d);
-            alert("Producto Actualizado");
-        } else {
-            await db.collection("productos").add(d);
-            alert("Producto Creado");
-        }
-        
+        if(id) { await db.collection("productos").doc(id).update(d); } 
+        else { await db.collection("productos").add(d); }
         limpiarFormP();
     }
 
     function editP(id) {
         const p = prods.find(x => x.id === id);
-        if(!p) return;
-
         document.getElementById("fId").value = p.id; 
         document.getElementById("fNom").value = p.nombre;
         document.getElementById("fPre").value = p.precio; 
@@ -523,119 +483,67 @@
         document.getElementById("fPro").value = p.promo || ""; 
         document.getElementById("fCat").value = p.categoria;
         document.getElementById("fImg").value = p.imagen;
-        
         const btn = document.getElementById("btnSave");
         btn.innerText = "ACTUALIZAR DATOS";
         btn.style.background = "#3b82f6";
     }
 
     function renderAdmP() {
-        const cont = document.getElementById("admListP");
-        if(!cont) return;
-
-        cont.innerHTML = prods.map(p => `
-            <div class="admin-item" style="display:flex; justify-content:space-between; align-items:center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        document.getElementById("admListP").innerHTML = prods.map(p => `
+            <div class="admin-item">
                 <div style="display:flex; align-items:center; gap:15px;">
                     <img src="${p.imagen}" style="width:40px; height:40px; object-fit:cover; border-radius:8px; background:white;">
-                    <div>
-                        <b style="display:block; font-size:14px;">${p.nombre}</b>
-                        <small style="color:var(--accent); font-weight:700;">$${p.precio} / $${p.precio_may}</small>
-                    </div>
+                    <div><b style="display:block; font-size:14px;">${p.nombre}</b><small style="color:var(--accent); font-weight:700;">$${p.precio} / $${p.precio_may}</small></div>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="editP('${p.id}')" title="Editar" style="background:none; border:none; cursor:pointer; font-size:18px;">✏️</button>
-                    <button onclick="del('productos','${p.id}')" title="Eliminar" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
+                    <button onclick="editP('${p.id}')">✏️</button>
+                    <button onclick="del('productos','${p.id}')">🗑️</button>
                 </div>
             </div>`).join("");
     }
 
     function renderAdmU() {
-        const cont = document.getElementById("admListU");
         const pendientes = users.filter(u => !u.activo);
         const registrados = users.filter(u => u.activo);
-
-        let html = `<h3 style="color:var(--promo); margin-bottom:10px; font-size:16px;">⏳ Solicitudes Pendientes (${pendientes.length})</h3>`;
-        
-        if (pendientes.length === 0) {
-            html += `<p style="font-size:12px; opacity:0.6; margin-bottom:20px;">No hay solicitudes nuevas.</p>`;
-        } else {
-            html += pendientes.map(u => `
-                <div class="admin-item" style="flex-direction:column; align-items:flex-start; gap:5px;">
-                    <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
-                        <b style="font-size:15px;">${u.user}</b>
-                        <div style="display:flex; gap:5px;">
-                            <button onclick="updU('${u.id}', true)" style="background:var(--success); color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:700;">Aprobar</button>
-                            <button onclick="del('usuarios','${u.id}')" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:700;">Rechazar</button>
-                        </div>
-                    </div>
-                    <small style="color:var(--accent); font-weight:600;">📞 WhatsApp: ${u.tel || 'No cargado'}</small>
-                </div>`).join("");
-        }
-
-        html += `<h3 style="color:var(--success); margin:20px 0 10px 0; font-size:16px;">✅ Clientes Registrados (${registrados.length})</h3>`;
-        html += registrados.map(u => `
-            <div class="admin-item" style="display:flex; justify-content:space-between; align-items:center; opacity:0.9;">
-                <div><b>${u.user}</b><br><small style="color:var(--accent);">WhatsApp: ${u.tel}</small></div>
-                <button onclick="del('usuarios','${u.id}')" title="Eliminar acceso" style="background:none; border:none; cursor:pointer; font-size:16px;">🗑️</button>
+        let html = `<h3 style="color:var(--promo);">⏳ Solicitudes (${pendientes.length})</h3>`;
+        html += pendientes.map(u => `
+            <div class="admin-item">
+                <b>${u.user}</b>
+                <div>
+                    <button onclick="updU('${u.id}', true)">Aprobar</button>
+                    <button onclick="del('usuarios','${u.id}')">Rechazar</button>
+                </div>
             </div>`).join("");
-
-        cont.innerHTML = html;
+        html += `<h3 style="color:var(--success);">✅ Registrados (${registrados.length})</h3>`;
+        html += registrados.map(u => `<div class="admin-item"><b>${u.user}</b><button onclick="del('usuarios','${u.id}')">🗑️</button></div>`).join("");
+        document.getElementById("admListU").innerHTML = html;
     }
 
-    async function updU(id, estado) {
-        if(confirm("¿Confirmar acción sobre este usuario?")) {
-            await db.collection("usuarios").doc(id).update({ activo: estado });
-            alert("Usuario actualizado.");
-        }
-    }
+    async function updU(id, s) { await db.collection("usuarios").doc(id).update({ activo: s }); }
 
     function renderAdmO() {
-        const cont = document.getElementById("admListO");
-        let html = `<button onclick="vaciarPedidos()" style="width:100%; background:var(--danger); color:white; border:none; padding:10px; border-radius:10px; margin-bottom:15px; font-weight:700; cursor:pointer;">🗑️ VACIAR HISTORIAL</button>`;
-        
-        html += orders.map(o => {
-            const fecha = new Date(o.fecha);
-            return `<div class="admin-item" style="flex-direction:column; align-items:flex-start;">
-                <div style="width:100%; display:flex; justify-content:space-between;">
-                    <b style="color:var(--accent);">${o.total}</b>
-                    <button onclick="del('pedidos','${o.id}')" style="background:none; border:none; cursor:pointer;">❌</button>
-                </div>
-                <small style="color:#94a3b8;">${fecha.toLocaleDateString()} - ${fecha.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} hs</small>
-                <small>${o.items.map(i => i.n + " (x"+i.q+")").join(", ")}</small>
+        document.getElementById("admListO").innerHTML = orders.map(o => {
+            const f = new Date(o.fecha);
+            return `<div class="admin-item">
+                <div><b>${o.total}</b><br><small>${f.toLocaleDateString()} - ${f.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}hs</small></div>
+                <button onclick="del('pedidos','${o.id}')">❌</button>
             </div>`;
         }).join("");
-        cont.innerHTML = html;
     }
 
-    async function vaciarPedidos() {
-        if(confirm("¿Borrar todo el historial de pedidos?")) {
-            const snap = await db.collection("pedidos").get();
-            const batch = db.batch();
-            snap.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-        }
-    }
-
-    /** LÓGICA DE USUARIOS Y SESIONES **/
     async function doLogin() {
         const u = document.getElementById("uInp").value, p = document.getElementById("pInp").value;
         if(u === "admin" && p === "admin") return openModal("adminModal");
         const user = users.find(x => x.user === u && x.pass === p);
-        if(user && user.activo) { 
-            localStorage.setItem("ms47_may", "true"); 
-            location.reload(); 
-        } else alert("Acceso denegado o usuario no aprobado");
+        if(user && user.activo) { localStorage.setItem("ms47_may", "true"); location.reload(); } else alert("Error");
     }
 
     async function regU() {
         const u = document.getElementById("rU").value, p = document.getElementById("rP").value, t = document.getElementById("rT").value;
-        if(!u || !p) return;
         await db.collection("usuarios").add({ user: u, pass: p, tel: t, activo: false });
-        alert("Solicitud de alta enviada correctamente"); 
         closeAll();
     }
 
-    /** HELPERS DE INTERFAZ (UI) **/
     function setCat(c) { 
         filterCat = c; 
         document.querySelectorAll('.cat-card').forEach(card => card.classList.remove('active'));
@@ -653,17 +561,15 @@
     function openModal(id) { closeAll(); document.getElementById(id).style.display = 'flex'; }
     function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("ov").classList.toggle("active"); }
     function toggleInfo() { document.getElementById("infoDrawer").classList.toggle("active"); document.getElementById("ov").classList.toggle("active"); }
-    
     function closeAll() { 
         document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
         document.querySelectorAll(".drawer").forEach(d => d.classList.remove("active"));
         document.getElementById("ov").classList.remove("active");
     }
-    
     function toggleTheme() { document.body.classList.toggle("light"); }
     function logout() { localStorage.removeItem("ms47_may"); location.reload(); }
     function verificarAdmin() { let p = prompt("Clave:"); if(p==="admin") openModal("adminModal"); }
-    async function del(c,i) { if(confirm("¿Estás seguro de eliminar este elemento?")) await db.collection(c).doc(i).delete(); }
+    async function del(c,i) { if(confirm("Eliminar?")) await db.collection(c).doc(i).delete(); }
 
 </script>
 </body>
