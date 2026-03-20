@@ -279,10 +279,26 @@
         document.querySelectorAll("#t-prod input").forEach(i => i.value = "");
     }
 
-    function renderAdmP() {
-        document.getElementById("admListP").innerHTML = prods.map(p => `
-            <div class="admin-item"><span>${p.nombre}</span><div style="margin-left:auto;"><button onclick="editP('${p.id}')">✏️</button><button onclick="del('productos','${p.id}')">🗑️</button></div></div>`).join("");
-    }
+function renderAdmP() {
+    const cont = document.getElementById("admListP");
+    
+    // Generamos la lista de productos para el administrador
+    cont.innerHTML = prods.map(p => `
+        <div class="admin-item" style="display:flex; justify-content:space-between; align-items:center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <img src="${p.imagen}" style="width:40px; height:40px; object-fit:cover; border-radius:8px; background:white;">
+                <div>
+                    <b style="display:block; font-size:14px;">${p.nombre}</b>
+                    <small style="color:var(--accent); font-weight:700;">$${p.precio} / $${p.precio_may}</small>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="editP('${p.id}')" title="Editar" style="background:none; border:none; cursor:pointer; font-size:18px; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));">✏️</button>
+                <button onclick="del('productos','${p.id}')" title="Eliminar" style="background:none; border:none; cursor:pointer; font-size:18px; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));">🗑️</button>
+            </div>
+        </div>
+    `).join("");
+}
     function editP(id) {
         const p = prods.find(x => x.id === id);
         document.getElementById("fId").value = p.id; document.getElementById("fNom").value = p.nombre;
