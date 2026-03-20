@@ -203,13 +203,12 @@
         .map-box { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 220px; margin-top: 5px; }
         .soporte-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; }
         
-        /* CORRECCIÓN FINAL LOGO */
+        /* CORRECCIÓN: El logo se mantiene abajo sin márgenes automáticos extraños */
         .perfil-logo { 
-            width: 140px; 
-            margin: 10px auto 25px; 
+            width: 130px; 
+            margin: 20px auto; 
             display: block; 
-            opacity: 0.9;
-            filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -308,9 +307,6 @@
 
 <div id="infoDrawer" class="drawer">
     <h2 style="color:var(--accent); margin-bottom:5px; margin-top: 10px;">Mi Perfil</h2>
-    
-    <img src="logoo.png" class="perfil-logo">
-    
     <p style="font-size:12px; margin-bottom:20px; opacity:0.6;">Información y Soporte</p>
     
     <div id="mayBadge" style="display:none; padding:10px; background:rgba(16,185,129,0.1); border-radius:10px; color:var(--success); font-weight:800; border:1px solid var(--success); margin-bottom:20px;">✓ MAYORISTA ACTIVO</div>
@@ -320,7 +316,7 @@
         <p style="font-size:13px; margin:5px 0;">Calle Falsa 123, Santa Fe Capital</p>
         <div class="map-box">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13593.75053424164!2d-60.70613275!3d-31.6356391!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2sar!4v1715637251263!5m2!1ses-419!2sar" 
+                src="http://googleusercontent.com/maps.google.com/6" 
                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
             </iframe>
         </div>
@@ -332,6 +328,8 @@
             💬 WhatsApp Soporte
         </a>
     </div>
+
+    <img src="logoo.png" class="perfil-logo">
     
     <button id="logoutBtn" onclick="logout()" style="display:none; background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; cursor:pointer; margin-top:auto; font-weight:700;">Cerrar Sesión</button>
 </div>
@@ -363,8 +361,7 @@
 
     db.collection("productos").onSnapshot(s => { 
         prods = s.docs.map(d => ({id:d.id, ...d.data()})); 
-        render(); 
-        renderAdmP(); 
+        render(); renderAdmP(); 
     });
     
     db.collection("usuarios").onSnapshot(s => { 
@@ -409,10 +406,7 @@
 
     function modQ(id, d) {
         const it = cart.find(c => c.id === id);
-        if(it) { 
-            it.qty += d; 
-            if(it.qty <= 0) cart = cart.filter(c => c.id !== id); 
-        }
+        if(it) { it.qty += d; if(it.qty <= 0) cart = cart.filter(c => c.id !== id); }
         updateCartUI();
     }
 
@@ -491,8 +485,7 @@
                     <div><b style="display:block; font-size:14px;">${p.nombre}</b><small style="color:var(--accent); font-weight:700;">$${p.precio} / $${p.precio_may}</small></div>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="editP('${p.id}')">✏️</button>
-                    <button onclick="del('productos','${p.id}')">🗑️</button>
+                    <button onclick="editP('${p.id}')">✏️</button><button onclick="del('productos','${p.id}')">🗑️</button>
                 </div>
             </div>`).join("");
     }
@@ -528,8 +521,7 @@
 
     async function regU() {
         const u = document.getElementById("rU").value, p = document.getElementById("rP").value, t = document.getElementById("rT").value;
-        await db.collection("usuarios").add({ user: u, pass: p, tel: t, activo: false });
-        closeAll();
+        await db.collection("usuarios").add({ user: u, pass: p, tel: t, activo: false }); closeAll();
     }
 
     function setCat(c) { 
