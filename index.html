@@ -21,7 +21,6 @@
             --danger: #ef4444;
             --input-bg: rgba(30, 41, 59, 0.7); 
             --radius: 18px;
-            --img-bg: #ffffff;
         }
 
         body.light {
@@ -30,7 +29,6 @@
             --text: #0f172a; 
             --accent: #2563eb;
             --input-bg: #f1f5f9; 
-            --img-bg: #ffffff;
         }
 
         body { 
@@ -135,6 +133,7 @@
         .price-val { font-size: 20px; font-weight: 800; color: var(--accent); margin: 10px 0; }
         .btn-add { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
+        /* MODALES */
         .modal { 
             position: fixed; 
             inset: 0; 
@@ -156,6 +155,7 @@
             overflow-y: auto; 
         }
 
+        /* DRAWERS (CARRITO Y PERFIL) */
         .drawer { 
             position: fixed; 
             top: 0; 
@@ -163,7 +163,7 @@
             max-width: 350px; 
             height: 100%; 
             background: var(--card); 
-            transition: 0.4s; 
+            transition: 0.4s ease; 
             z-index: 5000; 
             padding: 25px; 
             box-sizing: border-box; 
@@ -178,18 +178,7 @@
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 4000; }
         .overlay.active { display: block; }
 
-        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; border-radius: 10px; background: rgba(255,255,255,0.05); color: white; border: none; cursor: pointer; white-space: nowrap; }
-        .tab-btn.active { background: var(--accent); }
-        .admin-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.05); }
-
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: var(--input-bg); color: white; box-sizing: border-box; }
-        
-        .btn-back { background: transparent; color: #94a3b8; border: none; padding: 10px; width: 100%; cursor: pointer; margin-top: 10px; font-weight: 600; }
-        .qty-controls { display: flex; align-items: center; gap: 10px; }
-        .qty-btn { width: 25px; height: 25px; border-radius: 5px; border: none; background: var(--accent); color: white; cursor: pointer; }
-
-        /* ESTILOS PERFIL */
+        /* ESTILOS PERFIL (DENTRO DEL DRAWER) */
         .perfil-section { margin-bottom: 20px; }
         .perfil-section h3 { 
             font-size: 14px; 
@@ -199,17 +188,19 @@
             padding-left: 8px; 
             line-height: 1;
         }
-        
-        .map-box { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 220px; margin-top: 5px; }
+        .map-box { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 180px; margin-top: 5px; }
         .soporte-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; }
         
-        /* CORRECCIÓN: El logo se mantiene abajo sin márgenes automáticos extraños */
-        .perfil-logo { 
-            width: 130px; 
-            margin: 20px auto; 
-            display: block; 
-            opacity: 0.8;
-        }
+        /* ADMIN */
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border-radius: 10px; background: rgba(255,255,255,0.05); color: white; border: none; cursor: pointer; white-space: nowrap; }
+        .tab-btn.active { background: var(--accent); }
+        .admin-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.05); }
+
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: var(--input-bg); color: white; box-sizing: border-box; }
+        .btn-back { background: transparent; color: #94a3b8; border: none; padding: 10px; width: 100%; cursor: pointer; margin-top: 10px; font-weight: 600; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { width: 25px; height: 25px; border-radius: 5px; border: none; background: var(--accent); color: white; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -262,13 +253,11 @@
             <h2 style="margin:0;">Panel Maestro MS47</h2>
             <button onclick="closeAll()" style="background:none; border:none; color:white; font-size:20px;">✕</button>
         </div>
-        
         <div class="admin-tabs">
             <button class="tab-btn active" onclick="tab('t-prod')">Productos</button>
             <button class="tab-btn" onclick="tab('t-user')">Usuarios</button>
             <button class="tab-btn" onclick="tab('t-order')">Pedidos</button>
         </div>
-
         <div id="t-prod">
             <input id="fId" type="hidden">
             <input id="fNom" placeholder="Nombre">
@@ -279,14 +268,12 @@
             <input id="fPro" placeholder="Promo (Ej: 3x10000)">
             <input id="fCat" placeholder="Categoría">
             <input id="fImg" placeholder="Link Imagen">
-            
             <div style="display:flex; gap:10px; margin-top:10px;">
                 <button id="btnSave" class="btn-add" style="flex:3; background:var(--success);" onclick="saveP()">GUARDAR PRODUCTO</button>
                 <button type="button" class="btn-add" style="flex:1; background:#475569;" onclick="limpiarFormP()">NUEVO</button>
             </div>
             <div id="admListP" style="margin-top:20px;"></div>
         </div>
-
         <div id="t-user" style="display:none;"><div id="admListU"></div></div>
         <div id="t-order" style="display:none;"><div id="admListO"></div></div>
     </div>
@@ -311,27 +298,25 @@
     
     <div id="mayBadge" style="display:none; padding:10px; background:rgba(16,185,129,0.1); border-radius:10px; color:var(--success); font-weight:800; border:1px solid var(--success); margin-bottom:20px;">✓ MAYORISTA ACTIVO</div>
 
-    <div class="perfil-section">
-        <h3>DIRECCIÓN</h3>
-        <p style="font-size:13px; margin:5px 0;">Calle Falsa 123, Santa Fe Capital</p>
-        <div class="map-box">
-            <iframe 
-                src="http://googleusercontent.com/maps.google.com/6" 
-                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
-            </iframe>
+    <div style="flex-grow: 1; overflow-y: auto;">
+        <div class="perfil-section">
+            <h3>DIRECCIÓN</h3>
+            <p style="font-size:13px; margin:5px 0;">Calle Falsa 123, Santa Fe Capital</p>
+            <div class="map-box">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3405.846505370366!2d-60.7100!3d-31.6333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM4JzAwLjAiUyA2MMKwNDInMzYuMCJX!5e0!3m2!1ses!2sar!4v1710000000000!5m2!1ses!2sar" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+
+        <div class="perfil-section">
+            <h3>SOPORTE</h3>
+            <a href="https://wa.me/5493434508948" target="_blank" class="soporte-btn">💬 WhatsApp Soporte</a>
         </div>
     </div>
 
-    <div class="perfil-section">
-        <h3>SOPORTE</h3>
-        <a href="https://wa.me/5493434508948" target="_blank" class="soporte-btn">
-            💬 WhatsApp Soporte
-        </a>
+    <div style="margin-top: 20px; text-align: center;">
+        <img src="logoo.png" style="width:120px; height:auto; display:block; margin: 0 auto 15px; opacity:0.8;">
+        <button id="logoutBtn" onclick="logout()" style="display:none; width:100%; background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; cursor:pointer; font-weight:700;">Cerrar Sesión</button>
     </div>
-
-    <img src="logoo.png" class="perfil-logo">
-    
-    <button id="logoutBtn" onclick="logout()" style="display:none; background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; cursor:pointer; margin-top:auto; font-weight:700;">Cerrar Sesión</button>
 </div>
 
 <div id="cartDrawer" class="drawer">
@@ -359,26 +344,15 @@
     let isMay = localStorage.getItem("ms47_may") === "true";
     let filterCat = "";
 
-    db.collection("productos").onSnapshot(s => { 
-        prods = s.docs.map(d => ({id:d.id, ...d.data()})); 
-        render(); renderAdmP(); 
-    });
-    
-    db.collection("usuarios").onSnapshot(s => { 
-        users = s.docs.map(d => ({id:d.id, ...d.data()})); 
-        renderAdmU(); 
-    });
-    
-    db.collection("pedidos").orderBy("fecha", "desc").limit(15).onSnapshot(s => { 
-        orders = s.docs.map(d => ({id:d.id, ...d.data()})); 
-        renderAdmO(); 
-    });
+    // CARGAR DATOS
+    db.collection("productos").onSnapshot(s => { prods = s.docs.map(d => ({id:d.id, ...d.data()})); render(); renderAdmP(); });
+    db.collection("usuarios").onSnapshot(s => { users = s.docs.map(d => ({id:d.id, ...d.data()})); renderAdmU(); });
+    db.collection("pedidos").orderBy("fecha", "desc").limit(15).onSnapshot(s => { orders = s.docs.map(d => ({id:d.id, ...d.data()})); renderAdmO(); });
 
     function render() {
         const q = document.getElementById("searchInput").value.toLowerCase();
         const cont = document.getElementById("productsCont");
         const list = prods.filter(p => p.nombre.toLowerCase().includes(q) && (filterCat === "" || p.categoria === filterCat));
-        
         cont.innerHTML = list.map(p => `
             <div class="product-card">
                 ${p.promo ? `<div class="promo-badge">${p.promo}</div>` : ''}
@@ -389,26 +363,14 @@
                     <button class="btn-add" onclick="add('${p.id}')">AGREGAR</button>
                 </div>
             </div>`).join("");
-        
-        if(isMay) {
-            const badge = document.getElementById("mayBadge");
-            if(badge) badge.style.display = "block";
-            const btnOut = document.getElementById("logoutBtn");
-            if(btnOut) btnOut.style.display = "block";
+        if(isMay) { 
+            document.getElementById("mayBadge").style.display = "block"; 
+            document.getElementById("logoutBtn").style.display = "block"; 
         }
     }
 
-    function add(id) {
-        const ex = cart.find(c => c.id === id);
-        if(ex) ex.qty++; else cart.push({id, qty:1});
-        updateCartUI();
-    }
-
-    function modQ(id, d) {
-        const it = cart.find(c => c.id === id);
-        if(it) { it.qty += d; if(it.qty <= 0) cart = cart.filter(c => c.id !== id); }
-        updateCartUI();
-    }
+    function add(id) { const ex = cart.find(c => c.id === id); if(ex) ex.qty++; else cart.push({id, qty:1}); updateCartUI(); }
+    function modQ(id, d) { const it = cart.find(c => c.id === id); if(it) { it.qty += d; if(it.qty <= 0) cart = cart.filter(c => c.id !== id); } updateCartUI(); }
 
     function updateCartUI() {
         let total = 0, itemsCount = 0;
@@ -423,10 +385,7 @@
                 if(it.qty >= cant) sub = (Math.floor(it.qty / cant) * val) + ((it.qty % cant) * price);
             }
             total += sub; itemsCount += it.qty;
-            return `<div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between;">
-                <div><b>${p.nombre}</b><br><div class="qty-controls">
-                <button class="qty-btn" onclick="modQ('${it.id}',-1)">-</button><span>${it.qty}</span><button class="qty-btn" onclick="modQ('${it.id}',1)">+</button></div></div>
-                <b>$${sub}</b></div>`;
+            return `<div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between;"><div><b>${p.nombre}</b><br><div class="qty-controls"><button class="qty-btn" onclick="modQ('${it.id}',-1)">-</button><span>${it.qty}</span><button class="qty-btn" onclick="modQ('${it.id}',1)">+</button></div></div><b>$${sub}</b></div>`;
         }).join("");
         document.getElementById("cartTotal").innerText = "Total: $" + total;
         document.getElementById("cartCount").innerText = itemsCount;
@@ -442,111 +401,43 @@
         cart = []; updateCartUI(); closeAll();
     }
 
-    function limpiarFormP() {
-        document.getElementById("fId").value = ""; 
-        document.querySelectorAll("#t-prod input").forEach(input => { input.value = ""; });
-        const btnSave = document.getElementById("btnSave");
-        btnSave.innerText = "GUARDAR PRODUCTO"; btnSave.style.background = "var(--success)";
-    }
-
-    async function saveP() {
-        const id = document.getElementById("fId").value;
-        const d = { 
-            nombre: document.getElementById("fNom").value, 
-            precio: Number(document.getElementById("fPre").value), 
-            precio_may: Number(document.getElementById("fPreM").value), 
-            promo: document.getElementById("fPro").value, 
-            categoria: document.getElementById("fCat").value.toLowerCase(), 
-            imagen: document.getElementById("fImg").value 
-        };
-        if(id) await db.collection("productos").doc(id).update(d);
-        else await db.collection("productos").add(d);
-        limpiarFormP();
-    }
-
-    function editP(id) {
-        const p = prods.find(x => x.id === id);
-        document.getElementById("fId").value = p.id; 
-        document.getElementById("fNom").value = p.nombre;
-        document.getElementById("fPre").value = p.precio; 
-        document.getElementById("fPreM").value = p.precio_may;
-        document.getElementById("fPro").value = p.promo || ""; 
-        document.getElementById("fCat").value = p.categoria;
-        document.getElementById("fImg").value = p.imagen;
-        const btn = document.getElementById("btnSave");
-        btn.innerText = "ACTUALIZAR DATOS"; btn.style.background = "#3b82f6";
-    }
-
-    function renderAdmP() {
-        document.getElementById("admListP").innerHTML = prods.map(p => `
-            <div class="admin-item">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <img src="${p.imagen}" style="width:40px; height:40px; object-fit:cover; border-radius:8px; background:white;">
-                    <div><b style="display:block; font-size:14px;">${p.nombre}</b><small style="color:var(--accent); font-weight:700;">$${p.precio} / $${p.precio_may}</small></div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="editP('${p.id}')">✏️</button><button onclick="del('productos','${p.id}')">🗑️</button>
-                </div>
-            </div>`).join("");
-    }
-
-    function renderAdmU() {
-        const p = users.filter(u => !u.activo);
-        const r = users.filter(u => u.activo);
-        let h = `<h3 style="color:var(--promo);">⏳ Solicitudes (${p.length})</h3>`;
-        h += p.map(u => `<div class="admin-item"><b>${u.user}</b><div><button onclick="updU('${u.id}', true)">Aprobar</button><button onclick="del('usuarios','${u.id}')">Rechazar</button></div></div>`).join("");
-        h += `<h3 style="color:var(--success);">✅ Registrados (${r.length})</h3>`;
-        h += r.map(u => `<div class="admin-item"><b>${u.user}</b><button onclick="del('usuarios','${u.id}')">🗑️</button></div>`).join("");
-        document.getElementById("admListU").innerHTML = h;
-    }
-
+    function limpiarFormP() { document.getElementById("fId").value = ""; document.querySelectorAll("#t-prod input").forEach(input => { input.value = ""; }); document.getElementById("btnSave").innerText = "GUARDAR PRODUCTO"; }
+    async function saveP() { const id = document.getElementById("fId").value; const d = { nombre: document.getElementById("fNom").value, precio: Number(document.getElementById("fPre").value), precio_may: Number(document.getElementById("fPreM").value), promo: document.getElementById("fPro").value, categoria: document.getElementById("fCat").value.toLowerCase(), imagen: document.getElementById("fImg").value }; if(id) await db.collection("productos").doc(id).update(d); else await db.collection("productos").add(d); limpiarFormP(); }
+    function editP(id) { const p = prods.find(x => x.id === id); document.getElementById("fId").value = p.id; document.getElementById("fNom").value = p.nombre; document.getElementById("fPre").value = p.precio; document.getElementById("fPreM").value = p.precio_may; document.getElementById("fPro").value = p.promo || ""; document.getElementById("fCat").value = p.categoria; document.getElementById("fImg").value = p.imagen; document.getElementById("btnSave").innerText = "ACTUALIZAR DATOS"; }
+    function renderAdmP() { document.getElementById("admListP").innerHTML = prods.map(p => `<div class="admin-item"><div style="display:flex; align-items:center; gap:15px;"><img src="${p.imagen}" style="width:40px; height:40px; border-radius:8px; background:white;"><div><b>${p.nombre}</b></div></div><div><button onclick="editP('${p.id}')">✏️</button><button onclick="del('productos','${p.id}')">🗑️</button></div></div>`).join(""); }
+    function renderAdmU() { const p = users.filter(u => !u.activo), r = users.filter(u => u.activo); document.getElementById("admListU").innerHTML = p.map(u => `<div class="admin-item"><b>${u.user}</b><div><button onclick="updU('${u.id}', true)">Aprobar</button><button onclick="del('usuarios','${u.id}')">❌</button></div></div>`).join("") + r.map(u => `<div class="admin-item"><b>${u.user}</b><button onclick="del('usuarios','${u.id}')">🗑️</button></div>`).join(""); }
     async function updU(id, s) { await db.collection("usuarios").doc(id).update({ activo: s }); }
-
-    function renderAdmO() {
-        document.getElementById("admListO").innerHTML = orders.map(o => {
-            const f = new Date(o.fecha);
-            return `<div class="admin-item">
-                <div><b>${o.total}</b><br><small>${f.toLocaleDateString()} - ${f.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}hs</small></div>
-                <button onclick="del('pedidos','${o.id}')">❌</button>
-            </div>`;
-        }).join("");
+    function renderAdmO() { document.getElementById("admListO").innerHTML = orders.map(o => `<div class="admin-item"><div><b>${o.total}</b></div><button onclick="del('pedidos','${o.id}')">❌</button></div>`).join(""); }
+    
+    async function doLogin() { 
+        const u = document.getElementById("uInp").value, p = document.getElementById("pInp").value; 
+        if(u === "admin" && p === "admin") return openModal("adminModal"); 
+        const user = users.find(x => x.user === u && x.pass === p); 
+        if(user && user.activo) { localStorage.setItem("ms47_may", "true"); location.reload(); } else alert("Error o cuenta no activada"); 
     }
-
-    async function doLogin() {
-        const u = document.getElementById("uInp").value, p = document.getElementById("pInp").value;
-        if(u === "admin" && p === "admin") return openModal("adminModal");
-        const user = users.find(x => x.user === u && x.pass === p);
-        if(user && user.activo) { localStorage.setItem("ms47_may", "true"); location.reload(); } else alert("Error");
-    }
-
-    async function regU() {
-        const u = document.getElementById("rU").value, p = document.getElementById("rP").value, t = document.getElementById("rT").value;
-        await db.collection("usuarios").add({ user: u, pass: p, tel: t, activo: false }); closeAll();
+    
+    async function regU() { 
+        await db.collection("usuarios").add({ user: document.getElementById("rU").value, pass: document.getElementById("rP").value, tel: document.getElementById("rT").value, activo: false }); 
+        closeAll(); alert("Solicitud enviada"); 
     }
 
     function setCat(c) { 
         filterCat = c; 
-        document.querySelectorAll('.cat-card').forEach(card => card.classList.remove('active'));
-        event.currentTarget.classList.add('active'); render(); 
+        document.querySelectorAll('.cat-card').forEach(card => {
+            const isTarget = c === '' ? card.innerText.includes("Todos") : card.innerText.toLowerCase().includes(c);
+            card.classList.toggle('active', isTarget);
+        }); 
+        render(); 
     }
-    
-    function tab(id) {
-        document.querySelectorAll('#adminModal [id^="t-"]').forEach(d => d.style.display = 'none');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).style.display = 'block'; event.target.classList.add('active');
-    }
-    
+
+    function tab(id) { document.querySelectorAll('#adminModal [id^="t-"]').forEach(d => d.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
     function openModal(id) { closeAll(); document.getElementById(id).style.display = 'flex'; }
     function toggleCart() { document.getElementById("cartDrawer").classList.toggle("active"); document.getElementById("ov").classList.toggle("active"); }
     function toggleInfo() { document.getElementById("infoDrawer").classList.toggle("active"); document.getElementById("ov").classList.toggle("active"); }
-    function closeAll() { 
-        document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
-        document.querySelectorAll(".drawer").forEach(d => d.classList.remove("active"));
-        document.getElementById("ov").classList.remove("active");
-    }
+    function closeAll() { document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); document.querySelectorAll(".drawer").forEach(d => d.classList.remove("active")); document.getElementById("ov").classList.remove("active"); }
     function toggleTheme() { document.body.classList.toggle("light"); }
     function logout() { localStorage.removeItem("ms47_may"); location.reload(); }
-    function verificarAdmin() { let p = prompt("Clave:"); if(p==="admin") openModal("adminModal"); }
+    function verificarAdmin() { if(prompt("Clave:")==="admin") openModal("adminModal"); }
     async function del(c,i) { if(confirm("Eliminar?")) await db.collection(c).doc(i).delete(); }
 </script>
 </body>
