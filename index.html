@@ -60,7 +60,7 @@
         .header-left { display: flex; align-items: center; gap: 12px; }
         .main-logo { height: 50px; width: auto; filter: drop-shadow(0 0 5px var(--accent)); }
         .header-icons { display: flex; gap: 15px; align-items: center; }
-        .icon-btn { cursor: pointer; font-size: 20px; position: relative; padding: 8px; border-radius: 50%; transition: 0.2s; }
+        .icon-btn { cursor: pointer; font-size: 20px; position: relative; padding: 8px; border-radius: 50%; transition: 0.2s; color: var(--text); }
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
 
         /* SECCIÓN HERO Y CATEGORÍAS */
@@ -200,22 +200,20 @@
         .qty-controls { display: flex; align-items: center; gap: 10px; }
         .qty-btn { width: 25px; height: 25px; border-radius: 5px; border: none; background: var(--accent); color: white; cursor: pointer; }
 
-        /* ESTILOS NUEVOS PERFIL */
+        /* ESTILOS PERFIL */
         .perfil-section { margin-bottom: 20px; }
-        
-        /* Solución: Restaurado el separador azul vertical */
         .perfil-section h3 { 
             font-size: 14px; 
             margin-bottom: 10px; 
             opacity: 0.7; 
-            border-left: 3px solid var(--accent); /* Línea azul vertical */
+            border-left: 3px solid var(--accent); 
             padding-left: 8px; 
+            line-height: 1;
         }
         
         .map-box { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 220px; margin-top: 5px; }
         .soporte-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; }
         
-        /* Mantener Logo Grande (anterior cambio) */
         .perfil-logo { 
             width: 180px; 
             margin: 20px auto; 
@@ -317,7 +315,7 @@
 <div class="overlay" id="ov" onclick="closeAll()"></div>
 
 <div id="infoDrawer" class="drawer">
-    <h2 style="color:var(--accent); margin-bottom:5px;">Mi Perfil</h2>
+    <h2 style="color:var(--accent); margin-bottom:5px; margin-top: 10px;">Mi Perfil</h2>
     <p style="font-size:12px; margin-bottom:20px; opacity:0.6;">Información y Soporte</p>
     
     <div id="mayBadge" style="display:none; padding:10px; background:rgba(16,185,129,0.1); border-radius:10px; color:var(--success); font-weight:800; border:1px solid var(--success); margin-bottom:20px;">✓ MAYORISTA ACTIVO</div>
@@ -327,7 +325,7 @@
         <p style="font-size:13px; margin:5px 0;">Calle Falsa 123, Santa Fe Capital</p>
         <div class="map-box">
             <iframe 
-                src="http://googleusercontent.com/maps.google.com/4" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3396.657597148564!2d-60.7061!3d-31.6333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM4JzAwLjAiUyA2MMKwNDInMjIuMCJX!5e0!3m2!1ses!2sar!4v1646850000000!5m2!1ses!2sar" 
                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
             </iframe>
         </div>
