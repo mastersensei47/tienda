@@ -291,10 +291,45 @@
         document.getElementById("fImg").value = p.imagen;
     }
 
-    function renderAdmU() {
-        document.getElementById("admListU").innerHTML = users.map(u => `
-            <div class="admin-item"><span>${u.user} (${u.tel})</span> ${u.activo ? '✅' : `<button onclick="updU('${u.id}')">Aprobar</button>`}</div>`).join("");
+function renderAdmU() {
+    const cont = document.getElementById("admListU");
+    
+    // Filtramos los usuarios por estado
+    const pendientes = users.filter(u => !u.activo);
+    const registrados = users.filter(u => u.activo);
+
+    let html = `<h3 style="color:var(--promo); margin-bottom:10px; font-size:16px;">⏳ Solicitudes Pendientes (${pendientes.length})</h3>`;
+    
+    if (pendientes.length === 0) {
+        html += `<p style="font-size:12px; opacity:0.6; margin-bottom:20px;">No hay solicitudes nuevas.</p>`;
+    } else {
+        html += pendientes.map(u => `
+            <div class="admin-item" style="flex-direction:column; align-items:flex-start; gap:5px;">
+                <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+                    <b style="font-size:15px;">${u.user}</b>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="updU('${u.id}', true)" style="background:var(--success); color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:700;">Aprobar</button>
+                        <button onclick="del('usuarios','${u.id}')" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:700;">Rechazar</button>
+                    </div>
+                </div>
+                <small style="color:var(--accent); font-weight:600;">📞 WhatsApp: ${u.tel || 'No cargado'}</small>
+                <small style="opacity:0.7;">ID: ${u.id}</small>
+            </div>`).join("");
     }
+
+    html += `<h3 style="color:var(--success); margin:20px 0 10px 0; font-size:16px;">✅ Clientes Registrados (${registrados.length})</h3>`;
+    
+    html += registrados.map(u => `
+        <div class="admin-item" style="display:flex; justify-content:space-between; align-items:center; opacity:0.9;">
+            <div>
+                <b style="display:block;">${u.user}</b>
+                <small style="color:var(--accent);">WhatsApp: ${u.tel}</small>
+            </div>
+            <button onclick="del('usuarios','${u.id}')" title="Eliminar acceso" style="background:none; border:none; cursor:pointer; font-size:16px;">🗑️</button>
+        </div>`).join("");
+
+    cont.innerHTML = html;
+}
     async function updU(id) { await db.collection("usuarios").doc(id).update({activo:true}); }
 
 function renderAdmO() {
@@ -324,7 +359,12 @@ function renderAdmO() {
     
     cont.innerHTML = html;
 }
-
+async function updU(id, estado) {
+    if(confirm("¿Confirmar acción sobre este usuario?")) {
+        await db.collection("usuarios").doc(id).update({ activo: estado });
+        alert("Usuario actualizado correctamente.");
+    }
+}
     async function doLogin() {
         const u = document.getElementById("uInp").value, p = document.getElementById("pInp").value;
         if(u === "admin" && p === "admin") return openModal("adminModal");
