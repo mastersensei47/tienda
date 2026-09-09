@@ -607,6 +607,30 @@ async function instalarApp() {
 
 let categoriasEditando = [];
 
+// Pinta la barra de categorías del catálogo público (#catBar) a partir de
+// STORE_CONFIG.categories. Cada chip usa setCat() para filtrar productos.
+function renderCategorias() {
+    const cont = document.getElementById("catBar");
+    if (!cont) return;
+    const categorias = STORE_CONFIG.categories || [];
+    const chipTodos = `<div class="cat-item${filterCat === "" ? " active" : ""}" onclick="setCat(this, '')">🗂️ Todos</div>`;
+    const chips = categorias.map(c => `
+        <div class="cat-item${filterCat === c.id ? " active" : ""}" onclick="setCat(this, '${String(c.id).replace(/'/g, "\\'")}')">${c.icon || ""} ${(c.label || "").replace(/</g, "&lt;")}</div>
+    `).join("");
+    cont.innerHTML = chipTodos + chips;
+}
+
+// Llena el <select id="fCat"> del formulario de producto (panel admin) con
+// las mismas categorías configuradas en STORE_CONFIG.categories.
+function renderCategoriasSelect() {
+    const sel = document.getElementById("fCat");
+    if (!sel) return;
+    const categorias = STORE_CONFIG.categories || [];
+    const valorPrevio = sel.value;
+    sel.innerHTML = categorias.map(c => `<option value="${c.id}">${c.icon || ""} ${(c.label || "").replace(/</g, "&lt;")}</option>`).join("");
+    if (categorias.some(c => c.id === valorPrevio)) sel.value = valorPrevio;
+}
+
 function slugCategoria(texto) {
     return normalizarTexto(texto).replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || ('cat-' + Date.now());
 }
